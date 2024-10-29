@@ -1,10 +1,9 @@
 import java.io.*;
 import java.net.*;
 
-
+  //Je commence avec le noir (cas 2)
 class Client {
 	public static void main(String[] args) {
-         
 	Socket MyClient;
 	BufferedInputStream input;
 	BufferedOutputStream output;
@@ -25,7 +24,6 @@ class Client {
                 byte[] aBuffer = new byte[1024];
 				
 				int size = input.available();
-				//System.out.println("size " + size);
 				input.read(aBuffer,0,size);
                 String s = new String(aBuffer).trim();
                 System.out.println(s);
@@ -84,7 +82,8 @@ class Client {
 				System.out.println("Dernier coup :"+ s);
 		       	System.out.println("Entrez votre coup : ");
 				String move = null;
-				move = console.readLine();
+                RandomGenerator a = new RandomGenerator();
+				move = a.move();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
 				
