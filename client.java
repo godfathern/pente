@@ -1,9 +1,11 @@
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
-  //Je commence avec le noir (cas 2)
+
 class Client {
 	public static void main(String[] args) {
+         
 	Socket MyClient;
 	BufferedInputStream input;
 	BufferedOutputStream output;
@@ -14,42 +16,22 @@ class Client {
 	   	input    = new BufferedInputStream(MyClient.getInputStream());
 		output   = new BufferedOutputStream(MyClient.getOutputStream());
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-	   	while(1 == 1){
-			char cmd = 0;
-		   	
-            cmd = (char)input.read();
-            System.out.println(cmd);
-            // Debut de la partie en joueur blanc
-            if(cmd == '1'){
-                byte[] aBuffer = new byte[1024];
-				
-				int size = input.available();
-				input.read(aBuffer,0,size);
-                String s = new String(aBuffer).trim();
-                System.out.println(s);
-                String[] boardValues;
-                boardValues = s.split(" ");
-                int x=0,y=0;
-                for(int i=0; i<boardValues.length;i++){
-                    board[x][y] = Integer.parseInt(boardValues[i]);
-                    x++;
-                    if(x == 15){
-                        x = 0;
-                        y++;
-                    }
-                }
+        Board reseauBoard = new Board();
 
-                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
-                String move = null;
-                move = console.readLine();
-				output.write(move.getBytes(),0,move.length());
-				output.flush();
-            }
-            // Debut de la partie en joueur Noir
-            if(cmd == '2'){
-                System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
+
+        ReseauPlayer reseauPlayer = new ReseauPlayer(Mark.N);
+
+        
+
+	   	while(1 == 1){
+			char cmd = 0;  	
+            cmd = (char)input.read();
+            System.out.println("cmd" + cmd);
+            // Debut de la partie en joueur rouge
+            if(cmd == '1'){
+                System.out.println("11111111111111111111111");
+                reseauPlayer = new ReseauPlayer(Mark.R);
                 byte[] aBuffer = new byte[1024];
-				
 				int size = input.available();
 				//System.out.println("size " + size);
 				input.read(aBuffer,0,size);
@@ -66,6 +48,35 @@ class Client {
                         y++;
                     }
                 }
+
+                System.out.println("Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
+                String move = reseauPlayer.randomMove();
+				output.write(move.getBytes(),0,move.length());
+				output.flush();
+            }
+            // Debut de la partie en joueur Noir
+            if(cmd == '2'){
+                System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des rouges");//ReseauPlayer = noir
+                byte[] aBuffer = new byte[1024];
+				
+				int size = input.available();
+				//System.out.println("size " + size);
+				input.read(aBuffer,0,size);
+                String s = new String(aBuffer).trim();
+                //System.out.println(s);
+                String[] boardValues;
+                boardValues = s.split(" ");
+                int x=0,y=0;
+                for(int i=0; i<boardValues.length;i++){
+                    board[x][y] = Integer.parseInt(boardValues[i]);
+                    
+                    x++;
+                    if(x == 15){
+                        x = 0;
+                        y++;
+                    }
+                }
+                
             }
 
 
@@ -77,14 +88,22 @@ class Client {
 				int size = input.available();
 				System.out.println("size :" + size);
 				input.read(aBuffer,0,size);
-				
-				String s = new String(aBuffer);
+			
+				String s = new String(aBuffer).trim();
+                System.out.println(s);
+                Move ordinateurMove = new Move (MoveConverter.convertMove(s)[0],MoveConverter.convertMove(s)[1]);
+                reseauBoard.play(ordinateurMove, reseauPlayer.getOpponentMark());
+                reseauBoard.printBoard();
 				System.out.println("Dernier coup :"+ s);
 		       	System.out.println("Entrez votre coup : ");
-				String move = null;
-                RandomGenerator a = new RandomGenerator();
-				move = a.move();
-				output.write(move.getBytes(),0,move.length());
+				String reseauMove = null;
+                // ArrayList <Move> reseauPlayerMoves = reseauPlayer.getNextMoveAB(reseauBoard);
+                // System.out.println("haha : " + reseauPlayerMoves.size());
+                // reseauMove = MoveConverter.convertBack(reseauPlayer.selectBestMove(reseauPlayerMoves));
+                reseauMove = new RandomGenerator().move();
+
+                reseauBoard.play(MoveConverter.convertStringToMove(reseauMove), reseauPlayer.getMark());
+				output.write(reseauMove.getBytes(),0,reseauMove.length());
 				output.flush();
 				
 			}
@@ -92,7 +111,8 @@ class Client {
 			if(cmd == '4'){
 				System.out.println("Coup invalide, entrez un nouveau coup : ");
 		       	String move = null;
-				move = console.readLine();
+				//move = console.readLine();
+                move = new RandomGenerator().move();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
 				
@@ -102,7 +122,10 @@ class Client {
                 byte[] aBuffer = new byte[16];
                 int size = input.available();
                 input.read(aBuffer,0,size);
-				String s = new String(aBuffer);
+				String s = new String(aBuffer).trim();
+                Move ordinateurMove = new Move (MoveConverter.convertMove(s)[0],MoveConverter.convertMove(s)[1]);
+                //reseauBoard.play(ordinateurMove, Mark.R);
+                reseauBoard.printBoard();
 				System.out.println("Partie Terminé. Le dernier coup joué est: "+s);
 		       	String move = null;
 				move = console.readLine();
