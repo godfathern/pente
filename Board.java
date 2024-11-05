@@ -28,35 +28,32 @@ class Board
         }
     }
 
-    public ArrayList<Move> generateValidMoves(){
-    if (isReseauPlayerRouge && firstMoveReseauPlayerRouge){
-        int centerStart = (SIZE - firstMoveRougeLimit)/2;
-        int centerEnd = (SIZE + firstMoveRougeLimit)/2 - 1;
-        ArrayList<Move> validMoves = new ArrayList<Move>();
+    public ArrayList<Move> generateValidMoves() {
+        ArrayList<Move> validMoves = new ArrayList<>();
+    
+        int centerStart = (SIZE - firstMoveRougeLimit) / 2;
+        int centerEnd = (SIZE + firstMoveRougeLimit) / 2 - 1;
+        
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                if (i >= centerStart && i <= centerEnd && j >= centerStart && j <= centerEnd) {
-                    continue;
-                }
                 if (board[i][j] == null) {
+                    if (isReseauPlayerRouge && firstMoveReseauPlayerRouge) {
+                        if (i >= centerStart && i <= centerEnd && j >= centerStart && j <= centerEnd) {
+                            continue;
+                        }
+                    }
                     validMoves.add(new Move(i, j));
                 }
             }
         }
-        firstMoveReseauPlayerRouge = false;
-        return validMoves;
-    }
-
-        ArrayList<Move> validMoves = new ArrayList<Move>();
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                if (board[i][j] == null) {
-                    validMoves.add(new Move(i, j));
-                }
-            }
+        
+        if (isReseauPlayerRouge && firstMoveReseauPlayerRouge) {
+            firstMoveReseauPlayerRouge = false;
         }
+    
         return validMoves;
     }
+    
 
     // Place la pièce 'mark' sur le plateau, à la
     // position spécifiée dans Move
