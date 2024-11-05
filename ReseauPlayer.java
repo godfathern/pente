@@ -12,18 +12,20 @@ class ReseauPlayer {
     // Normalement, la variable devrait être incrémentée
     // au début de votre MinMax ou Alpha Beta.
     private int numExploredNodes;
-    private Mark cpu;
+    private Mark markReseauPlayer;
 
     // Le constructeur reçoit en paramètre le
     // joueur MAX (X ou O)
-    public ReseauPlayer(Mark cpu) {
-        this.cpu = cpu;
+    public ReseauPlayer(Mark markReseauPlayer) {
+        this.markReseauPlayer = markReseauPlayer;
     }
-    public Mark getOpponentMark(){
-        return this.cpu.getOpponent();
+
+    public Mark getOpponentMark() {
+        return this.markReseauPlayer.getOpponent();
     }
-    public Mark getMark(){
-        return this.cpu;
+
+    public Mark getMark() {
+        return this.markReseauPlayer;
     }
 
     // Ne pas changer cette méthode
@@ -38,12 +40,12 @@ class ReseauPlayer {
         numExploredNodes = 0;
         int bestScore = Integer.MIN_VALUE;
         ArrayList<Move> bestMoves = new ArrayList<>();
-    
+
         for (Move move : board.generateValidMoves()) {
-            board.play(move, cpu);
+            board.play(move, markReseauPlayer);
             int score = minmax(board, false);
             board.undo(move);
-    
+
             if (score > bestScore) {
                 bestScore = score;
                 bestMoves.clear();
@@ -55,23 +57,22 @@ class ReseauPlayer {
         System.out.println("Number of nodes : " + numExploredNodes);
         return bestMoves;
     }
-    
 
     private int minmax(Board board, boolean isMaximizing) {
         numExploredNodes++;
-    
-        if (board.checkWin(cpu)) {
+
+        if (board.checkWin(markReseauPlayer)) {
             return 100;
-        } else if (board.checkWin(cpu.getOpponent())) {
+        } else if (board.checkWin(markReseauPlayer.getOpponent())) {
             return -100;
         } else if (board.isFull()) {
             return 0;
         }
-    
+
         if (isMaximizing) {
             int bestScore = Integer.MIN_VALUE;
             for (Move move : board.generateValidMoves()) {
-                board.play(move, cpu);
+                board.play(move, markReseauPlayer);
                 int score = minmax(board, false);
                 board.undo(move);
                 bestScore = Math.max(bestScore, score);
@@ -80,7 +81,7 @@ class ReseauPlayer {
         } else {
             int bestScore = Integer.MAX_VALUE;
             for (Move move : board.generateValidMoves()) {
-                board.play(move, cpu.getOpponent());
+                board.play(move, markReseauPlayer.getOpponent());
                 int score = minmax(board, true);
                 board.undo(move);
                 bestScore = Math.min(bestScore, score);
@@ -88,7 +89,6 @@ class ReseauPlayer {
             return bestScore;
         }
     }
-    
 
     // Retourne la liste des coups possibles. Cette liste contient
     // plusieurs coups possibles si et seuleument si plusieurs coups
@@ -97,15 +97,15 @@ class ReseauPlayer {
         numExploredNodes = 0;
         int bestScore = Integer.MIN_VALUE;
         ArrayList<Move> bestMoves = new ArrayList<>();
-    
+
         int alpha = Integer.MIN_VALUE;
         int beta = Integer.MAX_VALUE;
-    
+
         for (Move move : board.generateValidMoves()) {
-            board.play(move, cpu);
+            board.play(move, markReseauPlayer);
             int score = alphaBeta(board, false, alpha, beta);
             board.undo(move);
-    
+
             if (score > bestScore) {
                 bestScore = score;
                 bestMoves.clear();
@@ -117,22 +117,22 @@ class ReseauPlayer {
         System.out.println("Number of nodes : " + numExploredNodes);
         return bestMoves;
     }
-    
+
     private int alphaBeta(Board board, boolean isMaximizing, int alpha, int beta) {
         numExploredNodes++;
-    
-        if (board.checkWin(cpu)) {
+
+        if (board.checkWin(markReseauPlayer)) {
             return 100;
-        } else if (board.checkWin(cpu.getOpponent())) {
+        } else if (board.checkWin(markReseauPlayer.getOpponent())) {
             return -100;
         } else if (board.isFull()) {
             return 0;
         }
-    
+
         if (isMaximizing) {
             int bestScore = Integer.MIN_VALUE;
             for (Move move : board.generateValidMoves()) {
-                board.play(move, cpu);
+                board.play(move, markReseauPlayer);
                 int score = alphaBeta(board, false, alpha, beta);
                 board.undo(move);
                 bestScore = Math.max(bestScore, score);
@@ -145,7 +145,7 @@ class ReseauPlayer {
         } else {
             int bestScore = Integer.MAX_VALUE;
             for (Move move : board.generateValidMoves()) {
-                board.play(move, cpu.getOpponent());
+                board.play(move, markReseauPlayer.getOpponent());
                 int score = alphaBeta(board, true, alpha, beta);
                 board.undo(move);
                 bestScore = Math.min(bestScore, score);
@@ -158,34 +158,29 @@ class ReseauPlayer {
         }
     }
 
-
-
-
-
-
     public Move selectBestMove(ArrayList<Move> bestMoves) {
         if (bestMoves.size() == 1) {
             return bestMoves.get(0);
         }
         Random random = new Random();
-        int index = random.nextInt(bestMoves.size()); 
+        int index = random.nextInt(bestMoves.size());
         return bestMoves.get(index);
     }
 
-    char [] letters = new char [15];
-    int [] numbers = new int [15];
+    char[] letters = new char[15];
+    int[] numbers = new int[15];
     boolean firstMove = false;
 
-    public String randomMove(){
-        for (char letter = 'A'; letter <= 'O'; letter++){
-            letters[letter-'A']=letter;
+    public String randomMove() {
+        for (char letter = 'A'; letter <= 'O'; letter++) {
+            letters[letter - 'A'] = letter;
         }
-        for (int i = 0; i<15; i++ ){
+        for (int i = 0; i < 15; i++) {
             numbers[i] = i + 1;
         }
-        if (cpu == Mark.R && firstMove == false){
+        if (markReseauPlayer == Mark.R && firstMove == false) {
             firstMove = true;
-            return "I8";
+            return "H8";
         }
         Random random = new Random();
         char randomLetter = letters[random.nextInt(letters.length)];
@@ -194,6 +189,4 @@ class ReseauPlayer {
     }
 
 
-
 }
-

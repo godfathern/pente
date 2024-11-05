@@ -50,6 +50,7 @@ class Client {
                 }
 
                 System.out.println("Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
+                reseauBoard.checkFirstMove(reseauPlayer);
                 String move = reseauPlayer.randomMove();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
@@ -124,14 +125,15 @@ class Client {
                 input.read(aBuffer,0,size);
 				String s = new String(aBuffer).trim();
                 Move ordinateurMove = new Move (MoveConverter.convertMove(s)[0],MoveConverter.convertMove(s)[1]);
-                //reseauBoard.play(ordinateurMove, Mark.R);
+                reseauBoard.play(ordinateurMove, reseauPlayer.getOpponentMark());
                 reseauBoard.printBoard();
+                System.out.println("Check winnnnnnn : " + reseauBoard.checkWin(reseauPlayer.getOpponentMark())); 
 				System.out.println("Partie Terminé. Le dernier coup joué est: "+s);
+
 		       	String move = null;
 				move = console.readLine();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
-				
 			}
         }
 	}

@@ -8,6 +8,10 @@ class Board
 {
     private Mark[][] board;
     private static final int SIZE = 15;
+    private static final int winLength = 5;
+    private static final int firstMoveRougeLimit = 5;
+    private boolean isReseauPlayerRouge = false;
+    private boolean firstMoveReseauPlayerRouge = false;
 
     // Ne pas changer la signature de cette méthode
     public Board() {
@@ -15,7 +19,34 @@ class Board
 
     }
 
+    public Mark[][] getBoard(){
+        return this.board;
+    }
+    public void checkFirstMove (ReseauPlayer reseauPlayer){
+        if (reseauPlayer.getMark() == Mark.R){
+            isReseauPlayerRouge = true;
+        }
+    }
+
     public ArrayList<Move> generateValidMoves(){
+    if (isReseauPlayerRouge && firstMoveReseauPlayerRouge){
+        int centerStart = (SIZE - firstMoveRougeLimit)/2;
+        int centerEnd = (SIZE + firstMoveRougeLimit)/2 - 1;
+        ArrayList<Move> validMoves = new ArrayList<Move>();
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (i >= centerStart && i <= centerEnd && j >= centerStart && j <= centerEnd) {
+                    continue;
+                }
+                if (board[i][j] == null) {
+                    validMoves.add(new Move(i, j));
+                }
+            }
+        }
+        firstMoveReseauPlayerRouge = false;
+        return validMoves;
+    }
+
         ArrayList<Move> validMoves = new ArrayList<Move>();
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
@@ -49,51 +80,30 @@ class Board
         board[row][col] = null;
     }
 
-    // retourne  100 pour une victoire
-    //          -100 pour une défaite
-    //           0   pour un match nul
-    // Ne pas changer la signature de cette méthode
-
-
-    public int evaluate(Mark mark) {
-        // Vérifier si le joueur actuel (mark) a gagné
-        if (checkWin(mark)) {
-            return 100; // Victoire
-        }
-        // Vérifier si l'adversaire a gagné
-        Mark opponent = (mark == Mark.R) ? Mark.N : Mark.R;
-        if (checkWin(opponent)) {
-            return -100; // Défaite
-        }
-        // Si aucune victoire ou défaite, on regarde si c'est un match nul
-        if (isFull()) {
-            return 0; // Match nul
-        }
-        // Jeu en cours, aucune évaluation
-        return 0;
-    }
-
     public boolean checkWin(Mark mark) {
-        // Vérification des lignes
-        for (int i = 0; i < SIZE; i++) {
-            if (board[i][0] == mark && board[i][1] == mark && board[i][2] == mark) {
+        for (int i = 0; i <= (SIZE - winLength); i++){
+            for (int j = 0; j <= (SIZE - winLength); j++){
+                if (board[i][j+0] == mark && board[i][j+1] == mark && board[i][j+2] == mark && board[i][j+3] == mark && 
+                board[i][j+4] == mark) {
+                    return true;
+                }
+                if (board[i+0][j] == mark && board[i+1][j] == mark && board[i+2][j] == mark && board[i+3][j] == mark && 
+                board[i+4][j] == mark) {
+                    return true;
+                }
+                if (board[i+0][j+0] == mark && board[i+1][j+1] == mark && board[i+2][j+2] == mark && board[i+3][j+3] == mark && 
+                board[i+4][j+4] == mark) {
+                    return true;
+                }
+                if (j >= winLength - 1 && board[i][j] == mark && board[i + 1][j - 1] == mark &&
+                board[i + 2][j - 2] == mark && board[i + 3][j - 3] == mark && board[i + 4][j - 4] == mark) {
                 return true;
             }
-        }
-        // Vérification des colonnes
-        for (int i = 0; i < SIZE; i++) {
-            if (board[0][i] == mark && board[1][i] == mark && board[2][i] == mark) {
-                return true;
+
             }
-        }
-        // Vérification des diagonales
-        if (board[0][0] == mark && board[1][1] == mark && board[2][2] == mark) {
-            return true;
-        }
-        if (board[0][2] == mark && board[1][1] == mark && board[2][0] == mark) {
-            return true;
         }
         return false;
+
     }
 
     public boolean isFull() {
