@@ -15,4 +15,11 @@ class Move
     public int getCol(){
         return col;
     }
+
+    @Override
+    public String toString() {
+        char columnLetter = (char) ('A' + col);
+        int rowNumber = row + 1;
+        return columnLetter + Integer.toString(rowNumber);
+    }
 }

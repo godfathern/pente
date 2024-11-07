@@ -29,7 +29,6 @@ class Client {
             System.out.println("cmd" + cmd);
             // Debut de la partie en joueur rouge
             if(cmd == '1'){
-                System.out.println("11111111111111111111111");
                 reseauPlayer = new ReseauPlayer(Mark.R);
                 byte[] aBuffer = new byte[1024];
 				int size = input.available();
@@ -51,7 +50,7 @@ class Client {
 
                 System.out.println("Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
                 reseauBoard.checkFirstMove(reseauPlayer);
-                String move = reseauPlayer.randomMove();
+                String move = reseauPlayer.randomMove(reseauBoard);
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
             }
@@ -97,14 +96,15 @@ class Client {
                 reseauBoard.printBoard();
 				System.out.println("Dernier coup :"+ s);
 		       	System.out.println("Entrez votre coup : ");
-				String reseauMove = null;
-                // ArrayList <Move> reseauPlayerMoves = reseauPlayer.getNextMoveAB(reseauBoard);
-                // System.out.println("haha : " + reseauPlayerMoves.size());
-                // reseauMove = MoveConverter.convertBack(reseauPlayer.selectBestMove(reseauPlayerMoves));
-                reseauMove = new RandomGenerator().move();
-
-                reseauBoard.play(MoveConverter.convertStringToMove(reseauMove), reseauPlayer.getMark());
-				output.write(reseauMove.getBytes(),0,reseauMove.length());
+                //--------------
+                // String move = reseauPlayer.randomMove(reseauBoard);
+                // output.write(move.getBytes(),0,move.length());
+				// output.flush();
+                //-----------------------
+                Move reseauMove = reseauPlayer.selectBestMove(reseauPlayer, reseauBoard);
+                reseauBoard.play(reseauMove, reseauPlayer.getMark());
+                String stringReseauMove = MoveConverter.convertBack(reseauMove);
+				output.write(stringReseauMove.getBytes(),0,stringReseauMove.length());
 				output.flush();
 				
 			}

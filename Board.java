@@ -7,7 +7,7 @@ import java.util.ArrayList;
 class Board
 {
     private Mark[][] board;
-    private static final int SIZE = 15;
+    private static final int SIZE = 10;
     private static final int winLength = 5;
     private static final int firstMoveRougeLimit = 5;
     private boolean isReseauPlayerRouge = false;
@@ -39,12 +39,18 @@ class Board
                 if (board[i][j] == null) {
                     if (isReseauPlayerRouge && firstMoveReseauPlayerRouge) {
                         if (i >= centerStart && i <= centerEnd && j >= centerStart && j <= centerEnd) {
+                            System.out.println("fuck");
                             continue;
+                            
                         }
                     }
                     validMoves.add(new Move(i, j));
                 }
             }
+        }
+        System.out.println("Amount of valid moves :  " + validMoves.size());
+        for (Move m : validMoves){
+            System.out.print(m + "-");
         }
         
         if (isReseauPlayerRouge && firstMoveReseauPlayerRouge) {
