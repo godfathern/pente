@@ -181,8 +181,11 @@ class ReseauPlayer {
         }
         Random random = new Random();
         Move randomMove = validMoves.get(random.nextInt(validMoves.size()));
-        MoveConverter.convertBack(randomMove);
-        return MoveConverter.convertBack(randomMove);
+        MoveConverter.convertMoveToString(randomMove);
+        return MoveConverter.convertMoveToString(randomMove);
+
+
+        
     }
 
 

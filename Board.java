@@ -7,7 +7,7 @@ import java.util.ArrayList;
 class Board
 {
     private Mark[][] board;
-    private static final int SIZE = 10;
+    private static final int SIZE = 15;
     private static final int winLength = 5;
     private static final int firstMoveRougeLimit = 5;
     private boolean isReseauPlayerRouge = false;
@@ -27,7 +27,7 @@ class Board
             isReseauPlayerRouge = true;
         }
     }
-
+    //Generateur de movements
     public ArrayList<Move> generateValidMoves() {
         ArrayList<Move> validMoves = new ArrayList<>();
     
@@ -52,6 +52,7 @@ class Board
         for (Move m : validMoves){
             System.out.print(m + "-");
         }
+        System.out.println("------------------------");
         
         if (isReseauPlayerRouge && firstMoveReseauPlayerRouge) {
             firstMoveReseauPlayerRouge = false;
@@ -59,7 +60,7 @@ class Board
     
         return validMoves;
     }
-    
+
 
     // Place la pièce 'mark' sur le plateau, à la
     // position spécifiée dans Move
