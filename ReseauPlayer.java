@@ -95,70 +95,70 @@ class ReseauPlayer {
     // Retourne la liste des coups possibles. Cette liste contient
     // plusieurs coups possibles si et seuleument si plusieurs coups
     // ont le même score.
-    // public ArrayList<Move> getNextMoveAB(Board board) {
-    //     numExploredNodes = 0;
-    //     int bestScore = Integer.MIN_VALUE;
-    //     ArrayList<Move> bestMoves = new ArrayList<>();
+    public ArrayList<Move> getNextMoveAB(Board board) {
+        numExploredNodes = 0;
+        int bestScore = Integer.MIN_VALUE;
+        ArrayList<Move> bestMoves = new ArrayList<>();
 
-    //     int alpha = Integer.MIN_VALUE;
-    //     int beta = Integer.MAX_VALUE;
+        int alpha = Integer.MIN_VALUE;
+        int beta = Integer.MAX_VALUE;
 
-    //     for (Move move : board.generateValidMoves()) {
-    //         board.play(move, markReseauPlayer);
-    //         int score = alphaBeta(board, false, alpha, beta);
-    //         board.undo(move);
+        for (Move move : board.generateValidMoves()) {
+            board.play(move, markReseauPlayer);
+            int score = alphaBeta(board, false, alpha, beta);
+            board.undo(move);
 
-    //         if (score > bestScore) {
-    //             bestScore = score;
-    //             bestMoves.clear();
-    //             bestMoves.add(move);
-    //         } else if (score == bestScore) {
-    //             bestMoves.add(move);
-    //         }
-    //     }
-    //     System.out.println("Number of nodes : " + numExploredNodes);
-    //     return bestMoves;
-    // }
+            if (score > bestScore) {
+                bestScore = score;
+                bestMoves.clear();
+                bestMoves.add(move);
+            } else if (score == bestScore) {
+                bestMoves.add(move);
+            }
+        }
+        System.out.println("Number of nodes : " + numExploredNodes);
+        return bestMoves;
+    }
 
-    // private int alphaBeta(Board board, boolean isMaximizing, int alpha, int beta) {
-    //     numExploredNodes++;
+    private int alphaBeta(Board board, boolean isMaximizing, int alpha, int beta) {
+        numExploredNodes++;
 
-    //     if (board.checkWin(markReseauPlayer)) {
-    //         return 100;
-    //     } else if (board.checkWin(markReseauPlayer.getOpponent())) {
-    //         return -100;
-    //     } else if (board.isFull()) {
-    //         return 0;
-    //     }
+        if (board.checkWin(markReseauPlayer)) {
+            return 100;
+        } else if (board.checkWin(markReseauPlayer.getOpponent())) {
+            return -100;
+        } else if (board.isFull()) {
+            return 0;
+        }
 
-    //     if (isMaximizing) {
-    //         int bestScore = Integer.MIN_VALUE;
-    //         for (Move move : board.generateValidMoves()) {
-    //             board.play(move, markReseauPlayer);
-    //             int score = alphaBeta(board, false, alpha, beta);
-    //             board.undo(move);
-    //             bestScore = Math.max(bestScore, score);
-    //             alpha = Math.max(alpha, bestScore);
-    //             if (beta <= alpha) {
-    //                 break;
-    //             }
-    //         }
-    //         return bestScore;
-    //     } else {
-    //         int bestScore = Integer.MAX_VALUE;
-    //         for (Move move : board.generateValidMoves()) {
-    //             board.play(move, markReseauPlayer.getOpponent());
-    //             int score = alphaBeta(board, true, alpha, beta);
-    //             board.undo(move);
-    //             bestScore = Math.min(bestScore, score);
-    //             beta = Math.min(beta, bestScore);
-    //             if (beta <= alpha) {
-    //                 break;
-    //             }
-    //         }
-    //         return bestScore;
-    //     }
-    // }
+        if (isMaximizing) {
+            int bestScore = Integer.MIN_VALUE;
+            for (Move move : board.generateValidMoves()) {
+                board.play(move, markReseauPlayer);
+                int score = alphaBeta(board, false, alpha, beta);
+                board.undo(move);
+                bestScore = Math.max(bestScore, score);
+                alpha = Math.max(alpha, bestScore);
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+            return bestScore;
+        } else {
+            int bestScore = Integer.MAX_VALUE;
+            for (Move move : board.generateValidMoves()) {
+                board.play(move, markReseauPlayer.getOpponent());
+                int score = alphaBeta(board, true, alpha, beta);
+                board.undo(move);
+                bestScore = Math.min(bestScore, score);
+                beta = Math.min(beta, bestScore);
+                if (beta <= alpha) {
+                    break;
+                }
+            }
+            return bestScore;
+        }
+    }
 
     public Move selectBestMove(ReseauPlayer reseauPlayer, Board board) {
         ArrayList<Move> bestMoves = reseauPlayer.getNextMoveMinMax(board);
@@ -181,12 +181,6 @@ class ReseauPlayer {
         }
         Random random = new Random();
         Move randomMove = validMoves.get(random.nextInt(validMoves.size()));
-        MoveConverter.convertMoveToString(randomMove);
-        return MoveConverter.convertMoveToString(randomMove);
-
-
-        
+        return MoveConverter.convertMoveToString(randomMove);        
     }
-
-
 }

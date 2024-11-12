@@ -85,8 +85,8 @@ class Board
     }
 
     public boolean checkWin(Mark mark) {
-        for (int i = 0; i <= (SIZE - winLength); i++){
-            for (int j = 0; j <= (SIZE - winLength); j++){
+        for (int i = 0; i < SIZE; i++){
+            for (int j = 0; j < SIZE; j++){
                 if (board[i][j+0] == mark && board[i][j+1] == mark && board[i][j+2] == mark && board[i][j+3] == mark && 
                 board[i][j+4] == mark) {
                     return true;
