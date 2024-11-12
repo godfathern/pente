@@ -33,15 +33,16 @@ class Board
     
         int centerStart = (SIZE - firstMoveRougeLimit) / 2;
         int centerEnd = (SIZE + firstMoveRougeLimit) / 2 - 1;
+
+        // Skip center moves for the first move if the reseau player is rouge and goes first
+        boolean skipCenter = isReseauPlayerRouge && firstMoveReseauPlayerRouge;
         
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == null) {
-                    if (isReseauPlayerRouge && firstMoveReseauPlayerRouge) {
-                        if (i >= centerStart && i <= centerEnd && j >= centerStart && j <= centerEnd) {
-                            System.out.println("fuck");
-                            continue;
-                        }
+                    if (skipCenter && i >= centerStart && i <= centerEnd && j >= centerStart && j <= centerEnd) {
+                        System.out.println("fuck");
+                        continue;
                     }
                     validMoves.add(new Move(i, j));
                 }
@@ -53,7 +54,7 @@ class Board
         }
         System.out.println("------------------------");
         
-        if (isReseauPlayerRouge && firstMoveReseauPlayerRouge) {
+        if (skipCenter) {
             firstMoveReseauPlayerRouge = false;
         }
     
