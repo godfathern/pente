@@ -41,7 +41,6 @@ class Board
                         if (i >= centerStart && i <= centerEnd && j >= centerStart && j <= centerEnd) {
                             System.out.println("fuck");
                             continue;
-                            
                         }
                     }
                     validMoves.add(new Move(i, j));
@@ -87,27 +86,26 @@ class Board
     public boolean checkWin(Mark mark) {
         for (int i = 0; i < SIZE; i++){
             for (int j = 0; j < SIZE; j++){
-                if (board[i][j+0] == mark && board[i][j+1] == mark && board[i][j+2] == mark && board[i][j+3] == mark && 
-                board[i][j+4] == mark) {
+                // check horizontal condition
+                if (j <= SIZE - winLength && board[i][j] == mark && board[i][j + 1] == mark && board[i][j + 2] == mark && board[i][j + 3] == mark && board[i][j + 4] == mark) {
                     return true;
                 }
-                if (board[i+0][j] == mark && board[i+1][j] == mark && board[i+2][j] == mark && board[i+3][j] == mark && 
-                board[i+4][j] == mark) {
+                // check vertical condition
+                if (i <= SIZE - winLength && board[i][j] == mark && board[i + 1][j] == mark && board[i + 2][j] == mark && board[i + 3][j] == mark && board[i + 4][j] == mark) {
                     return true;
                 }
-                if (board[i+0][j+0] == mark && board[i+1][j+1] == mark && board[i+2][j+2] == mark && board[i+3][j+3] == mark && 
-                board[i+4][j+4] == mark) {
+                // check diagonal (top-left to bottom-right) condition
+                if (i <= SIZE - winLength && j <= SIZE - winLength && board[i][j] == mark && board[i + 1][j + 1] == mark && board[i + 2][j + 2] == mark && board[i + 3][j + 3] == mark && board[i + 4][j + 4] == mark) {
                     return true;
                 }
-                if (j >= winLength - 1 && board[i][j] == mark && board[i + 1][j - 1] == mark &&
-                board[i + 2][j - 2] == mark && board[i + 3][j - 3] == mark && board[i + 4][j - 4] == mark) {
-                return true;
+                // check diagonal (top-right to bottom-left) condition
+                if (i <= SIZE - winLength && j >= winLength - 1 && board[i][j] == mark && board[i + 1][j - 1] == mark && board[i + 2][j - 2] == mark && board[i + 3][j - 3] == mark && board[i + 4][j - 4] == mark) {
+                    return true;
             }
 
             }
         }
         return false;
-
     }
 
     public boolean isFull() {

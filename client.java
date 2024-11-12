@@ -26,7 +26,7 @@ class Client {
 	   	while(1 == 1){
 			char cmd = 0;  	
             cmd = (char)input.read();
-            System.out.println("cmd" + cmd);
+            System.out.println("cmd: " + cmd);
             // Debut de la partie en joueur rouge
             if(cmd == '1'){
                 reseauPlayer = new ReseauPlayer(Mark.R);
