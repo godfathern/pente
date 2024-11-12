@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -39,13 +40,22 @@ class ReseauPlayer {
     // plusieurs coups possibles si et seuleument si plusieurs coups
     // ont le même score.
     public ArrayList<Move> getNextMoveMinMax(Board board) {
+        System.out.println("[getNextMoveMinMax] Getting next move with MinMax...");
         numExploredNodes = 0;
         int bestScore = Integer.MIN_VALUE;
         ArrayList<Move> bestMoves = new ArrayList<>();
-        for (Move move : board.generateValidMoves()) {
+        ArrayList<Move> validMoves = board.generateValidMoves();
+        for (Move move : validMoves) {
             board.play(move, markReseauPlayer);
+            System.out.println("[getNextMoveMinMax] Played move: " + move);
+        
             int score = minmax(board, false);
+        
+            System.out.println("[getNextMoveMinMax] Score for move: " + move + " is " + score);
+        
             board.undo(move);
+            System.out.println("[getNextMoveMinMax] Undid move: " + move);
+
             if (score > bestScore) {
                 bestScore = score;
                 bestMoves.clear();
@@ -54,38 +64,52 @@ class ReseauPlayer {
                 bestMoves.add(move);
             }
         }
-        System.out.println("sizeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" + bestMoves.size());
-        System.out.println("Number of nodes : " + numExploredNodes);
+        System.out.println("[getNextMoveMinMax] bestMoves size: " + bestMoves.size());
+        System.out.println("[getNumberMoveMinMax] Number of nodes: " + numExploredNodes);
         return bestMoves;
     }
 
     private int minmax(Board board, boolean isMaximizing) {
+        System.out.println("[minmax] Minmaxing...");
         numExploredNodes++;
 
         if (board.checkWin(markReseauPlayer)) {
-            System.out.println("winnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn");
+            System.out.println("[minmax] win");
             return 100;
         } else if (board.checkWin(markReseauPlayer.getOpponent())) {
+            System.out.println("[minmax] lose");
             return -100;
         } else if (board.isFull()) {
+            System.out.println("[minmax] full");
             return 0;
         }
 
+        System.out.println("[minmax] no win, no lose, no full");
+
         if (isMaximizing) {
+            System.out.println("[minmax] Maximizing...");
             int bestScore = Integer.MIN_VALUE;
             for (Move move : board.generateValidMoves()) {
-                board.play(move, markReseauPlayer);
+                System.out.println("\r\n[minmax - isMaximizing == true] Minimizing move: " + move);
+                board.play(move, markReseauPlayer.getOpponent());
+                System.out.println("[minmax - isMaximizing == true] Played move: " + move + " with mark: " + markReseauPlayer.getOpponent());
                 int score = minmax(board, false);
+                System.out.println("[minmax - isMaximizing == true] Score for move: " + move + " is: " + score);
                 board.undo(move);
-                bestScore = Math.max(bestScore, score);
+                System.out.println("[minmax - isMaximizing == true] Undid move: " + move);
             }
             return bestScore;
         } else {
+            System.out.println("[minmax] Minimizing...");
             int bestScore = Integer.MAX_VALUE;
             for (Move move : board.generateValidMoves()) {
+                System.out.println("\r\n[minmax - isMaximizing == false] Minimizing move: " + move);
                 board.play(move, markReseauPlayer.getOpponent());
+                System.out.println("[minmax - isMaximizing == false] Played move: " + move + " with mark: " + markReseauPlayer.getOpponent());
                 int score = minmax(board, true);
+                System.out.println("[minmax - isMaximizing == false] Score for move: " + move + " is: " + score);
                 board.undo(move);
+                System.out.println("[minmax - isMaximizing == false] Undid move: " + move);
                 bestScore = Math.min(bestScore, score);
             }
             return bestScore;
@@ -161,8 +185,8 @@ class ReseauPlayer {
     }
 
     public Move selectBestMove(ReseauPlayer reseauPlayer, Board board) {
+        System.out.println("[selectBestMove] Best move cooking!");
         ArrayList<Move> bestMoves = reseauPlayer.getNextMoveMinMax(board);
-        System.out.println("Best move cooking!");
         if (bestMoves.size() == 1) {
             return bestMoves.get(0);
         }
@@ -174,8 +198,10 @@ class ReseauPlayer {
     boolean firstMove = false;
 
     public String randomMove(Board board) {
+        System.out.println("[randomMove] Generating random move...");
         ArrayList <Move> validMoves = board.generateValidMoves();
         if (markReseauPlayer == Mark.R && firstMove == false) {
+            System.out.println("\n\r[randomMove] First move for rouge: " + validMoves.get(0)); // ignore the first 
             firstMove = true;
             return "H8";
         }

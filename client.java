@@ -26,7 +26,7 @@ class Client {
 	   	while(1 == 1){
 			char cmd = 0;  	
             cmd = (char)input.read();
-            System.out.println("cmd: " + cmd);
+            System.out.println("[client - main] cmd: " + cmd);
             // Debut de la partie en joueur rouge
             if(cmd == '1'){
                 reseauPlayer = new ReseauPlayer(Mark.R);
@@ -48,7 +48,7 @@ class Client {
                     }
                 }
 
-                System.out.println("Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
+                System.out.println("[client - main => cmd == 1] Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
                 reseauBoard.checkFirstMove(reseauPlayer);
                 String move = reseauPlayer.randomMove(reseauBoard);
                 reseauBoard.play(MoveConverter.convertStringToMove(move), reseauPlayer.getMark());
@@ -57,7 +57,7 @@ class Client {
             }
             // Debut de la partie en joueur Noir
             if(cmd == '2'){
-                System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des rouges");//ReseauPlayer = noir
+                System.out.println("[client - main => cmd == 2] Nouvelle partie! Vous jouer noir, attendez le coup des rouges");//ReseauPlayer = noir
                 byte[] aBuffer = new byte[1024];
 				
 				int size = input.available();
@@ -87,33 +87,33 @@ class Client {
 				byte[] aBuffer = new byte[16];
 				
 				int size = input.available();
-				System.out.println("size :" + size);
+				System.out.println("[client - main => cmd == 3] buffer size: " + size);
 				input.read(aBuffer,0,size);
 			
 				String s = new String(aBuffer).trim();
-                System.out.println(s);
+                System.out.println("[client - main => cmd == 3] Trimmed buffer: " + s);
                 Move ordinateurMove = MoveConverter.convertStringToMove(s);
                 reseauBoard.play(ordinateurMove, reseauPlayer.getOpponentMark());
                 reseauBoard.printBoard();
-				System.out.println("Dernier coup :"+ s);
-		       	System.out.println("Entrez votre coup : ");
+				System.out.println("[client - main => cmd == 3] Dernier coup: "+ s);
+		       	System.out.println("[client - main => cmd == 3] Entrez votre coup : ");
                 //--------------
-                String reseauMove = new RandomGenerator().move();;
-                reseauBoard.play(MoveConverter.convertStringToMove(reseauMove), reseauPlayer.getMark());
-                reseauBoard.printBoard();
-                output.write(reseauMove.getBytes(),0,reseauMove.length());
-				output.flush();
-                //-----------------------
-                // Move reseauMove = reseauPlayer.selectBestMove(reseauPlayer, reseauBoard);
-                // reseauBoard.play(reseauMove, reseauPlayer.getMark());
-                // String stringReseauMove = MoveConverter.convertMoveToString(reseauMove);
-				// output.write(stringReseauMove.getBytes(),0,stringReseauMove.length());
+                // String reseauMove = new RandomGenerator().move();;
+                // reseauBoard.play(MoveConverter.convertStringToMove(reseauMove), reseauPlayer.getMark());
+                // reseauBoard.printBoard();
+                // output.write(reseauMove.getBytes(),0,reseauMove.length());
 				// output.flush();
+                //-----------------------
+                Move reseauMove = reseauPlayer.selectBestMove(reseauPlayer, reseauBoard);
+                reseauBoard.play(reseauMove, reseauPlayer.getMark());
+                String stringReseauMove = MoveConverter.convertMoveToString(reseauMove);
+				output.write(stringReseauMove.getBytes(),0,stringReseauMove.length());
+				output.flush();
 				
 			}
 			// Le dernier coup est invalide
 			if(cmd == '4'){
-				System.out.println("Coup invalide, entrez un nouveau coup : ");
+				System.out.println("[client - main => cmd == 4] Coup invalide, entrez un nouveau coup : ");
 		       	String move = null;
 				//move = console.readLine();
                 move = new RandomGenerator().move();
@@ -130,8 +130,8 @@ class Client {
                 Move ordinateurMove = MoveConverter.convertStringToMove(s);
                 reseauBoard.play(ordinateurMove, reseauPlayer.getOpponentMark());
                 reseauBoard.printBoard();
-                System.out.println("Check winnnnnnn : " + reseauBoard.checkWin(reseauPlayer.getOpponentMark())); 
-				System.out.println("Partie Terminé. Le dernier coup joué est: "+s);
+                System.out.println("[client - main => cmd == 5] Check winnnnnnn : " + reseauBoard.checkWin(reseauPlayer.getOpponentMark())); 
+				System.out.println("[client - main => cmd == 5] Partie Terminé. Le dernier coup joué est: "+s);
 
 		       	String move = null;
 				move = console.readLine();

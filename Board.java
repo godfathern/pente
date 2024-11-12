@@ -24,11 +24,13 @@ class Board
     }
     public void checkFirstMove (ReseauPlayer reseauPlayer){
         if (reseauPlayer.getMark() == Mark.R){
+            System.out.println("[checkFirstMove] Reseau player is rouge");
             isReseauPlayerRouge = true;
         }
     }
     //Generateur de movements
     public ArrayList<Move> generateValidMoves() {
+        System.out.println("[generateValidMoves] Generating valid moves");
         ArrayList<Move> validMoves = new ArrayList<>();
     
         int centerStart = (SIZE - firstMoveRougeLimit) / 2;
@@ -48,11 +50,10 @@ class Board
                 }
             }
         }
-        System.out.println("Amount of valid moves :  " + validMoves.size());
+        System.out.println("[generateValidMoves] Amount of valid moves :  " + validMoves.size());
         for (Move m : validMoves){
             System.out.print(m + "-");
         }
-        System.out.println("------------------------");
         
         if (skipCenter) {
             firstMoveReseauPlayerRouge = false;
@@ -73,8 +74,9 @@ class Board
         // On vérifie si la case est libre avant de jouer
         if (board[row][col] == null) {
             board[row][col] = mark;
+            System.out.println("\r\n[board.play] Played move: " + m + " with mark: " + mark);
         } else {
-            System.out.println("La case est déjà occupée !");
+            System.out.println("[board.play] La case est déjà occupée !");
         }
     }
 
@@ -82,6 +84,7 @@ class Board
         int row = m.getRow();
         int col = m.getCol();
         board[row][col] = null;
+        System.out.println("[board.undo] Undid move: " + m);
     }
 
     public boolean checkWin(Mark mark) {
@@ -121,6 +124,7 @@ class Board
     }
 
     public void printBoard() {
+        System.out.print("[printBoard] Board:\n\r");
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 if (board[i][j] == null) {
