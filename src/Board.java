@@ -3,8 +3,12 @@ import java.util.ArrayList;
 public class Board {
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
+    private int turns;
+
     public Board() {
+        turns = 0;
         board = new Mark[15][15];
+
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 board[i][j] = Mark.Empty;
@@ -12,18 +16,14 @@ public class Board {
         }
     }
 
-    private int turns = 0;
-    public void addTurn(){
-        turns++;
-    }
     public int getTurns(){
         return turns;
     }
 
-
     public void play(Move move){
         if(board[move.getCol()][move.getRow()] == Mark.Empty){
             board[move.getCol()][move.getRow()] = move.getColor();
+            turns++;
         }
     }
 
@@ -31,17 +31,18 @@ public class Board {
         if(board[move.getCol()][move.getRow()] == Mark.Empty){
             board[move.getCol()][move.getRow()] = move.getColor();
         }
+
         for(Move enemy : move.getEnemies()){
             if(board[enemy.getCol()][enemy.getRow()] == enemy.getColor()){
                 board[enemy.getCol()][enemy.getRow()] = Mark.Empty;
             }
         }
-
     }
 
     public void undo(Move move){
         if(board[move.getCol()][move.getRow()] == move.getColor()){
             board[move.getCol()][move.getRow()] = Mark.Empty;
+            turns--;
         }
     }
 
@@ -94,6 +95,7 @@ public class Board {
 
     public ArrayList<Move> getAllMarks(Mark mark){
         ArrayList<Move> moves = new ArrayList<>();
+
         for(int i = 0; i < 15; i++){
             for(int j = 0; j < 15; j++){
                 if(board[i][j] == mark){
@@ -101,6 +103,7 @@ public class Board {
                 }
             }
         }
+
         return moves;
     }
 
@@ -128,6 +131,7 @@ public class Board {
                 }
             }
         }
+        
         for(int i = 0; i < 5; i++){
             for(int j = 5; j < 15; j++){
                 if(board[i][j].equals(Mark.Empty)){
