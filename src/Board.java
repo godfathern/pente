@@ -57,40 +57,42 @@ public class Board {
         }
     }
 
-    private int blackEat = 0;
-    private int redEat = 0;
-
     public int getEatings(Mark mark){
         if(mark == Mark.Black){
-            return blackEat;
+            return 0;
         }
         if(mark == Mark.Red){
-            return redEat;
+            return 0;
         }
         return 0;
     }
 
     // negative if black wins, positive if red wins
-    public int evaluate(){
-        if(redEat == 5){
+    public int evaluate(Mark mark){        
+        Mark oppMark;
+        if(mark == Mark.Black) {
+            oppMark = Mark.Black;
+        } else {
+            oppMark = Mark.Red;
+        }
+
+        int markCaptures = getEatings(mark);
+        int oppCaptures = getEatings(oppMark);
+        int maxConnectedMark = getMaxConnected(mark);
+        int maxConnectedOpp = getMaxConnected(oppMark);   
+
+        if(markCaptures == 5 || maxConnectedMark == 5){
             return Integer.MAX_VALUE;
         }
-        if(blackEat == 5){
-            return Integer.MIN_VALUE;
-        }
-        int maxConnectedRed = getMaxConnected(Mark.Red);
-        int maxConnectedBlack = getMaxConnected(Mark.Black);
-        if(maxConnectedRed == 5){
-            return Integer.MAX_VALUE;
-        }
-        if(maxConnectedBlack == 5){
+
+        if(oppCaptures == 5 || maxConnectedOpp == 5){
             return Integer.MIN_VALUE;
         }
 
-        int redScore = maxConnectedRed * (redEat + 1);
-        int blackScore = maxConnectedBlack * (blackEat + 1);
+        int markScore = maxConnectedMark * (markCaptures + 1);
+        int oppScore = maxConnectedOpp * (oppCaptures + 1);
 
-        return redScore - blackScore;
+        return markScore - oppScore;
     }
 
     public ArrayList<Move> getAllMarks(Mark mark){

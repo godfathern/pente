@@ -94,8 +94,8 @@ public class CPU {
 
     private int depth = MAX_DEPTH;
     private int minmax(Board board, Mark mark){
-        int eval = board.evaluate();
         if(depth == 0 || eval == Integer.MAX_VALUE || eval == Integer.MIN_VALUE){
+        int eval = board.evaluate(mark);
             return eval;
         }
         depth--;
@@ -122,8 +122,8 @@ public class CPU {
     }
 
     private int minmaxAB(Board board, Mark mark, int alpha, int beta){
-        int eval = board.evaluate();
         if(depth == 0 || eval == Integer.MAX_VALUE || eval == Integer.MIN_VALUE){
+        int eval = board.evaluate(mark);
             return eval;
         }
         depth--;
