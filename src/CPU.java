@@ -5,40 +5,41 @@ public class CPU {
     private final Mark opponent;
     private final static int MAX_DEPTH = 3;
 
-    public CPU(Mark mark){
+    public CPU(Mark mark) {
         cpu = mark;
         opponent = mark == Mark.Red ? Mark.Black : Mark.Red;
     }
 
-    public Mark getCpu(){
+    public Mark getCpu() {
         return cpu;
     }
-    public Mark getOpponent(){
+
+    public Mark getOpponent() {
         return opponent;
     }
 
-    public Move getNextMove(Board board){
+    public Move getNextMove(Board board) {
         ArrayList<Move> moves = getNextMovesAB(board);
         return moves.get(0);
     }
 
-    public ArrayList<Move> getNextMovesAB(Board board){
+    public ArrayList<Move> getNextMovesAB(Board board) {
         ArrayList<Move> moves = new ArrayList<>();
 
-        if(cpu == Mark.Red && board.getTurns() == 0){
-            moves.add(new Move("H8",Mark.Red));
+        if (cpu == Mark.Red && board.getTurns() == 0) {
+            moves.add(new Move("H8", Mark.Red));
             return moves;
         }
+
         ArrayList<Move> possibleMoves;
-        if(cpu == Mark.Red && board.getTurns() == 2){
+        if (cpu == Mark.Red && board.getTurns() == 2) {
             possibleMoves = board.getPossibleMovesRedSecondTurn();
-        }
-        else{
+        } else {
             possibleMoves = board.getPossibleMoves(cpu);
         }
 
         int max = Integer.MIN_VALUE;
-        for(Move move : possibleMoves){
+        for (Move move : possibleMoves) {
             board.play(move);
             depth = MAX_DEPTH;
             int score = minmaxAB(board, opponent, Integer.MIN_VALUE, Integer.MAX_VALUE);
@@ -46,10 +47,10 @@ public class CPU {
                 moves.clear();
                 moves.add(move);
             }
-            if(score == max){
+            if (score == max) {
                 moves.add(move);
             }
-            
+
             max = score;
             board.undo(move);
         }
@@ -57,34 +58,35 @@ public class CPU {
         return moves;
     }
 
-    public ArrayList<Move> getNextMovesMinMax(Board board){
-        ArrayList<Move> moves = new ArrayList<>();
+    public ArrayList<Move> getNextMovesMinMax(Board board) {
+        ArrayList<Move> moves = new ArrayList<>();        
 
-        if(cpu == Mark.Red && board.getTurns() == 0){
-            moves.add(new Move("H8",Mark.Red));
+        if (cpu == Mark.Red && board.getTurns() == 0) {
+            moves.add(new Move("H8", Mark.Red));
             return moves;
         }
+
         ArrayList<Move> possibleMoves;
-        if(cpu == Mark.Red && board.getTurns() == 2){
+        if (cpu == Mark.Red && board.getTurns() == 2) {
             possibleMoves = board.getPossibleMovesRedSecondTurn();
-        }
-        else{
+        } else {
             possibleMoves = board.getPossibleMoves(cpu);
         }
 
         int max = cpu == Mark.Red ? Integer.MIN_VALUE : Integer.MAX_VALUE;
-        for(Move move : possibleMoves){
+        for (Move move : possibleMoves) {
             board.play(move);
             depth = MAX_DEPTH;
             int score = minmax(board,opponent);
-            if(score > max){
+
+            if (score > max) {
                 moves.clear();
                 moves.add(move);
             }
-            if(score == max){
+            if (score == max) {
                 moves.add(move);
             }
-            
+
             max = score;
             board.undo(move);
         }
@@ -94,27 +96,35 @@ public class CPU {
 
     private int depth = MAX_DEPTH;
     private int minmax(Board board, Mark mark){
-        if(depth == 0 || eval == Integer.MAX_VALUE || eval == Integer.MIN_VALUE){
         int eval = board.evaluate(mark);
+
+        if (depth == 0 || eval == Integer.MAX_VALUE || eval == Integer.MIN_VALUE) {
             return eval;
         }
+
         depth--;
-        if(mark == cpu){
+        if (mark == cpu) {
             int maxScore = Integer.MIN_VALUE;
-            for(Move move : board.getPossibleMoves(cpu)){
+
+            for (Move move : board.getPossibleMoves(cpu)) {
                 board.play(move);
                 int score = minmax(board, opponent);
+
                 maxScore = Math.max(maxScore, score);
+
                 board.undo(move);
             }
+
             return maxScore;
-        }
-        else{
+        } else {
             int minScore = Integer.MAX_VALUE;
-            for(Move move : board.getPossibleMoves(opponent)){
+
+            for (Move move : board.getPossibleMoves(opponent)) {
                 board.play(move);
                 int score = minmax(board, cpu);
+
                 minScore = Math.min(minScore, score);
+
                 board.undo(move);
             }
             return minScore;
@@ -122,36 +132,46 @@ public class CPU {
     }
 
     private int minmaxAB(Board board, Mark mark, int alpha, int beta){
-        if(depth == 0 || eval == Integer.MAX_VALUE || eval == Integer.MIN_VALUE){
         int eval = board.evaluate(mark);
+
+        if (depth == 0 || eval == Integer.MAX_VALUE || eval == Integer.MIN_VALUE) {
             return eval;
         }
+
         depth--;
-        if(mark == cpu){
+        if (mark == cpu) {
             int maxScore = Integer.MIN_VALUE;
-            for(Move move : board.getPossibleMoves(cpu)){
+
+            for (Move move : board.getPossibleMoves(cpu)) {
                 board.play(move);
                 int score = minmaxAB(board, opponent, Math.max(alpha, maxScore), beta);
+
                 maxScore = Math.max(maxScore, score);
+                
                 board.undo(move);
-                if(maxScore >= beta){
+
+                if (maxScore >= beta) {
                     return maxScore;
                 }
-
             }
+
             return maxScore;
-        }
-        else{
+        } else {
             int minScore = Integer.MAX_VALUE;
-            for(Move move : board.getPossibleMoves(opponent)){
+
+            for (Move move : board.getPossibleMoves(opponent)) {
                 board.play(move);
                 int score = minmaxAB(board, cpu, alpha, Math.min(beta, minScore));
+            
                 minScore = Math.min(minScore, score);
+            
                 board.undo(move);
-                if(minScore <= alpha){
+            
+                if (minScore <= alpha) {
                     return minScore;
                 }
             }
+
             return minScore;
         }
     }

@@ -167,6 +167,7 @@ public class Board {
         if(col < 0 || col >= 15 || row < 0 || row >= 15){
             return false;
         }
+
         return true;
     }
 
@@ -180,10 +181,12 @@ public class Board {
                 if(move == m){
                     continue;
                 }
+
                 if(move.isClose(m)){
                     current++;
                 }
             }
+            
             if(current > max){
                 max = current;
             }
@@ -199,14 +202,13 @@ public class Board {
             for(int j = 0; j < 15; j++){
                 if(board[i][j].equals(Mark.Empty)){
                     sb.append("E");
-                }
-                else if(board[i][j].equals(Mark.Red)){
+                } else if(board[i][j].equals(Mark.Red)){
                     sb.append("R");
-                }
-                else{
+                } else{
                     sb.append("B");
                 }
             }
+
             sb.append("]");
             sb.append("\n");
         }

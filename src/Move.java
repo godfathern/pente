@@ -7,6 +7,7 @@ public class Move {
         this.row = row;
         color = mark;
     }
+    
     public Move(String move, Mark mark) {
         col = move.charAt(0) - 'A';
         row = Integer.parseInt(move.substring(1)) - 1;
