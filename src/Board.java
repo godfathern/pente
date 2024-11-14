@@ -71,9 +71,9 @@ public class Board {
     public int evaluate(Mark mark){        
         Mark oppMark;
         if(mark == Mark.Black) {
-            oppMark = Mark.Black;
-        } else {
             oppMark = Mark.Red;
+        } else {
+            oppMark = Mark.Black;
         }
 
         int markCaptures = getEatings(mark);
