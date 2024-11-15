@@ -46,11 +46,13 @@ public class CPU {
 
             int score = minmaxAB(board, opponent, -100001, 100001, MAX_DEPTH);
             System.out.println("Score minmaxAB: " + score);
+
             if (score > max) {
                 max = score;
                 moves.clear();
                 moves.add(move);
             }
+
             if (score == max) {
                 moves.add(move);
             }
@@ -87,6 +89,7 @@ public class CPU {
                 moves.clear();
                 moves.add(move);
             }
+
             if (score == max) {
                 moves.add(move);
             }
@@ -143,18 +146,18 @@ public class CPU {
         }
 
         depth--;
-        
+
         ArrayList<Move> possibleMoves = board.getPossibleMoves(mark);
         if (mark == cpu) {
             int maxScore = Integer.MIN_VALUE;
-            
+
             for (Move move : possibleMoves) {
                 board.play(move);
 
                 int score = minmaxAB(board, opponent, alpha, beta, depth);
                 maxScore = Math.max(maxScore, score);
                 alpha = Math.max(alpha, maxScore);
-                
+
                 board.undo(move);
 
                 if (maxScore >= beta) {
@@ -168,13 +171,13 @@ public class CPU {
 
             for (Move move : possibleMoves) {
                 board.play(move);
-            
+
                 int score = minmaxAB(board, cpu, alpha, Math.min(beta, minScore), depth);
                 minScore = Math.min(minScore, score);
                 beta = Math.min(beta, minScore);
-            
+
                 board.undo(move);
-            
+
                 if (minScore <= alpha) {
                     return minScore;
                 }
