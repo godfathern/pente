@@ -47,6 +47,7 @@ public class CPU {
             int score = minmaxAB(board, opponent, -100001, 100001, MAX_DEPTH);
             System.out.println("Score minmaxAB: " + score);
             if (score > max) {
+                max = score;
                 moves.clear();
                 moves.add(move);
             }
@@ -54,7 +55,6 @@ public class CPU {
                 moves.add(move);
             }
 
-            max = score;
             board.undo(move);
         }
 
@@ -83,6 +83,7 @@ public class CPU {
 
             int score = minmax(board, opponent, MAX_DEPTH);
             if (score > max) {
+                max = score;
                 moves.clear();
                 moves.add(move);
             }
@@ -90,7 +91,6 @@ public class CPU {
                 moves.add(move);
             }
 
-            max = score;
             board.undo(move);
         }
 
