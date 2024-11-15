@@ -26,6 +26,7 @@ public class CPU {
     public ArrayList<Move> getNextMovesAB(Board board) {
         ArrayList<Move> moves = new ArrayList<>();
 
+        // First move
         if (cpu == Mark.Red && board.getTurns() == 0) {
             moves.add(new Move("H8", Mark.Red));
             return moves;
@@ -62,6 +63,7 @@ public class CPU {
     public ArrayList<Move> getNextMovesMinMax(Board board) {
         ArrayList<Move> moves = new ArrayList<>();
 
+        // First move
         if (cpu == Mark.Red && board.getTurns() == 0) {
             moves.add(new Move("H8", Mark.Red));
             return moves;
