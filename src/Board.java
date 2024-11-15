@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Board {
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
+    private Move[] movesPlayed;
     private int turns;
     private int blackCaptures;
     private int redCaptures;
@@ -10,6 +11,7 @@ public class Board {
     public Board() {
         turns = 0;
         board = new Mark[15][15];
+        movesPlayed = new Move[225];
 
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
@@ -25,6 +27,7 @@ public class Board {
     public void play(Move move){
         if(board[move.getCol()][move.getRow()] == Mark.Empty){
             board[move.getCol()][move.getRow()] = move.getColor();
+            movesPlayed[turns] = move;
             turns++;
         }
     }
@@ -52,7 +55,8 @@ public class Board {
         if(board[move.getCol()][move.getRow()] == move.getColor()){
             board[move.getCol()][move.getRow()] = Mark.Empty;
         }
-        for(Move enemy : move.getEnemies()){
+
+        for(Move enemy : move.getEnemies()) {
             if(board[enemy.getCol()][enemy.getRow()] == Mark.Empty){
                 board[enemy.getCol()][enemy.getRow()] = enemy.getColor();
             }
