@@ -152,7 +152,7 @@ public class Board {
 
     public int getMaxConnected(Mark mark){
         ArrayList<Move> moves = getAllMarks(mark);
-        int max = 0;
+        int maxConnected = 0;
 
         for(Move move : moves){
             int current = 0;
@@ -161,17 +161,17 @@ public class Board {
                     continue;
                 }
 
-                if(move.isClose(m)){
+                if(move.isWithinOneSquare(m)){
                     current++;
                 }
             }
             
-            if(current > max){
-                max = current;
+            if(current > maxConnected){
+                maxConnected = current;
             }
         }
         
-        return max;
+        return maxConnected;
     }
 
     public String toString(){

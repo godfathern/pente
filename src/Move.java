@@ -26,12 +26,12 @@ public class Move {
         return color;
     }
 
-    public String toString(){
-        return Character.toString((char) (col + 'A')) + (row + 1);
+    public boolean isWithinOneSquare(Move move){
+        return Math.abs(col - move.col) <= 1 && Math.abs(row - move.row) <= 1;
     }
 
-    public boolean isClose(Move move){
-        return Math.abs(col - move.col) <= 1 && Math.abs(row - move.row) <= 1;
+    public String toString(){
+        return Character.toString((char) (col + 'A')) + (row + 1);
     }
 }
 
