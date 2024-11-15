@@ -68,7 +68,7 @@ public class Board {
     }
 
     // negative if black wins, positive if red wins
-    public int evaluate(Mark mark){        
+    public int evaluate(Mark mark){
         Mark oppMark;
         if(mark == Mark.Black) {
             oppMark = Mark.Red;
@@ -79,14 +79,14 @@ public class Board {
         int markCaptures = getEatings(mark);
         int oppCaptures = getEatings(oppMark);
         int maxConnectedMark = getMaxConnected(mark);
-        int maxConnectedOpp = getMaxConnected(oppMark);   
+        int maxConnectedOpp = getMaxConnected(oppMark);
 
         if(markCaptures == 5 || maxConnectedMark == 5){
-            return Integer.MAX_VALUE;
+            return 100000;
         }
 
         if(oppCaptures == 5 || maxConnectedOpp == 5){
-            return Integer.MIN_VALUE;
+            return -100000;
         }
 
         int markScore = maxConnectedMark * (markCaptures + 1);
@@ -191,6 +191,7 @@ public class Board {
                 max = current;
             }
         }
+        
         return max;
     }
 
