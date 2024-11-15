@@ -4,6 +4,7 @@ public class CPU {
     private final Mark cpu;
     private final Mark opponent;
     private final static int MAX_DEPTH = 1;
+    private int numOfExploredNodes = 0;
 
     public CPU(Mark mark) {
         cpu = mark;
