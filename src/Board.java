@@ -32,34 +32,10 @@ public class Board {
         }
     }
 
-    public void play(Eating move){
-        if(board[move.getCol()][move.getRow()] == Mark.Empty){
-            board[move.getCol()][move.getRow()] = move.getColor();
-        }
-
-        for(Move enemy : move.getEnemies()){
-            if(board[enemy.getCol()][enemy.getRow()] == enemy.getColor()){
-                board[enemy.getCol()][enemy.getRow()] = Mark.Empty;
-            }
-        }
-    }
-
     public void undo(Move move){
         if(board[move.getCol()][move.getRow()] == move.getColor()){
             board[move.getCol()][move.getRow()] = Mark.Empty;
             turns--;
-        }
-    }
-
-    public void undo(Eating move){
-        if(board[move.getCol()][move.getRow()] == move.getColor()){
-            board[move.getCol()][move.getRow()] = Mark.Empty;
-        }
-
-        for(Move enemy : move.getEnemies()) {
-            if(board[enemy.getCol()][enemy.getRow()] == Mark.Empty){
-                board[enemy.getCol()][enemy.getRow()] = enemy.getColor();
-            }
         }
     }
 
@@ -76,7 +52,6 @@ public class Board {
         return false;
     }
 
-    // negative if black wins, positive if red wins
     public int evaluate(Mark mark){
         Mark oppMark;
         if(mark == Mark.Black) {
