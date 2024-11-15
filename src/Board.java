@@ -42,9 +42,9 @@ public class Board {
     public int getCaptures(Mark mark){
         if(mark == Mark.Black){
             return blackCaptures;
-        } else {
-            return redCaptures;
         }
+        
+        return redCaptures;
     }
 
     public boolean isCapture(Move move){
@@ -53,12 +53,7 @@ public class Board {
     }
 
     public int evaluate(Mark mark){
-        Mark oppMark;
-        if(mark == Mark.Black) {
-            oppMark = Mark.Red;
-        } else {
-            oppMark = Mark.Black;
-        }
+        Mark oppMark = mark.getOpponent();
 
         int markCaptures = getCaptures(mark);
         int oppCaptures = getCaptures(oppMark);
