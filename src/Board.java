@@ -74,6 +74,11 @@ public class Board {
         return markScore - oppScore;
     }
 
+    /**
+     * Returns all the moves of a certain color (Most likely deprecated by the movesPlayed array)
+     * @param mark The color of the moves to return
+     * @return List of all the moves of a certain color
+     */
     public ArrayList<Move> getAllMarks(Mark mark){
         ArrayList<Move> moves = new ArrayList<>();
 
@@ -150,6 +155,11 @@ public class Board {
         return true;
     }
 
+    /**
+     * Returns the maximum number of connected marks of a certain color
+     * @param mark 
+     * @return Highest number of connected marks
+     */
     public int getMaxConnected(Mark mark){
         ArrayList<Move> moves = getAllMarks(mark);
         int maxConnected = 0;
