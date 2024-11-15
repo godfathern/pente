@@ -4,6 +4,8 @@ public class Board {
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
     private int turns;
+    private int blackCaptures;
+    private int redCaptures;
 
     public Board() {
         turns = 0;
@@ -57,14 +59,17 @@ public class Board {
         }
     }
 
-    public int getEatings(Mark mark){
+    public int getCaptures(Mark mark){
         if(mark == Mark.Black){
-            return 0;
+            return blackCaptures;
+        } else {
+            return redCaptures;
         }
-        if(mark == Mark.Red){
-            return 0;
-        }
-        return 0;
+    }
+
+    public boolean isCapture(Move move){
+        // TODO: Implement this
+        return false;
     }
 
     // negative if black wins, positive if red wins
@@ -76,8 +81,8 @@ public class Board {
             oppMark = Mark.Black;
         }
 
-        int markCaptures = getEatings(mark);
-        int oppCaptures = getEatings(oppMark);
+        int markCaptures = getCaptures(mark);
+        int oppCaptures = getCaptures(oppMark);
         int maxConnectedMark = getMaxConnected(mark);
         int maxConnectedOpp = getMaxConnected(oppMark);
 
