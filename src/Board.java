@@ -35,6 +35,7 @@ public class Board {
     public void undo(Move move){
         if(board[move.getCol()][move.getRow()] == move.getColor()){
             board[move.getCol()][move.getRow()] = Mark.Empty;
+            movesPlayed[turns] = null;
             turns--;
         }
     }
