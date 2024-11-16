@@ -7,7 +7,7 @@
      * @param player The player to check for
      * @return 1 if there is a pair, 0 otherwise
      */
-    public static int isPair(char[][] board, int row, int col, char player) {
+    public static int isPair(Mark[][] board, int row, int col, Mark player) {
         // Check horizontal pair
         if (col + 1 < board[0].length && board[row][col] == player && board[row][col + 1] == player) { 
             // (col + 1 < board[0].length) is to check if the pair is in bound
@@ -37,12 +37,12 @@
      * @param player The player to check for
      * @return 1 if there is a stretch, 0 otherwise
      */
-    public static int isStretchTwo(char[][] board, int row, int col, char player) {
+    public static int isStretchTwo(Mark[][] board, int row, int col, Mark player) {
         // Check horizontal stretch two
         if (col + 2 < board[0].length && 
             board[row][col] == player && 
             board[row][col + 2] == player && 
-            board[row][col + 1] == ' ') {
+            board[row][col + 1] == null) {
             return 1;
         }
         
@@ -50,7 +50,7 @@
         if (row + 2 < board.length && 
             board[row][col] == player && 
             board[row + 2][col] == player && 
-            board[row + 1][col] == ' ') {
+            board[row + 1][col] == null) {
             return 1;
         }
         
@@ -58,7 +58,7 @@
         if (row + 2 < board.length && col + 2 < board[0].length && 
             board[row][col] == player && 
             board[row + 2][col + 2] == player && 
-            board[row + 1][col + 1] == ' ') {
+            board[row + 1][col + 1] == null) {
             return 1;
         }
         
@@ -66,7 +66,7 @@
         if (row - 2 >= 0 && col + 2 < board[0].length && 
             board[row][col] == player && 
             board[row - 2][col + 2] == player && 
-            board[row - 1][col + 1] == ' ') {
+            board[row - 1][col + 1] == null) {
             return 1;
         }
         
@@ -81,7 +81,7 @@
      * @param player The player to check for
      * @return 1 if there is an open tria, 0 otherwise
      */
-    public static int isOpenTria(char[][] board, int row, int col, char player) {
+    public static int isOpenTria(Mark[][] board, int row, int col, Mark player) {
         // Check horizontal open tria
         if (col + 2 < board[0].length && 
             board[row][col] == player && // board[row][col] is the first stone
@@ -133,12 +133,12 @@
      * @param player The player to check for
      * @return 1 if there is a stretch, 0 otherwise
      */
-    public static int isStretchTria(char[][] board, int row, int col, char player) {
+    public static int isStretchTria(Mark[][] board, int row, int col, Mark player) {
         // Check horizontal stretch tria (pair on left)
         if (col + 3 < board[0].length && 
             board[row][col] == player && 
             board[row][col + 1] == player && // pair
-            board[row][col + 2] == ' ' &&    // gap
+            board[row][col + 2] == null &&    // gap
             board[row][col + 3] == player) { // single stone
             return 1;
         }
@@ -146,7 +146,7 @@
         // Check horizontal stretch tria (pair on right)
         if (col + 3 < board[0].length && 
             board[row][col] == player &&     // single stone
-            board[row][col + 1] == ' ' &&    // gap
+            board[row][col + 1] == null &&    // gap
             board[row][col + 2] == player && // pair
             board[row][col + 3] == player) {
             return 1;
@@ -156,7 +156,7 @@
         if (row + 3 < board.length && 
             board[row][col] == player && 
             board[row + 1][col] == player && // pair
-            board[row + 2][col] == ' ' &&    // gap
+            board[row + 2][col] == null &&    // gap
             board[row + 3][col] == player) { // single stone
             return 1;
         }
@@ -164,7 +164,7 @@
         // Check vertical stretch tria (pair on bottom)
         if (row + 3 < board.length && 
             board[row][col] == player &&     // single stone
-            board[row + 1][col] == ' ' &&    // gap
+            board[row + 1][col] == null &&    // gap
             board[row + 2][col] == player && // pair
             board[row + 3][col] == player) {
             return 1;
@@ -174,7 +174,7 @@
         if (row + 3 < board.length && col + 3 < board[0].length && 
             board[row][col] == player && 
             board[row + 1][col + 1] == player && // pair
-            board[row + 2][col + 2] == ' ' &&    // gap
+            board[row + 2][col + 2] == null &&    // gap
             board[row + 3][col + 3] == player) { // single stone
             return 1;
         }
@@ -182,7 +182,7 @@
         // Check diagonal stretch tria (top-left to bottom-right, pair on bottom)
         if (row + 3 < board.length && col + 3 < board[0].length && 
             board[row][col] == player &&         // single stone
-            board[row + 1][col + 1] == ' ' &&    // gap
+            board[row + 1][col + 1] == null &&    // gap
             board[row + 2][col + 2] == player && // pair
             board[row + 3][col + 3] == player) {
             return 1;
@@ -192,7 +192,7 @@
         if (row >= 3 && col + 3 < board[0].length && 
             board[row][col] == player && 
             board[row - 1][col + 1] == player && // pair
-            board[row - 2][col + 2] == ' ' &&    // gap
+            board[row - 2][col + 2] == null &&    // gap
             board[row - 3][col + 3] == player) { // single stone
             return 1;
         }
@@ -200,7 +200,7 @@
         // Check diagonal stretch tria (bottom-left to top-right, pair on top)
         if (row >= 3 && col + 3 < board[0].length && 
             board[row][col] == player &&         // single stone
-            board[row - 1][col + 1] == ' ' &&    // gap
+            board[row - 1][col + 1] == null &&    // gap
             board[row - 2][col + 2] == player && // pair
             board[row - 3][col + 3] == player) {
             return 1;
@@ -217,7 +217,7 @@
      * @param player The player to check for
      * @return 1 if there is an open tessera, 0 otherwise
      */
-    public static int isOpenTessera(char[][] board, int row, int col, char player) {
+    public static int isOpenTessera(Mark[][] board, int row, int col, Mark player) {
         // Check horizontal open tessera
         if (col + 3 < board[0].length && 
             board[row][col] == player && 
