@@ -1,0 +1,32 @@
+# IntelliJ IDEA specific files
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Compiled source files
+*.class
+*.jar
+*.war
+*.ear
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Maven specific files
+target/
+
+# Gradle specific files
+.gradle/
+build/
+
+# Node specific files
+node_modules/
+
+# Python specific files
+__pycache__/
+*.pyc
