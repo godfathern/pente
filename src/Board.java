@@ -50,6 +50,14 @@ public class Board {
 
     public boolean isCapture(Move move) {
         // TODO: Implement this
+        // Check if the move captures any pieces using the Shapes & Letters class
+        int row = move.getRow();
+        int col = move.getCol();
+        Mark player = move.getColor() == Mark.Red ? Mark.Red : Mark.Black;
+        Mark[][] currentBoard = board;
+        int highScore = 0, score = 0;
+        // start with most basic shapes
+        isPair(currentBoard, row, col, player);
         return false;
     }
 
