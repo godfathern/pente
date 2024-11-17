@@ -57,8 +57,23 @@ public class Board {
         Mark[][] currentBoard = board;
         int highScore = 0, score = 0;
         // start with most basic shapes
-        Shapes.isPair(currentBoard, row, col, player);
-        return false;
+        score += Shapes.isPair(currentBoard, row, col, player);
+        score += Shapes.isStretchTwo(currentBoard, row, col, player);
+        score += Shapes.isStretchTria(currentBoard, row, col, player);
+        score += Shapes.isOpenTria(currentBoard, row, col, player);
+        score += Shapes.isOpenTessera(currentBoard, row, col, player);
+        if (score > highScore) {
+            highScore = score;
+        }
+        if (highScore > 0) {
+            return true;
+        }
+        score += Letters.hLowerAdvancedShape(currentBoard, row, col, player);
+        score += Letters.hHigherAdvancedShape(currentBoard, row, col, player);
+        score += Letters.iAdvancedShape(currentBoard, row, col, player);
+        score += Letters.lAdvancedShape(currentBoard, row, col, player);
+        score += Letters.xAdvancedShape(currentBoard, row, col, player);
+        return highScore > 0;
     }
 
     public int evaluate(Mark mark) {
