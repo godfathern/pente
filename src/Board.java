@@ -57,7 +57,7 @@ public class Board {
         Mark[][] currentBoard = board;
         int highScore = 0, score = 0;
         // start with most basic shapes
-        isPair(currentBoard, row, col, player);
+        Shapes.isPair(currentBoard, row, col, player);
         return false;
     }
 

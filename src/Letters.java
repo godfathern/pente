@@ -115,7 +115,7 @@ public class Letters {
             board[row][col] == player &&
             board[row + 1][col] == player &&
             board[row + 2][col] == player && 
-            board[row][col + 2]] == player &&
+            board[row][col + 2] == player &&
             board[row + 1][col + 2] == player &&
             board[row + 2][col + 2] == player &&
             // check middle connector line

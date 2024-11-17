@@ -1,4 +1,4 @@
-`public class Shapes {
+public class Shapes {
     /**
      * Determines if there is a pair of the same player in the given row, column, or diagonal.
      * @param board The game board
