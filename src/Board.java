@@ -51,6 +51,34 @@ public class Board {
     public boolean isCapture(Move move) {
         // TODO: Implement this
         // Check if the move captures any pieces using the Shapes & Letters class
+        int result = Solvers.detectWedge(board, move.getRow(), move.getCol(), move.getColor());
+        if (result == 2) {
+            return true;
+        }
+        result = Solvers.detectExtension(board, move.getRow(), move.getCol(), move.getColor());
+        return result == 3;
+    }
+
+    public int evaluate(Mark mark, Move move) {
+        Mark oppMark = mark.getOpponent();
+
+        // int markCaptures = getCaptures(mark);
+        // int oppCaptures = getCaptures(oppMark);
+        // int maxConnectedMark = getMaxConnected(mark);
+        // int maxConnectedOpp = getMaxConnected(oppMark);
+
+        // if (markCaptures == 5 || maxConnectedMark == 5) {
+        //     return 100000;
+        // }
+
+        // if (oppCaptures == 5 || maxConnectedOpp == 5) {
+        //     return -100000;
+        // }
+
+        // int markScore = maxConnectedMark * (markCaptures + 1);
+        // int oppScore = maxConnectedOpp * (oppCaptures + 1);
+
+        // return markScore - oppScore;
         int row = move.getRow();
         int col = move.getCol();
         Mark player = move.getColor() == Mark.Red ? Mark.Red : Mark.Black;
@@ -66,36 +94,14 @@ public class Board {
             highScore = score;
         }
         if (highScore > 0) {
-            return true;
+            return highScore;
         }
         score += Letters.hLowerAdvancedShape(currentBoard, row, col, player);
         score += Letters.hHigherAdvancedShape(currentBoard, row, col, player);
         score += Letters.iAdvancedShape(currentBoard, row, col, player);
         score += Letters.lAdvancedShape(currentBoard, row, col, player);
         score += Letters.xAdvancedShape(currentBoard, row, col, player);
-        return highScore > 0;
-    }
-
-    public int evaluate(Mark mark) {
-        Mark oppMark = mark.getOpponent();
-
-        int markCaptures = getCaptures(mark);
-        int oppCaptures = getCaptures(oppMark);
-        int maxConnectedMark = getMaxConnected(mark);
-        int maxConnectedOpp = getMaxConnected(oppMark);
-
-        if (markCaptures == 5 || maxConnectedMark == 5) {
-            return 100000;
-        }
-
-        if (oppCaptures == 5 || maxConnectedOpp == 5) {
-            return -100000;
-        }
-
-        int markScore = maxConnectedMark * (markCaptures + 1);
-        int oppScore = maxConnectedOpp * (oppCaptures + 1);
-
-        return markScore - oppScore;
+        return highScore;
     }
 
     /**
