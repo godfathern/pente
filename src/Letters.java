@@ -195,4 +195,97 @@ public class Letters {
         }
         return 0;
     }
+
+    public static int fourByThreeTriangle(Mark[][] board, int row, int col, Mark player) {
+        // Check horizontal base case (4 wide x 3 high)
+        if (row + 2 < board.length && col + 3 < board[0].length) {
+            // Check base triangle pattern
+            if (board[row][col] == player &&
+                board[row][col + 3] == player &&
+                board[row + 2][col] == player &&
+                
+                // Verify required empty spaces
+                board[row][col + 1] == null &&
+                board[row][col + 2] == null &&
+                board[row + 1][col] == null &&
+                
+                // Check spaces for tria and stretch tria potential
+                board[row + 1][col + 1] == null &&
+                board[row + 1][col + 2] == null &&
+                board[row + 2][col + 1] == null &&
+                board[row + 2][col + 2] == null &&
+                
+                // Verify unbound edges for H shape potential
+                (row == 0 || board[row - 1][col] != player) &&
+                (row == 0 || board[row - 1][col + 3] != player) &&
+                (col == 0 || board[row][col - 1] != player) &&
+                (col + 4 >= board[0].length || board[row][col + 4] != player))
+            {
+                return 2; // High threat score due to forced response and H potential
+            }
+        }
+        return 0;
+    }
+    public static int fiveByThreeTriangle(Mark[][] board, int row, int col, Mark player){
+        // Check dimensions for 5x3 triangle
+        if (row + 2 < board.length && col + 4 < board[0].length) {
+            // Check base triangle pattern
+            if (board[row][col] == player &&
+                board[row][col + 4] == player &&
+                board[row + 2][col] == player &&
+                
+                // Verify empty spaces for stretch twos
+                board[row][col + 1] == null &&
+                board[row][col + 2] == null &&
+                board[row][col + 3] == null &&
+                board[row + 1][col] == null &&
+                
+                // Check spaces for tria threat potential
+                board[row + 1][col + 1] == null &&
+                board[row + 1][col + 2] == null &&
+                board[row + 1][col + 3] == null &&
+                board[row + 2][col + 1] == null &&
+                board[row + 2][col + 2] == null &&
+                
+                // Verify unbound edges
+                (row == 0 || board[row - 1][col] != player) &&
+                (row == 0 || board[row - 1][col + 4] != player) &&
+                (col == 0 || board[row][col - 1] != player) &&
+                (col + 5 >= board[0].length || board[row][col + 5] != player)) {
+                
+                return 2; // Threat score for stretch two potential
+            }
+        }
+        return 0;
+    }
+
+    public static int hatLetter(Mark[][] board, int row, int col, Mark player) {
+        // Check dimensions for hat shape
+        if (row + 3 < board.length && col + 3 < board[0].length) {
+            // Check base scalene triangle pattern
+            if (board[row][col] == player &&
+                board[row][col + 3] == player &&
+                board[row + 2][col + 1] == player &&
+                
+                // Verify empty spaces for stretch tria
+                board[row][col + 1] == null &&
+                board[row][col + 2] == null &&
+                board[row + 1][col + 1] == null &&
+                
+                // Check spaces for X shape potential
+                board[row + 1][col + 2] == null &&
+                board[row + 2][col + 2] == null &&
+                board[row + 2][col] == null &&
+                
+                // Verify unbound edges
+                (row == 0 || board[row - 1][col] != player) &&
+                (row == 0 || board[row - 1][col + 3] != player) &&
+                (col == 0 || board[row][col - 1] != player) &&
+                (col + 4 >= board[0].length || board[row][col + 4] != player)) {
+                
+                return 2; // Threat score for stretch tria and X formation potential
+            }
+        }
+        return 0;
+    }
 }
