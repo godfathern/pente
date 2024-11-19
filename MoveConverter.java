@@ -1,8 +1,10 @@
 public class MoveConverter {
     public static String convertMoveToString(Move move) {
-        char columnLetter = (char) ('A' + (move.getCol() - 1));
-        return columnLetter + String.valueOf(move.getRow());
+        char columnLetter = (char) ('A' + (move.getCol()));
+        int row = 15 - move.getRow();
+        return "" + columnLetter + row;
     }
+    
 
     public static Move convertStringToMove(String moveString) {
         char columnLetter = moveString.charAt(0);

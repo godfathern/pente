@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
+
 
 
 class Client {
@@ -10,27 +10,24 @@ class Client {
 	BufferedInputStream input;
 	BufferedOutputStream output;
     int[][] board = new int[15][15];
+	BoardState romoku = new BoardState(15, 15);
+	PlayerKing harryTheFirst = new PlayerKing(romoku);
+
 	try {
 		MyClient = new Socket("localhost", 8888);
 
 	   	input    = new BufferedInputStream(MyClient.getInputStream());
 		output   = new BufferedOutputStream(MyClient.getOutputStream());
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-        Board reseauBoard = new Board();
-
-
-        ReseauPlayer reseauPlayer = new ReseauPlayer(Mark.N);
-
-        
-
 	   	while(1 == 1){
-			char cmd = 0;  	
+			char cmd = 0;
+		   	
             cmd = (char)input.read();
-            System.out.println("cmd" + cmd);
-            // Debut de la partie en joueur rouge
+            System.out.println(cmd);
+            // Debut de la partie en joueur blanc
             if(cmd == '1'){
-                reseauPlayer = new ReseauPlayer(Mark.R);
                 byte[] aBuffer = new byte[1024];
+				
 				int size = input.available();
 				//System.out.println("size " + size);
 				input.read(aBuffer,0,size);
@@ -48,36 +45,33 @@ class Client {
                     }
                 }
 
-                System.out.println("Nouvelle partie! Vous jouer rouge, entrez votre premier coup : ");
-                reseauBoard.checkFirstMove(reseauPlayer);
-                String move = reseauPlayer.randomMove(reseauBoard);
-                reseauBoard.play(MoveConverter.convertStringToMove(move), reseauPlayer.getMark());
+                System.out.println("Nouvelle partie! Vous jouer blanc, entrez votre premier coup : ");
+                String move = null;
+                move = console.readLine();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
             }
             // Debut de la partie en joueur Noir
             if(cmd == '2'){
-                System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des rouges");//ReseauPlayer = noir
+                System.out.println("Nouvelle partie! Vous jouer noir, attendez le coup des blancs");
                 byte[] aBuffer = new byte[1024];
 				
 				int size = input.available();
 				//System.out.println("size " + size);
 				input.read(aBuffer,0,size);
                 String s = new String(aBuffer).trim();
-                //System.out.println(s);
+                System.out.println(s);
                 String[] boardValues;
                 boardValues = s.split(" ");
                 int x=0,y=0;
                 for(int i=0; i<boardValues.length;i++){
                     board[x][y] = Integer.parseInt(boardValues[i]);
-                    
                     x++;
                     if(x == 15){
                         x = 0;
                         y++;
                     }
                 }
-                
             }
 
 
@@ -89,34 +83,31 @@ class Client {
 				int size = input.available();
 				System.out.println("size :" + size);
 				input.read(aBuffer,0,size);
-			
+				
 				String s = new String(aBuffer).trim();
-                System.out.println(s);
-                Move ordinateurMove = MoveConverter.convertStringToMove(s);
-                reseauBoard.play(ordinateurMove, reseauPlayer.getOpponentMark());
-                reseauBoard.printBoard();
+				Move ordiMove = MoveConverter.convertStringToMove(s);
+				int row = ordiMove.getRow();
+				int col = ordiMove.getCol();
+				romoku.setPosition(row, col,1);
 				System.out.println("Dernier coup :"+ s);
 		       	System.out.println("Entrez votre coup : ");
-                //--------------
-                String reseauMove = new RandomGenerator().move();;
-                reseauBoard.play(MoveConverter.convertStringToMove(reseauMove), reseauPlayer.getMark());
-                reseauBoard.printBoard();
-                output.write(reseauMove.getBytes(),0,reseauMove.length());
+				String moveTring = null;
+				//move = console.readLine();
+				Move aiMove = harryTheFirst.cook(2);
+                int aiRow = aiMove.getCol();
+                int aiCol = aiMove.getRow();
+				Move move = new Move(aiRow, aiCol);
+				moveTring = MoveConverter.convertMoveToString(move);
+				romoku.setPosition(aiRow, aiCol,2);
+				output.write(moveTring.getBytes(),0,moveTring.length());
 				output.flush();
-                //-----------------------
-                // Move reseauMove = reseauPlayer.selectBestMove(reseauPlayer, reseauBoard);
-                // reseauBoard.play(reseauMove, reseauPlayer.getMark());
-                // String stringReseauMove = MoveConverter.convertMoveToString(reseauMove);
-				// output.write(stringReseauMove.getBytes(),0,stringReseauMove.length());
-				// output.flush();
 				
 			}
 			// Le dernier coup est invalide
 			if(cmd == '4'){
 				System.out.println("Coup invalide, entrez un nouveau coup : ");
 		       	String move = null;
-				//move = console.readLine();
-                move = new RandomGenerator().move();
+				move = console.readLine();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
 				
@@ -126,58 +117,19 @@ class Client {
                 byte[] aBuffer = new byte[16];
                 int size = input.available();
                 input.read(aBuffer,0,size);
-				String s = new String(aBuffer).trim();
-                Move ordinateurMove = MoveConverter.convertStringToMove(s);
-                reseauBoard.play(ordinateurMove, reseauPlayer.getOpponentMark());
-                reseauBoard.printBoard();
-                System.out.println("Check winnnnnnn : " + reseauBoard.checkWin(reseauPlayer.getOpponentMark())); 
+				String s = new String(aBuffer);
 				System.out.println("Partie Terminé. Le dernier coup joué est: "+s);
-
 		       	String move = null;
 				move = console.readLine();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
+				
 			}
         }
 	}
 	catch (IOException e) {
-   		System.out.println(e);
+   		System.out.println(e); 
 	}
 	
     }
 }
-
-
-
-
-
-
-
-//-----------------------------------------------
-//For testing
-
-// class Client {
-// 	public static void main(String[] args) {
-//             Board boardReseau = new Board();
-            
-//             boardReseau.play(MoveConverter.convertStringToMove("H8"), Mark.R);
-//             for (int i = 1; i < 15; i++){
-//                 for (int j = 1; j < 15; j++ ){
-//                     boardReseau.play(MoveConverter.convertMovetoMove(new Move(i,j)),Mark.R);
-//                 }
-//             }
-
-//             boardReseau.play(MoveConverter.convertMovetoMove(new Move(1,1)),Mark.R);
-//             System.err.println(MoveConverter.convertMoveToString(new Move(0,0)));
-//             boardReseau.generateValidMoves();
-//             boardReseau.printBoard();
-//             }
-//         }
-
-
-
-
-
-//-------------------------------------------------------------------------------------------------
-
-
