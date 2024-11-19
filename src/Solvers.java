@@ -12,10 +12,10 @@ public class Solvers {
                     
                 // Check for stretch two pattern
                 if (board[r][c] == player &&
-                    board[r + dir[0]][c + dir[1]] == null &&
+                    board[r + dir[0]][c + dir[1]] == Mark.Empty &&
                     board[r + 2*dir[0]][c + 2*dir[1]] == player &&
                     // Check for potential pair formation
-                    board[r - dir[0]][c - dir[1]] == null &&
+                    board[r - dir[0]][c - dir[1]] == Mark.Empty &&
                     // Verify capture opportunity exists
                     isCapturePossible(board, r, c, dir[0], dir[1], player)) {
                     return 2;
@@ -35,7 +35,7 @@ public class Solvers {
                 if (board[row][col] == player &&
                     board[row + dir[0]][col + dir[1]] == player &&
                     board[row + 2*dir[0]][col + 2*dir[1]] == player &&
-                    board[row + 3*dir[0]][col + 3*dir[1]] == null &&
+                    board[row + 3*dir[0]][col + 3*dir[1]] == Mark.Empty &&
                     board[row + 4*dir[0]][col + 4*dir[1]] == player &&
                     // Check for adjacent capture potential
                     hasAdjacentCapturePotential(board, row, col, dir[0], dir[1], player)) {

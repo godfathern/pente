@@ -4,12 +4,12 @@ public class Letters {
         if (col + 2 < board[0].length && 
             board[row][col] == player && 
             board[row][col + 2] == player && 
-            board[row][col + 1] == null &&
+            board[row][col + 1] == Mark.Empty &&
             (col == 0 || board[row][col - 1] != player) && // unbound left
             (col + 3 >= board[0].length || board[row][col + 3] != player) && // unbound right
             // Check for L-shape potential (up or down)
-            ((row > 0 && board[row - 1][col] == null && board[row - 1][col + 1] == null && board[row - 1][col + 2] == null) ||
-            (row < board.length - 1 && board[row + 1][col] == null && board[row + 1][col + 1] == null && board[row + 1][col + 2] == null))) {
+            ((row > 0 && board[row - 1][col] == Mark.Empty && board[row - 1][col + 1] == Mark.Empty && board[row - 1][col + 2] == Mark.Empty) ||
+            (row < board.length - 1 && board[row + 1][col] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty && board[row + 1][col + 2] == Mark.Empty))) {
             return 1;
         }
         
@@ -17,12 +17,12 @@ public class Letters {
         if (row + 2 < board.length && 
             board[row][col] == player && 
             board[row + 2][col] == player && 
-            board[row + 1][col] == null &&
+            board[row + 1][col] == Mark.Empty &&
             (row == 0 || board[row - 1][col] != player) && // unbound top
             (row + 3 >= board.length || board[row + 3][col] != player) && // unbound bottom
             // Check for L-shape potential (left or right)
-            ((col > 0 && board[row][col - 1] == null && board[row + 1][col - 1] == null && board[row + 2][col - 1] == null) ||
-            (col < board[0].length - 1 && board[row][col + 1] == null && board[row + 1][col + 1] == null && board[row + 2][col + 1] == null))) {
+            ((col > 0 && board[row][col - 1] == Mark.Empty && board[row + 1][col - 1] == Mark.Empty && board[row + 2][col - 1] == Mark.Empty) ||
+            (col < board[0].length - 1 && board[row][col + 1] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty && board[row + 2][col + 1] == Mark.Empty))) {
             return 1;
         }
 
@@ -30,12 +30,12 @@ public class Letters {
         if (row + 2 < board.length && col + 2 < board[0].length && 
             board[row][col] == player && 
             board[row + 2][col + 2] == player && 
-            board[row + 1][col + 1] == null &&
+            board[row + 1][col + 1] == Mark.Empty &&
             (row == 0 || col == 0 || board[row - 1][col - 1] != player) && // unbound top left
             (row + 3 >= board.length || col + 3 >= board[0].length || board[row + 3][col + 3] != player) && // unbound bottom right
             // Check for L-shape potential (up-left or down-right)
-            ((row > 0 && col > 0 && board[row - 1][col - 1] == null && board[row + 1][col + 1] == null) ||
-            (row < board.length - 1 && col < board[0].length - 1 && board[row + 3][col + 3] == null && board[row + 1][col + 1] == null))) {
+            ((row > 0 && col > 0 && board[row - 1][col - 1] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty) ||
+            (row < board.length - 1 && col < board[0].length - 1 && board[row + 3][col + 3] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty))) {
             return 1;
         }
 
@@ -43,12 +43,12 @@ public class Letters {
         if (row + 2 < board.length && col - 2 >= 0 && 
             board[row][col] == player && 
             board[row + 2][col - 2] == player && 
-            board[row + 1][col - 1] == null &&
+            board[row + 1][col - 1] == Mark.Empty &&
             (row == 0 || col == board[0].length - 1 || board[row - 1][col + 1] != player) && // unbound top right
             (row + 3 >= board.length || col - 3 < 0 || board[row + 3][col - 3] != player) && // unbound bottom left
             // Check for L-shape potential (up-right or down-left)
-            ((row > 0 && col < board[0].length - 1 && board[row - 1][col + 1] == null && board[row + 1][col - 1] == null) ||
-            (row < board.length - 1 && col > 0 && board[row + 3][col - 3] == null && board[row + 1][col - 1] == null))) {
+            ((row > 0 && col < board[0].length - 1 && board[row - 1][col + 1] == Mark.Empty && board[row + 1][col - 1] == Mark.Empty) ||
+            (row < board.length - 1 && col > 0 && board[row + 3][col - 3] == Mark.Empty && board[row + 1][col - 1] == Mark.Empty))) {
             return 1;
         }
         return 0;
@@ -59,12 +59,12 @@ public class Letters {
         if (col + 2 < board[0].length && 
             board[row][col] == player && 
             board[row][col + 2] == player && 
-            board[row][col + 1] == null &&
+            board[row][col + 1] == Mark.Empty &&
             (col == 0 || board[row][col - 1] != player) && // unbound left
             (col + 3 >= board[0].length || board[row][col + 3] != player) && // unbound right
             // Check for I-shape potential (up or down)
-            ((row > 0 && board[row - 1][col] == null && board[row - 1][col + 1] == null && board[row - 1][col + 2] == null) ||
-            (row < board.length - 1 && board[row + 1][col] == null && board[row + 1][col + 1] == null && board[row + 1][col + 2] == null))) {
+            ((row > 0 && board[row - 1][col] == Mark.Empty && board[row - 1][col + 1] == Mark.Empty && board[row - 1][col + 2] == Mark.Empty) ||
+            (row < board.length - 1 && board[row + 1][col] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty && board[row + 1][col + 2] == Mark.Empty))) {
             return 1;
         }
         
@@ -72,12 +72,12 @@ public class Letters {
         if (row + 2 < board.length && 
             board[row][col] == player && 
             board[row + 2][col] == player && 
-            board[row + 1][col] == null &&
+            board[row + 1][col] == Mark.Empty &&
             (row == 0 || board[row - 1][col] != player) && // unbound top
             (row + 3 >= board.length || board[row + 3][col] != player) && // unbound bottom
             // Check for I-shape potential (left or right)
-            ((col > 0 && board[row][col - 1] == null && board[row + 1][col - 1] == null && board[row + 2][col - 1] == null) ||
-            (col < board[0].length - 1 && board[row][col + 1] == null && board[row + 1][col + 1] == null && board[row + 2][col + 1] == null))) {
+            ((col > 0 && board[row][col - 1] == Mark.Empty && board[row + 1][col - 1] == Mark.Empty && board[row + 2][col - 1] == Mark.Empty) ||
+            (col < board[0].length - 1 && board[row][col + 1] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty && board[row + 2][col + 1] == Mark.Empty))) {
             return 1;
         }
 
@@ -85,12 +85,12 @@ public class Letters {
         if (row + 2 < board.length && col + 2 < board[0].length && 
             board[row][col] == player && 
             board[row + 2][col + 2] == player && 
-            board[row + 1][col + 1] == null &&
+            board[row + 1][col + 1] == Mark.Empty &&
             (row == 0 || col == 0 || board[row - 1][col - 1] != player) && // unbound top left
             (row + 3 >= board.length || col + 3 >= board[0].length || board[row + 3][col + 3] != player) && // unbound bottom right
             // Check for I-shape potential (up-left or down-right)
-            ((row > 0 && col > 0 && board[row - 1][col - 1] == null && board[row + 1][col + 1] == null) ||
-            (row < board.length - 1 && col < board[0].length - 1 && board[row + 3][col + 3] == null && board[row + 1][col + 1] == null))) {
+            ((row > 0 && col > 0 && board[row - 1][col - 1] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty) ||
+            (row < board.length - 1 && col < board[0].length - 1 && board[row + 3][col + 3] == Mark.Empty && board[row + 1][col + 1] == Mark.Empty))) {
             return 1;
         }
 
@@ -98,12 +98,12 @@ public class Letters {
         if (row + 2 < board.length && col - 2 >= 0 && 
             board[row][col] == player && 
             board[row + 2][col - 2] == player && 
-            board[row + 1][col - 1] == null &&
+            board[row + 1][col - 1] == Mark.Empty &&
             (row == 0 || col == board[0].length - 1 || board[row - 1][col + 1] != player) && // unbound top right
             (row + 3 >= board.length || col - 3 < 0 || board[row + 3][col - 3] != player) && // unbound bottom left
             // Check for I-shape potential (up-right or down-left)
-            ((row > 0 && col < board[0].length - 1 && board[row - 1][col + 1] == null && board[row + 1][col - 1] == null) ||
-            (row < board.length - 1 && col > 0 && board[row + 3][col - 3] == null && board[row + 1][col - 1] == null))) {
+            ((row > 0 && col < board[0].length - 1 && board[row - 1][col + 1] == Mark.Empty && board[row + 1][col - 1] == Mark.Empty) ||
+            (row < board.length - 1 && col > 0 && board[row + 3][col - 3] == Mark.Empty && board[row + 1][col - 1] == Mark.Empty))) {
             return 1;
         }
         return 0;
@@ -119,10 +119,10 @@ public class Letters {
             board[row + 1][col + 2] == player &&
             board[row + 2][col + 2] == player &&
             // check middle connector line
-            board[row + 1][col + 1] == null &&
+            board[row + 1][col + 1] == Mark.Empty &&
             // check empty spaces for threat reaction
-            board[row][col + 1] == null &&
-            board[row + 2][col + 1] == null &&
+            board[row][col + 1] == Mark.Empty &&
+            board[row + 2][col + 1] == Mark.Empty &&
             // check edges which should be unbound
             (row == 0 || board[row - 1][col + 1] != player) && // unbound top
             (row == 0 || board[row - 1][col + 2] != player) && // unbound top right
@@ -146,10 +146,10 @@ public class Letters {
                 board[row + 2][col + 2] == player &&
                 board[row + 1][col + 1] == player &&
                 // Check for empty spaces
-                board[row + 1][col] == null &&
-                board[row + 1][col + 2] == null &&
-                board[row][col + 1] == null &&
-                board[row + 2][col + 1] == null &&
+                board[row + 1][col] == Mark.Empty &&
+                board[row + 1][col + 2] == Mark.Empty &&
+                board[row][col + 1] == Mark.Empty &&
+                board[row + 2][col + 1] == Mark.Empty &&
                 // Check for unbound edges
                 (row == 0 || board[row - 1][col + 1] != player) && // unbound top
                 (row + 3 >= board.length || board[row + 3][col + 1] != player) && // unbound bottom
@@ -178,12 +178,12 @@ public class Letters {
                 board[row + 3][col + 4] == player &&
                 
                 // Horizontal connector positions must be empty for tria threats
-                board[row + 2][col + 1] == null &&
-                board[row + 2][col + 3] == null &&
+                board[row + 2][col + 1] == Mark.Empty &&
+                board[row + 2][col + 3] == Mark.Empty &&
                 
                 // Middle spaces must be empty for double tria potential
-                board[row + 1][col + 2] == null &&
-                board[row + 3][col + 2] == null &&
+                board[row + 1][col + 2] == Mark.Empty &&
+                board[row + 3][col + 2] == Mark.Empty &&
                 
                 // Verify unbound edges for tessera formation
                 (row == 0 || board[row - 1][col] != player) &&
@@ -205,15 +205,15 @@ public class Letters {
                 board[row + 2][col] == player &&
                 
                 // Verify required empty spaces
-                board[row][col + 1] == null &&
-                board[row][col + 2] == null &&
-                board[row + 1][col] == null &&
+                board[row][col + 1] == Mark.Empty &&
+                board[row][col + 2] == Mark.Empty &&
+                board[row + 1][col] == Mark.Empty &&
                 
                 // Check spaces for tria and stretch tria potential
-                board[row + 1][col + 1] == null &&
-                board[row + 1][col + 2] == null &&
-                board[row + 2][col + 1] == null &&
-                board[row + 2][col + 2] == null &&
+                board[row + 1][col + 1] == Mark.Empty &&
+                board[row + 1][col + 2] == Mark.Empty &&
+                board[row + 2][col + 1] == Mark.Empty &&
+                board[row + 2][col + 2] == Mark.Empty &&
                 
                 // Verify unbound edges for H shape potential
                 (row == 0 || board[row - 1][col] != player) &&
@@ -235,17 +235,17 @@ public class Letters {
                 board[row + 2][col] == player &&
                 
                 // Verify empty spaces for stretch twos
-                board[row][col + 1] == null &&
-                board[row][col + 2] == null &&
-                board[row][col + 3] == null &&
-                board[row + 1][col] == null &&
+                board[row][col + 1] == Mark.Empty &&
+                board[row][col + 2] == Mark.Empty &&
+                board[row][col + 3] == Mark.Empty &&
+                board[row + 1][col] == Mark.Empty &&
                 
                 // Check spaces for tria threat potential
-                board[row + 1][col + 1] == null &&
-                board[row + 1][col + 2] == null &&
-                board[row + 1][col + 3] == null &&
-                board[row + 2][col + 1] == null &&
-                board[row + 2][col + 2] == null &&
+                board[row + 1][col + 1] == Mark.Empty &&
+                board[row + 1][col + 2] == Mark.Empty &&
+                board[row + 1][col + 3] == Mark.Empty &&
+                board[row + 2][col + 1] == Mark.Empty &&
+                board[row + 2][col + 2] == Mark.Empty &&
                 
                 // Verify unbound edges
                 (row == 0 || board[row - 1][col] != player) &&
@@ -268,14 +268,14 @@ public class Letters {
                 board[row + 2][col + 1] == player &&
                 
                 // Verify empty spaces for stretch tria
-                board[row][col + 1] == null &&
-                board[row][col + 2] == null &&
-                board[row + 1][col + 1] == null &&
+                board[row][col + 1] == Mark.Empty &&
+                board[row][col + 2] == Mark.Empty &&
+                board[row + 1][col + 1] == Mark.Empty &&
                 
                 // Check spaces for X shape potential
-                board[row + 1][col + 2] == null &&
-                board[row + 2][col + 2] == null &&
-                board[row + 2][col] == null &&
+                board[row + 1][col + 2] == Mark.Empty &&
+                board[row + 2][col + 2] == Mark.Empty &&
+                board[row + 2][col] == Mark.Empty &&
                 
                 // Verify unbound edges
                 (row == 0 || board[row - 1][col] != player) &&
