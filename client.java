@@ -89,6 +89,7 @@ class Client {
 				int row = ordiMove.getRow();
 				int col = ordiMove.getCol();
 				romoku.setPosition(row, col,1);
+				harryTheFirst.cook(1);
 				System.out.println("Dernier coup :"+ s);
 		       	System.out.println("Entrez votre coup : ");
 				String moveTring = null;

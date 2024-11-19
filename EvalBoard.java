@@ -40,6 +40,8 @@ public class EvalBoard {
 			return null;
 		}
 		evaluationBoard = Max;
+		this.pr(EBoard);
+		System.out.println("MaxPos: " + p.getRow() + " " + p.getCol());
 		return p;
 	}
 	public int evaluationBoard = 0;
