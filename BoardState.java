@@ -1,4 +1,3 @@
-
 public class BoardState {
 	public static int[][] boardArr;
 	public int width;
@@ -15,42 +14,39 @@ public class BoardState {
 	public int checkEnd(int rw, int cl) {
 		int r = 0, c = 0;
 		int i;
-		boolean human, pc;
-		// Check hÃ ng ngang
+		boolean ordi, AI;
 		while (c < width - 4) {
-			human = true;
-			pc = true;
+			ordi = true;
+			AI = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[rw][c + i] != 1)
-					human = false;
+					ordi = false;
 				if (boardArr[rw][c + i] != 2)
-					pc = false;
+					AI = false;
 			}
-			if (human)
+			if (ordi)
 				return 1;
-			if (pc)
+			if (AI)
 				return 2;
 			c++;
 		}
 
-		// Check hÃ ng doc
 		while (r < height - 4) {
-			human = true;
-			pc = true;
+			ordi = true;
+			AI = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[r + i][cl] != 1)
-					human = false;
+					ordi = false;
 				if (boardArr[r + i][cl] != 2)
-					pc = false;
+					AI = false;
 			}
-			if (human)
+			if (ordi)
 				return 1;
-			if (pc)
+			if (AI)
 				return 2;
 			r++;
 		}
 
-		// Check duong cheo xuong
 		r = rw;
 		c = cl;
 		while (r > 0 && c > 0) {
@@ -58,23 +54,23 @@ public class BoardState {
 			c--;
 		}
 		while (r < height - 4 && c < width - 4) {
-			human = true;
-			pc = true;
+			ordi = true;
+			AI = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[r + i][c + i] != 1)
-					human = false;
+					ordi = false;
 				if (boardArr[r + i][c + i] != 2)
-					pc = false;
+					AI = false;
 			}
-			if (human)
+			if (ordi)
 				return 1;
-			if (pc)
+			if (AI)
 				return 2;
 			r++;
 			c++;
 		}
 
-		// Check duong cheo len
+
 		r = rw;
 		c = cl;
 		while (r < height - 1 && c > 0) {
@@ -83,18 +79,17 @@ public class BoardState {
 		}
 
 		while (r >= 4 && c < height - 4) {
-			human = true;
-			pc = true;
+			ordi = true;
+			AI = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[r - i][c + i] != 1)
-					human = false;
+					ordi = false;
 				if (boardArr[r - i][c + i] != 2)
-					pc = false;
-				// System.out.println(r-i +";"+(c + i));
+					AI = false;
 			}
-			if (human)
+			if (ordi)
 				return 1;
-			if (pc)
+			if (AI)
 				return 2;
 			r--;
 			c++;
