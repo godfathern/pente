@@ -20,8 +20,8 @@ public class EvalBoard {
 				EBoard[r][c] = 0;
 	}
 
-	public void setPosition(int x, int y, int val) {
-		EBoard[x][y] = val;
+	public void setPosition(int x, int y, int diem) {
+		EBoard[x][y] = diem;
 	}
 
 	public Move MaxPos() {

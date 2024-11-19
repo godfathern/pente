@@ -1,3 +1,4 @@
+
 public class BoardState {
 	public static int[][] boardArr;
 	public int width;
@@ -14,39 +15,40 @@ public class BoardState {
 	public int checkEnd(int rw, int cl) {
 		int r = 0, c = 0;
 		int i;
-		boolean ordi, AI;
+		boolean human, pc;
 		while (c < width - 4) {
-			ordi = true;
-			AI = true;
+			human = true;
+			pc = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[rw][c + i] != 1)
-					ordi = false;
+					human = false;
 				if (boardArr[rw][c + i] != 2)
-					AI = false;
+					pc = false;
 			}
-			if (ordi)
+			if (human)
 				return 1;
-			if (AI)
+			if (pc)
 				return 2;
 			c++;
 		}
 
 		while (r < height - 4) {
-			ordi = true;
-			AI = true;
+			human = true;
+			pc = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[r + i][cl] != 1)
-					ordi = false;
+					human = false;
 				if (boardArr[r + i][cl] != 2)
-					AI = false;
+					pc = false;
 			}
-			if (ordi)
+			if (human)
 				return 1;
-			if (AI)
+			if (pc)
 				return 2;
 			r++;
 		}
 
+		// Check duong cheo xuong
 		r = rw;
 		c = cl;
 		while (r > 0 && c > 0) {
@@ -54,22 +56,21 @@ public class BoardState {
 			c--;
 		}
 		while (r < height - 4 && c < width - 4) {
-			ordi = true;
-			AI = true;
+			human = true;
+			pc = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[r + i][c + i] != 1)
-					ordi = false;
+					human = false;
 				if (boardArr[r + i][c + i] != 2)
-					AI = false;
+					pc = false;
 			}
-			if (ordi)
+			if (human)
 				return 1;
-			if (AI)
+			if (pc)
 				return 2;
 			r++;
 			c++;
 		}
-
 
 		r = rw;
 		c = cl;
@@ -79,17 +80,18 @@ public class BoardState {
 		}
 
 		while (r >= 4 && c < height - 4) {
-			ordi = true;
-			AI = true;
+			human = true;
+			pc = true;
 			for (i = 0; i < 5; i++) {
 				if (boardArr[r - i][c + i] != 1)
-					ordi = false;
+					human = false;
 				if (boardArr[r - i][c + i] != 2)
-					AI = false;
+					pc = false;
+				// System.out.println(r-i +";"+(c + i));
 			}
-			if (ordi)
+			if (human)
 				return 1;
-			if (AI)
+			if (pc)
 				return 2;
 			r--;
 			c++;
