@@ -1,6 +1,7 @@
 import java.util.ArrayList;
+import java.util.Random;
 
-public class CPU {
+public class CPU {    
     private final Mark cpu;
     private final Mark opponent;
     private final static int MAX_DEPTH = 3;
@@ -46,27 +47,67 @@ public class CPU {
         int max = Integer.MIN_VALUE;
         for (Move move : possibleMoves) {
             board.play(move);
+            int score = -minmaxAB(board, opponent, -Board.WINNING_SCORE - 1, Board.WINNING_SCORE + 1, MAX_DEPTH);
+            System.out.println("Score minmaxAB: " + score + " Move: " + move);
 
-            int score = minmaxAB(board, opponent, -100001, 100001, MAX_DEPTH);
-            System.out.println("Score minmaxAB: " + score);
+            boolean moveFound = false;            
+            for (Move m : moves) {
+                if(m.getCol() == move.getCol() && m.getRow() == move.getRow()) {
+                    moveFound = true;
+                }
+            }
 
-            if (score > max) {
+            if(score > max) {
                 max = score;
                 moves.clear();
                 moves.add(move);
-        if (depth == 0 || eval <= -Board.WINNING_SCORE || eval >= Board.WINNING_SCORE) {
-            return eval;
-        }
-            }
-
-            if (score == max) {
+            } else if(score == max && !moveFound) {
                 moves.add(move);
             }
-
-            board.undo(move);
         }
 
         return moves;
+    }
+
+    private int minmaxAB(Board board, Mark mark, int alpha, int beta, int depth) {
+        int eval = board.evaluate(mark);
+        if (depth == 0 || eval <= -Board.WINNING_SCORE || eval >= Board.WINNING_SCORE) {
+            return eval;
+        }
+
+        ArrayList<Move> possibleMoves = board.getPossibleMoves(mark);
+        if (mark == cpu) {
+            int maxScore = Integer.MIN_VALUE;
+
+            for (Move possibleMove : possibleMoves) {                
+                board.play(possibleMove);
+                maxScore = Math.max(maxScore, minmaxAB(board, opponent, alpha, beta, depth - 1));
+                board.undo(possibleMove);
+
+                if (maxScore >= beta) {
+                    break;
+                }
+                
+                alpha = Math.max(alpha, maxScore);
+            }
+
+            return maxScore;
+        } else {
+            int minScore = Integer.MAX_VALUE;
+            for (Move possibleMove : possibleMoves) {
+                board.play(possibleMove);
+                minScore = Math.min(minScore, minmaxAB(board, cpu, alpha, beta, depth - 1));                
+                board.undo(possibleMove);
+
+                if (minScore <= alpha) {
+                    break;
+                }
+                
+                beta = Math.min(beta, minScore);
+            }
+
+            return minScore;
+        }
     }
 
     public ArrayList<Move> getNextMovesMinMax(Board board) {
@@ -143,54 +184,4 @@ public class CPU {
             return minScore;
         }
     }
-
-    private int minmaxAB(Board board, Mark mark, int alpha, int beta, int depth) {
-        int eval = board.evaluate(mark);
-
-        if (depth == 0 || eval == -100000 || eval == 100000) {
-            return eval;
-        }
-
-        depth--;
-
-        ArrayList<Move> possibleMoves = board.getPossibleMoves(mark);
-        if (mark == cpu) {
-            int maxScore = Integer.MIN_VALUE;
-
-            for (Move move : possibleMoves) {
-                board.play(move);
-
-                int score = minmaxAB(board, opponent, alpha, beta, depth);
-                maxScore = Math.max(maxScore, score);
-                alpha = Math.max(alpha, maxScore);
-
-                board.undo(move);
-
-                if (maxScore >= beta) {
-                    return maxScore;
-                }
-            }
-
-            return maxScore;
-        } else {
-            int minScore = Integer.MAX_VALUE;
-
-            for (Move move : possibleMoves) {
-                board.play(move);
-
-                int score = minmaxAB(board, cpu, alpha, Math.min(beta, minScore), depth);
-                minScore = Math.min(minScore, score);
-                beta = Math.min(beta, minScore);
-
-                board.undo(move);
-
-                if (minScore <= alpha) {
-                    return minScore;
-                }
-            }
-
-            return minScore;
-        }
-    }
-
 }
