@@ -29,7 +29,8 @@ public class Board {
 
     public void play(Move move) {
         if (board[move.getCol()][move.getRow()] == Mark.Empty) {
-            board[move.getCol()][move.getRow()] = move.getColor();            
+            board[move.getCol()][move.getRow()] = move.getColor();
+            System.out.println("[play()] Playing move: " + move);            
             playedMoves.add(turns, move);
             turns++;
         }
@@ -38,6 +39,7 @@ public class Board {
     public void undo(Move move) {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             board[move.getCol()][move.getRow()] = Mark.Empty;
+            System.out.println("[undo()] Undoing move: " + move);
             playedMoves.remove(move);
             turns--;
         }
@@ -65,42 +67,58 @@ public class Board {
         return false;
     }
 
-    public int evaluate(Mark mark) {
-        boolean isAttacking = playedMoves.get(playedMoves.size()-1).getColor() == mark;
+    public boolean checkWin(Mark mark) {
+        int markCaptures = getCaptures(mark);
+        int maxConnectedMark = getMaxConnected(mark);
+
+        return markCaptures >= 5 || maxConnectedMark >= 5;
+    }
+
+    public int evaluate(Mark mark) {      
+        System.out.println("[evaluate()] Evaluating board for: " + mark);  
         int markScore = 0;
         int markCount = 0;
         int oppCount = 0;
         int oppScore = 0;
         
         Mark oppMark = mark.getOpponent();
+        System.out.println("[evaluate()] Opponent: " + oppMark);
 
-        int markCaptures = getCaptures(mark);
-        int oppCaptures = getCaptures(oppMark);
-        int maxConnectedMark = getMaxConnected(mark);
-        int maxConnectedOpp = getMaxConnected(oppMark);
-
-        if (markCaptures == 5 || maxConnectedMark == 5) {
+        if(checkWin(mark)) {
+            System.out.println("[evaluate()] " + mark + " has won");
             return Board.WINNING_SCORE;
-        }
-
-        if (oppCaptures == 5 || maxConnectedOpp == 5) {
+        } else if(checkWin(oppMark)) {
+            System.out.println("[evaluate()] " + oppMark + " has won");            
             return -Board.WINNING_SCORE;
         }
         
         for (Move move : playedMoves) {
+            System.out.println("[evaluate()] Evaluating move: " + move);            
             int moveScore = 0;
-            if(Shapes.isTria(board, move.getCol(), move.getRow(), move.getColor())) {
-                moveScore += 10;
+
+            int[][] directions = {
+                {0, 1},  // Horizontal (right)
+                {1, 0},  // Vertical (down)
+                {1, 1},  // Diagonal (down-right)
+                {1, -1}  // Diagonal (down-left)
+            };
+
+            for (int[] dir : directions) {
+                System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
+
+                if(Solvers.isBlocking(board,  move, dir)) {
+                    moveScore += 50;
+                    System.out.println("[evaluate()]" + move + " is blocking");                    
+                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
+                    System.out.println("[evaluate()] " + move + " is a row of 4");
+                    moveScore += 20;
+                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
+                    System.out.println("[evaluate()] " + move + " is a row of 3");
+                    moveScore += 10;
+                }
             }
 
-            if(Shapes.isTesseraWithEmptyEnd(board, move.getCol(), move.getRow(), move.getColor())) {
-                moveScore += 50;
-            }
-
-            if(Solvers.isBlocking(board,  move)) {
-                moveScore += 500;
-            }
-
+            System.out.println("[evaluate()] Move score: " + moveScore);
             if(move.getColor() == mark) {
                 markCount++;
                 markScore += moveScore;
@@ -110,19 +128,22 @@ public class Board {
             }
         }
 
-        if(markCount >= oppCount) { 
-            markScore = markScore + markCount * 5 + maxConnectedMark * 10;
+        markScore += markCount;
+        oppScore += oppCount;
+        System.out.println("[evaluate()] Mark score: " + markScore);
+        System.out.println("[evaluate()] Opponent score: " + oppScore);
+
+        boolean isAttacking = markCount > oppCount;
+        if(isAttacking) {
+            System.out.println("[evaluate()] " + mark + " is attacking");
+            markScore += markCount * 2;
         } else {
-            oppScore = oppScore + oppCount * 5 + maxConnectedOpp * 10;
+            System.out.println("[evaluate()] " + mark + " is defending");
+            oppScore += oppCount * 2;
         }
 
-        if(isAttacking) {
-            markScore += 1000;
-        } else {
-            oppScore += 1000;
-        }
-        
-        return markScore - oppScore;
+        System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
+        return (markScore - oppScore );
     }
 
     /**
