@@ -56,9 +56,10 @@ public class Board {
         // Check if the move captures any pieces using the Shapes & Letters class
         int row = move.getRow();
         int col = move.getCol();
-        Mark player = move.getColor() == Mark.Red ? Mark.Red : Mark.Black;
+        Mark player = move.getColor();
         Mark[][] currentBoard = board;
         int highScore = 0, score = 0;
+        
         // start with most basic shapes
         Shapes.isPair(currentBoard, row, col, player);
         return false;
