@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Board {
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
-    private Move[] movesPlayed;
+    private ArrayList<Move> playedMoves;
     private int turns;
     private int blackCaptures;
     private int redCaptures;
@@ -11,7 +11,7 @@ public class Board {
     public Board() {
         turns = 0;
         board = new Mark[15][15];
-        movesPlayed = new Move[225];
+        playedMoves = new ArrayList<Move>();
 
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
@@ -26,8 +26,8 @@ public class Board {
 
     public void play(Move move) {
         if (board[move.getCol()][move.getRow()] == Mark.Empty) {
-            board[move.getCol()][move.getRow()] = move.getColor();
-            movesPlayed[turns] = move;
+            board[move.getCol()][move.getRow()] = move.getColor();            
+            playedMoves.add(turns, move);
             turns++;
         }
     }
@@ -35,7 +35,7 @@ public class Board {
     public void undo(Move move) {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             board[move.getCol()][move.getRow()] = Mark.Empty;
-            movesPlayed[turns] = null;
+            playedMoves.remove(move);
             turns--;
         }
     }
@@ -104,13 +104,21 @@ public class Board {
         return moves;
     }
 
-    public ArrayList<Move> getPossibleMoves(Mark mark) {
-        ArrayList<Move> moves = new ArrayList<>();
+    public ArrayList<Move> getPossibleMoves(Mark mark) {        
+        int squareDist = 1;
 
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
-                if (board[i][j] == Mark.Empty) {
-                    moves.add(new Move(i, j, mark));
+        ArrayList<Move> moves = new ArrayList<Move>();
+        for (Move move : playedMoves) {
+            for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
+                for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
+                    if(i == move.getCol() && j == move.getRow()) {
+                        continue;
+                    }
+
+                    Move newMove = new Move(i, j, mark);
+                    if (isInbound(i, j) && board[i][j] == Mark.Empty && !moves.contains(newMove)) {
+                        moves.add(newMove);
+                    }
                 }
             }
         }
@@ -171,12 +179,11 @@ public class Board {
      * @return Highest number of connected marks
      */
     public int getMaxConnected(Mark mark) {
-        ArrayList<Move> moves = getAllMarks(mark);
         int maxConnected = 0;
 
-        for (Move move : moves) {
+        for (Move move : playedMoves) {
             int current = 0;
-            for (Move m : moves) {
+            for (Move m : playedMoves) {
                 if (move == m) {
                     continue;
                 }
