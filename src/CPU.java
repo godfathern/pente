@@ -14,16 +14,85 @@ public class CPU {
         return _mark;
     }
 
-    public Mark getOpponent() {
-        return opponent;
+    public Move getNextMove(Board board) {
+        System.out.println("[getNextMove()] Getting Next Move for " + _mark);
+        ArrayList<Move> moves = getNextMoveNegaMax(board);
+
+        return moves.get(0);
     }
 
-    public Move getNextMove(Board board) {
-        ArrayList<Move> moves = getNextMovesAB(board);
+    public ArrayList<Move> getNextMoveNegaMax(Board board) {
+        System.out.println("[getNextMoveNegaMax()] Getting Next Move with NegaMax for " + _mark); 
+        ArrayList<Move> moves = new ArrayList<>();
 
-        Random R = new Random();
-        int randomIndex = R.nextInt(moves.size());
-        return moves.get(randomIndex);
+        // First move
+        if (_mark == Mark.Red && board.getTurns() == 0) {        
+            moves.add(new Move("H8", Mark.Red));
+            return moves;
+        }
+
+        ArrayList<Move> possibleMoves;
+        if (_mark == Mark.Red && board.getTurns() == 2) {
+            possibleMoves = board.getPossibleMovesRedSecondTurn();
+        } else {
+            possibleMoves = board.getPossibleMoves(_mark);
+        }
+
+        int max = Integer.MIN_VALUE;
+         for (Move move : possibleMoves) {
+            System.out.println("[getNextMoveNegaMax()] Evaluating Node: " + move + ", Depth: " + MAX_DEPTH);
+            board.play(move);
+            int score = negaMax(board, _mark, Board.WINNING_SCORE, -Board.WINNING_SCORE, MAX_DEPTH);
+            board.undo(move);
+            System.out.println("Score negaMax: " + score + " Move: " + move);
+
+            if(score > max) {
+                max = score;
+                moves.clear();
+                moves.add(move);
+            } else if(score == max && !moves.contains(move)) {
+                moves.add(move);
+            }
+        }        
+
+        return moves;
+    }
+
+
+    public int negaMax(Board board, Mark mark, int alpha, int beta, int depth) {
+        System.out.println("[negaMax()] Evaluating Board for: " + mark + ", Depth: " + depth);
+        System.out.println("[negaMax()] Alpha: " + alpha + ", Beta: " + beta);
+        if(depth == 0) {
+            return board.evaluate(mark);
+        } else if (board.checkWin(mark)) {
+            return Board.WINNING_SCORE;
+        } else if(board.checkWin(mark.getOpponent())) {
+            return -Board.WINNING_SCORE;
+        }
+
+        ArrayList<Move> possibleMoves = board.getPossibleMoves(mark.getOpponent());
+
+        int maxScore = Integer.MIN_VALUE;
+        for (Move possibleMove : possibleMoves) {
+            System.out.println("[()] Evaluating Node: " + possibleMove + ", Depth: " + depth);
+            board.play(possibleMove);
+            possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));
+            System.out.println("[getNextMoveNegaMax()] Score for " + possibleMove + ": " + possibleMove.getScore() + ", Depth: " + depth);
+            board.undo(possibleMove);
+
+            
+            maxScore = Math.max(maxScore, possibleMove.getScore());
+            alpha = Math.max(alpha, possibleMove.getScore());
+            System.out.println("[getNextMoveNegaMax()] Alpha: " + alpha + ", MaxScore: " + maxScore);
+
+            // Pruning
+            if (alpha >= beta) {
+                break;
+            }
+        }
+
+        System.out.println("[getNextMoveNegaMax()] Returning: " + maxScore);
+        return maxScore;
     }
 
     public ArrayList<Move> getNextMovesAB(Board board) {
