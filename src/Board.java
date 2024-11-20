@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 
 public class Board {
+    public static final int WINNING_SCORE = 100000;
+    private static final int BOARD_SIZE = 15;
+
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
     private ArrayList<Move> playedMoves;
@@ -70,11 +73,11 @@ public class Board {
         int maxConnectedOpp = getMaxConnected(oppMark);
 
         if (markCaptures == 5 || maxConnectedMark == 5) {
-            return 100000;
+            return Board.WINNING_SCORE;
         }
 
         if (oppCaptures == 5 || maxConnectedOpp == 5) {
-            return -100000;
+            return -Board.WINNING_SCORE;
         }
 
         int markScore = maxConnectedMark * (markCaptures + 1);
@@ -165,7 +168,7 @@ public class Board {
     }
 
     public static boolean isInbound(int col, int row) {
-        if (col < 0 || col >= 15 || row < 0 || row >= 15) {
+        if (col < 0 || col >= BOARD_SIZE || row < 0 || row >= BOARD_SIZE) {
             return false;
         }
 

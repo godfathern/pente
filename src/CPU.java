@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class CPU {
     private final Mark cpu;
     private final Mark opponent;
-    private final static int MAX_DEPTH = 1;
+    private final static int MAX_DEPTH = 3;
     private int numOfExploredNodes = 0;
 
     public CPU(Mark mark) {
@@ -51,6 +51,9 @@ public class CPU {
                 max = score;
                 moves.clear();
                 moves.add(move);
+        if (depth == 0 || eval <= -Board.WINNING_SCORE || eval >= Board.WINNING_SCORE) {
+            return eval;
+        }
             }
 
             if (score == max) {
