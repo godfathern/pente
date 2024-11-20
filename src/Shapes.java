@@ -169,57 +169,36 @@ public class Shapes {
      * @param player The player to check for
      * @return true if there is a tria, false otherwise
      */
-    public static boolean isTria(Mark[][] board, int col, int row, Mark player) {
-        // Check horizontal tria
-        if (row + 2 < board[0].length &&
-                board[col][row] == player && // board[row][col] is the first stone
-                board[col][row + 1] == player && // board[row][col + 1] is the second stone
-                board[col][row + 2] == player && // board[row][col + 2] is the third stone
-                (row > 0 && board[col][row - 1] == Mark.Empty) || // check left end is empty
-                (row + 3 < board[0].length && board[col][row + 3] == Mark.Empty) // check right end is empty
-        ) {
-            return true;
-        }
+    public static boolean isConnected(Mark[][] board, int col, int row, Mark player, int maxStep, int[] direction) {
+        // Define directions: {rowDelta, colDelta}        
+            int count = 1; // Start with the current position
+            int dr = direction[0], dc = direction[1];
 
-        // Check vertical tria
-        if (col + 2 < board.length &&
-                board[col][row] == player &&
-                board[col + 1][row] == player &&
-                board[col + 2][row] == player &&
-                (col > 0 && 
-                    board[col - 1][row] == Mark.Empty) || // check top end is empty
-                (col + 3 < board.length && 
-                    board[col + 3][row] == Mark.Empty) // check bottom end is empty
-        ) {
-            return true;
-        }
+            // Check in the positive direction
+            for (int step = 1; step < maxStep; step++) {
+                int newRow = row + step * dr;
+                int newCol = col + step * dc;
+                if (Board.isInbound(newRow, newCol) && board[newRow][newCol] == player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
 
-        // Check diagonal tria (bottom-left to top-right)
-        if (col + 2 < board.length && row + 2 < board[0].length &&
-                board[col][row] == player &&
-                board[col + 1][row + 1] == player &&
-                board[col + 2][row + 2] == player &&
-                (col > 0 && row > 0 && board[col - 1][row - 1] == Mark.Empty) || // check top-left end is empty
-                (col + 3 < board.length && 
-                    row + 3 < board[0].length && 
-                    board[col + 3][row + 3] == Mark.Empty) //Check bottom-right end is empty
-        ) {
-            return true;
-        }
+            // Check in the negative direction
+            for (int step = 1; step < maxStep; step++) {
+                int newRow = row - step * dr;
+                int newCol = col - step * dc;
+                if (Board.isInbound(newRow, newCol) && board[newRow][newCol] == player) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
 
-        // Check diagonal tria (top-left to bottom-right)
-        if (col - 2 >= 0 && row + 2 < board[0].length &&
-                board[col][row] == player &&
-                board[col - 1][row + 1] == player &&
-                board[col - 2][row + 2] == player &&
-                (col + 1 < board.length && row > 0 && 
-                    board[col + 1][row - 1] == Mark.Empty) || // check bottom-left end
-                (col - 3 >= 0 && row + 3 < board[0].length && 
-                    board[col - 3][row + 3] == Mark.Empty) // check top-right
-                                                                                                     // end is empty
-        ) {
-            return true;
-        }
+            if(count >= maxStep) {
+                return true;
+            }        
 
         return false;
     }
