@@ -149,17 +149,39 @@ public class Board {
     public ArrayList<Move> getPossibleMoves(Mark mark) {        
         int squareDist = 1;
 
+        System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         ArrayList<Move> moves = new ArrayList<Move>();
-        for (Move move : playedMoves) {
+        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
+        
+        int maxScore = Integer.MIN_VALUE;
+        for (Move move : playedMovesCopy) {
+            int moveScore = Integer.MIN_VALUE;
+            System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
             for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
                 for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
                     if(i == move.getCol() && j == move.getRow()) {
                         continue;
                     }
 
-                    Move newMove = new Move(i, j, mark);
-                    if (isInbound(i, j) && board[i][j] == Mark.Empty && !moves.contains(newMove)) {
-                        moves.add(newMove);
+                    if (isInbound(i, j) && board[i][j] == Mark.Empty) {
+                        Move newMove = new Move(i, j, mark);
+                        System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
+                        play(newMove);
+                        newMove.setScore(-evaluate(mark));
+                        undo(newMove);
+        
+                        System.out.println("[getPossibleMoves()] Evaluation result | Move: " + newMove + " - Score: " + newMove.getScore());                        
+                        if(newMove.getScore() > maxScore) {
+                            System.out.println("[getPossibleMoves()] " + newMove + " is better than max score" );         
+                            
+                            maxScore = newMove.getScore();
+                            System.out.println("[getPossibleMoves()] New max score: " + maxScore );                                     
+                            moves.clear();
+                            moves.add(newMove);                    
+                        } else if(newMove.getScore() == maxScore && !moves.contains(newMove)) {
+                            System.out.println("[getPossibleMoves()] " + newMove + " is equal to max score" );
+                            moves.add(newMove);
+                        }
                     }
                 }
             }
