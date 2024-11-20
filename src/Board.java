@@ -66,6 +66,12 @@ public class Board {
     }
 
     public int evaluate(Mark mark) {
+        boolean isAttacking = playedMoves.get(playedMoves.size()-1).getColor() == mark;
+        int markScore = 0;
+        int markCount = 0;
+        int oppCount = 0;
+        int oppScore = 0;
+        
         Mark oppMark = mark.getOpponent();
 
         int markCaptures = getCaptures(mark);
@@ -80,10 +86,42 @@ public class Board {
         if (oppCaptures == 5 || maxConnectedOpp == 5) {
             return -Board.WINNING_SCORE;
         }
+        
+        for (Move move : playedMoves) {
+            int moveScore = 0;
+            if(Shapes.isTria(board, move.getCol(), move.getRow(), move.getColor())) {
+                moveScore += 10;
+            }
 
-        int markScore = maxConnectedMark * (markCaptures + 1);
-        int oppScore = maxConnectedOpp * (oppCaptures + 1);
+            if(Shapes.isTesseraWithEmptyEnd(board, move.getCol(), move.getRow(), move.getColor())) {
+                moveScore += 50;
+            }
 
+            if(Solvers.isBlocking(board,  move)) {
+                moveScore += 500;
+            }
+
+            if(move.getColor() == mark) {
+                markCount++;
+                markScore += moveScore;
+            } else {
+                oppCount++;
+                oppScore += moveScore;
+            }
+        }
+
+        if(markCount >= oppCount) { 
+            markScore = markScore + markCount * 5 + maxConnectedMark * 10;
+        } else {
+            oppScore = oppScore + oppCount * 5 + maxConnectedOpp * 10;
+        }
+
+        if(isAttacking) {
+            markScore += 1000;
+        } else {
+            oppScore += 1000;
+        }
+        
         return markScore - oppScore;
     }
 
@@ -192,7 +230,7 @@ public class Board {
                     continue;
                 }
 
-                if (move.isWithinOneSquare(m)) {
+                if (move.isWithinNSquares(m, 1)) {
                     current++;
                 }
             }

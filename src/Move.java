@@ -27,8 +27,8 @@ public class Move {
         return color;
     }
 
-    public boolean isWithinOneSquare(Move move){
-        return Math.abs(col - move.col) <= 1 && Math.abs(row - move.row) <= 1;
+    public boolean isWithinNSquares(Move move, int n) {
+        return Math.abs(col  - move.getCol()) <= n && Math.abs(row - move.getRow()) <= n;
     }
 
     public String toString(){
