@@ -2,6 +2,7 @@ public class Move {
     private int row;
     private int col;
     private Mark color;
+    private int score;
 
     public Move(int col, int row, Mark mark) {
         this.col = col;
