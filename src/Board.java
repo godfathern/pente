@@ -133,7 +133,7 @@ public class Board {
      * @return List of all the moves of a certain color
      */
     public ArrayList<Move> getAllMarks(Mark mark) {
-        ArrayList<Move> moves = new ArrayList<>();
+        ArrayList<Move> moves = new ArrayList<Move>();
 
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
