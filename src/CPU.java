@@ -21,7 +21,10 @@ public class CPU {
 
     public Move getNextMove(Board board) {
         ArrayList<Move> moves = getNextMovesAB(board);
-        return moves.get(0);
+
+        Random R = new Random();
+        int randomIndex = R.nextInt(moves.size());
+        return moves.get(randomIndex);
     }
 
     public ArrayList<Move> getNextMovesAB(Board board) {
