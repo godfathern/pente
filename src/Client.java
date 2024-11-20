@@ -95,7 +95,7 @@ class Client {
                     String s = new String(aBuffer);
                     System.out.println("Dernier coup :" + s);
                     String moveString = s.trim();
-                    mBoard.play(new Move(moveString, cpu.getOpponent()));
+                    mBoard.play(new Move(moveString, cpu.get_mark().getOpponent()));
 
                     System.out.println("Entrez votre coup : ");
                     Move move = cpu.getNextMove(mBoard);
