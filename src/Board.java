@@ -248,7 +248,7 @@ public class Board {
         for (Move move : playedMoves) {
             int current = 0;
             for (Move m : playedMoves) {
-                if (move == m) {
+                if (move.getCol() == m.getCol() && move.getRow() == m.getRow()) {
                     continue;
                 }
 
