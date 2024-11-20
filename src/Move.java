@@ -1,4 +1,4 @@
-public class Move {
+public class Move implements Comparable<Move> {
     private int row;
     private int col;
     private Mark color;
