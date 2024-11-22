@@ -156,10 +156,9 @@ public class Board {
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         ArrayList<Move> moves = new ArrayList<Move>();
         ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
-        
-        int maxScore = Integer.MIN_VALUE;
+            
+        int maxScore = Integer.MIN_VALUE;  
         for (Move move : playedMovesCopy) {
-            int moveScore = Integer.MIN_VALUE;
             // System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
             for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
                 for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
@@ -171,7 +170,7 @@ public class Board {
                         Move newMove = new Move(i, j, mark);
                         // System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
                         play(newMove);
-                        newMove.setScore(-evaluate(mark));
+                        newMove.setScore(evaluate(mark));
                         undo(newMove);
         
                         // System.out.println("[getPossibleMoves()] Evaluation result | Move: " + newMove + " - Score: " + newMove.getScore());                        
@@ -181,11 +180,11 @@ public class Board {
                             maxScore = newMove.getScore();
                             // System.out.println("[getPossibleMoves()] New max score: " + maxScore );                                     
                             moves.clear();
-                            moves.add(newMove);                    
+                            moves.add(newMove);
                         } else if(newMove.getScore() == maxScore && !moves.contains(newMove)) {
                             // System.out.println("[getPossibleMoves()] " + newMove + " is equal to max score" );
                             moves.add(newMove);
-                        }
+                        }                    
                     }
                 }
             }
