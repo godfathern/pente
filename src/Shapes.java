@@ -162,51 +162,6 @@ public class Shapes {
     }
 
     /**
-     * Determines if there is an  tria in the given row, column, or diagonal.
-     * @param board The game board
-     * @param col The row of the cell
-     * @param row The column of the cell
-     * @param player The player to check for
-     * @return true if there is a tria, false otherwise
-     */
-    public static boolean isConnected(Mark[][] board, int col, int row, Mark player, int maxStep, int[] direction) {
-        // Define directions: {rowDelta, colDelta}        
-            int count = 1; // Start with the current position
-            int dc = direction[0], dr = direction[1];
-
-            // Check in the positive direction
-            for (int step = 1; step < maxStep; step++) {
-                int newCol = col + step * dc;
-                int newRow = row + step * dr;
-
-                if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
-                    count++;
-                } else {
-                    count = 1;
-                    break;
-                }
-            }
-
-            // Check in the negative direction
-            for (int step = 1; step < maxStep; step++) {
-                int newCol = col - step * dc;
-                int newRow = row - step * dr;                
-                if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
-                    count++;
-                } else {
-                    count = 1;
-                    break;
-                }
-            }
-
-            if(count >= maxStep) {
-                return true;
-            }        
-
-        return false;
-    }
-
-    /**
      * Determines if there is a stretch of three of the same player in the given row, column, or diagonal.
      * @param board The game board
      * @param col The row of the cell
