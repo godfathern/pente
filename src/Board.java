@@ -111,19 +111,18 @@ public class Board {
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
                     if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
-                        moveScore += 300;
                         moveScore += 30;
                     } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        moveScore += 200;
+                        moveScore += 20;
                     }
                 } else {
                     if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
-                        moveScore += 300;
+                        moveScore += 30;
                     } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        moveScore += 200;
+                        moveScore += 20;
                     }
                 }
                 
