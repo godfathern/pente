@@ -172,13 +172,14 @@ public class Shapes {
     public static boolean isConnected(Mark[][] board, int col, int row, Mark player, int maxStep, int[] direction) {
         // Define directions: {rowDelta, colDelta}        
             int count = 1; // Start with the current position
-            int dr = direction[0], dc = direction[1];
+            int dc = direction[0], dr = direction[1];
 
             // Check in the positive direction
             for (int step = 1; step < maxStep; step++) {
-                int newRow = row + step * dr;
                 int newCol = col + step * dc;
-                if (Board.isInbound(newRow, newCol) && board[newRow][newCol] == player) {
+                int newRow = row + step * dr;
+
+                if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
                     count++;
                 } else {
                     break;
@@ -187,9 +188,9 @@ public class Shapes {
 
             // Check in the negative direction
             for (int step = 1; step < maxStep; step++) {
-                int newRow = row - step * dr;
                 int newCol = col - step * dc;
-                if (Board.isInbound(newRow, newCol) && board[newRow][newCol] == player) {
+                int newRow = row - step * dr;                
+                if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
                     count++;
                 } else {
                     break;
