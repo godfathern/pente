@@ -261,35 +261,6 @@ public class Board {
         return true;
     }
 
-    /**
-     * Returns the maximum number of connected marks of a certain color
-     * 
-     * @param mark
-     * @return Highest number of connected marks
-     */
-    public int getMaxConnected(Mark mark) {
-        int maxConnected = 0;
-
-        for (Move move : playedMoves) {
-            int current = 0;
-            for (Move m : playedMoves) {
-                if (move.getCol() == m.getCol() && move.getRow() == m.getRow()) {
-                    continue;
-                }
-
-                if (move.isWithinNSquares(m, 1)) {
-                    current++;
-                }
-            }
-
-            if (current > maxConnected) {
-                maxConnected = current;
-            }
-        }
-
-        return maxConnected;
-    }
-
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
