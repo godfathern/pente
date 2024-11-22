@@ -169,8 +169,9 @@ public class Board {
         int squareDist = 1;
 
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
-        ArrayList<Move> moves = new ArrayList<Move>();
-        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
+        // Have to make a copy because playing a move modifies the original list and that causes errors
+        ArrayList<Move> moves = new ArrayList<Move>();        
+        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves); 
             
         int maxScore = Integer.MIN_VALUE;  
         for (Move move : playedMovesCopy) {
