@@ -42,15 +42,15 @@ public class CPU {
          for (Move move : possibleMoves) {
             // System.out.println("[getNextMoveNegaMax()] Evaluating Node: " + move + ", Depth: " + MAX_DEPTH);
             board.play(move);
-            int score = negaMax(board, _mark, -Board.WINNING_SCORE, Board.WINNING_SCORE, MAX_DEPTH);
+            move.setScore(negaMax(board, _mark, -Board.WINNING_SCORE, Board.WINNING_SCORE, MAX_DEPTH));
             board.undo(move);
             // System.out.println("Score negaMax: " + score + " Move: " + move);
 
-            if(score > max) {
-                max = score;
+            if(move.getScore() > max) {
+                max = move.getScore();
                 moves.clear();
                 moves.add(move);
-            } else if(score == max && !moves.contains(move)) {
+            } else if(move.getScore() == max && !moves.contains(move)) {
                 moves.add(move);
             }
         }        
