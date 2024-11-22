@@ -107,14 +107,7 @@ public class Board {
             int moveScore = 0;
             int threatCount = 0;
 
-            int[][] directions = {
-                {0, 1},  // Horizontal (right)
-                {1, 0},  // Vertical (down)
-                {1, 1},  // Diagonal (down-right)
-                {1, -1}  // Diagonal (down-left)
-            };
-
-            for (int[] dir : directions) {
+            for (int[] dir : Solvers.DIRECTIONS) {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
                 if(Solvers.isBlocking(board,  move, dir)) {
                     threatCount++;
