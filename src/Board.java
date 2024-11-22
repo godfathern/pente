@@ -247,6 +247,12 @@ public class Board {
         return moves;
     }
 
+    /**
+     * Checks if a certain column and row is within the bounds of the board
+     * @param col Column to check
+     * @param row Row to check
+     * @return true if the column and row are within the bounds of the board, false otherwise
+     */
     public static boolean isInbound(int col, int row) {
         if (col < 0 || col >= BOARD_SIZE || row < 0 || row >= BOARD_SIZE) {
             return false;

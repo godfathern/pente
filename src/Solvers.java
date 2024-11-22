@@ -1,4 +1,3 @@
-	public static boolean isBlocking(Mark[][] board, Move move, int[] direction) {
 public class Solvers {        
     public static final int[][] DIRECTIONS = {       
         {1, 0}, // Right  
@@ -39,6 +38,15 @@ public class Solvers {
 
         return count >= connectionCount;
     }
+
+    /**
+     * Determines if the move is blocking one of the opponent's lines
+     * @param board The game board
+     * @param move The move to check
+     * @param direction The direction to check
+     * @return true if the move is blocking, false otherwise
+     */
+    public static boolean isBlocking(Mark[][] board, Move move, int[] direction) {
         // Look in all 8 directions for wedge pattern        
             int c = move.getCol() + direction[0];
             int r = move.getRow() + direction[1];
