@@ -114,17 +114,26 @@ public class Board {
             for (int[] dir : directions) {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
                 if(Solvers.isBlocking(board,  move, dir)) {
-                    moveScore += 500;
+                    moveScore += 600;
                     
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
-                    if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[1], mark.getOpponent(), 4, dir)) {
+                    if(Shapes.isConnected(board, move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
                         moveScore += 300;
-                    } else if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[1], mark.getOpponent(), 3, dir)) {
+                    } else if(Shapes.isConnected(board, move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent(), 3, dir)) {
+                        // System.out.println("[evaluate()] " + move + " is a row of 3");
+                        moveScore += 200;
+                    }
+                } else {
+                    if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 4, dir)) {
+                        // System.out.println("[evaluate()] " + move + " is a row of 4");
+                        moveScore += 300;
+                    } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 200;
                     }
                 }
+                
             }
 
             // System.out.println("[evaluate()] Move score: " + moveScore);
