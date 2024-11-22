@@ -107,7 +107,7 @@ public class Board {
                     threatCount++;
                     moveScore += 60;
                     
-                    Move blockedMove = new Move(move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent());
+                    Move blockedMove = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
                     if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
