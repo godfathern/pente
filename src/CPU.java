@@ -42,7 +42,7 @@ public class CPU {
          for (Move move : possibleMoves) {
             // System.out.println("[getNextMoveNegaMax()] Evaluating Node: " + move + ", Depth: " + MAX_DEPTH);
             board.play(move);
-            int score = negaMax(board, _mark, Board.WINNING_SCORE, -Board.WINNING_SCORE, MAX_DEPTH);
+            int score = negaMax(board, _mark, -Board.WINNING_SCORE, Board.WINNING_SCORE, MAX_DEPTH);
             board.undo(move);
             // System.out.println("Score negaMax: " + score + " Move: " + move);
 
@@ -81,7 +81,7 @@ public class CPU {
 
             
             maxScore = Math.max(maxScore, possibleMove.getScore());
-            alpha = Math.max(alpha, possibleMove.getScore());
+            alpha = Math.max(alpha, maxScore);
             // System.out.println("[getNextMoveNegaMax()] Alpha: " + alpha + ", MaxScore: " + maxScore);
 
             // Pruning
