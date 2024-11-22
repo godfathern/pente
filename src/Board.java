@@ -99,11 +99,11 @@ public class Board {
         for (Move move : playedMoves) {
             // System.out.println("[evaluate()] Evaluating move: " + move);            
             int moveScore = 0;
-            int threatCount = 0;
+            int threatCount = 0;            
 
             for (int[] dir : Solvers.DIRECTIONS) {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
-                if(Solvers.isBlocking(board,  move, dir)) {
+                if(Solvers.isBlocking(board, move, dir)) {
                     threatCount++;
                     moveScore += 60;
                     
