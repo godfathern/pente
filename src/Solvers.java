@@ -45,8 +45,8 @@ public class Solvers {
             if (Board.isInbound(c,r) ) {
                 // Check if the next cell is the opponent's cell
                 if(board[c][r] == move.getColor().getOpponent()) {
-                    return Shapes.isConnected(board, c, r, move.getColor().getOpponent(), 4, direction) ||
-                        Shapes.isConnected(board, c, r, move.getColor().getOpponent(), 3, direction);
+                    return Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 4, direction) ||
+                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 3, direction);
                 }
             }        
 

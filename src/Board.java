@@ -72,14 +72,8 @@ public class Board {
         
         for (Move move : playedMoves) {
             if(move.getColor() == mark) { 
-                if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{0, 1})) {
-                    return true;
-                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{1, 0})) {
-                    return true;
-                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{1, 1})) {
-                    return true;
-                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{1, -1})) {
-                    return true;
+                for (int[] dir : Solvers.DIRECTIONS) {
+                    return Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 5, dir);
                 }
             }
         }
@@ -115,18 +109,19 @@ public class Board {
                     
                     Move blockedMove = new Move(move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent());
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
-                    if(Shapes.isConnected(board, move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent(), 4, dir)) {
+                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
                         moveScore += 300;
-                    } else if(Shapes.isConnected(board, move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent(), 3, dir)) {
+                        moveScore += 30;
+                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 200;
                     }
                 } else {
-                    if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 4, dir)) {
+                    if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
                         moveScore += 300;
-                    } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 3, dir)) {
+                    } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 200;
                     }
