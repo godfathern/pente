@@ -22,7 +22,7 @@ class Client {
                         if(connect()) {
                             gameInitialization();
                         }
-                    }                    
+                    }       
                 }
 
                 char cmd = 0;                                

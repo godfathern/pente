@@ -181,7 +181,7 @@ public class Board {
                     if(i == move.getCol() && j == move.getRow()) {
                         continue;
                     }
-
+                    
                     if (isInbound(i, j) && board[i][j] == Mark.Empty) {
                         Move newMove = new Move(i, j, mark);
                         // System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
@@ -282,5 +282,4 @@ public class Board {
 
         return sb.toString();
     }
-
 }
