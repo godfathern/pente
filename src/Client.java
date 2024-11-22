@@ -2,25 +2,32 @@ import java.io.*;
 import java.net.*;
 
 class Client {
-    public static void main(String[] args) {
-        Socket MyClient;
-        BufferedInputStream input;
-        BufferedOutputStream output;
-        int[][] board = new int[15][15];
-        Board mBoard = new Board();
-        CPU cpu = null;
-
+    private static Socket MyClient;
+    private static BufferedInputStream input;
+    private static BufferedOutputStream output;
+    private static BufferedReader console;
+    private static int[][] board;
+    private static Board mBoard;
+    private static CPU cpu;
+    private static boolean gameEnded;
+    
+    public static void main(String[] args) {        
         try {
-            MyClient = new Socket("localhost", 8888);
+            gameInitialization();      
+            connect();
 
-            input = new BufferedInputStream(MyClient.getInputStream());
-            output = new BufferedOutputStream(MyClient.getOutputStream());
-            BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
+            while (true) {                                
+                while(gameEnded) {
+                    if(input.read() == -1) {
+                        if(connect()) {
+                            gameInitialization();
+                        }
+                    }                    
+                }
 
-            while (true) {
-                char cmd = 0;
-
+                char cmd = 0;                                
                 cmd = (char) input.read();
+                
                 System.out.println(cmd);
 
                 // Debut de la partie en joueur blanc
@@ -114,7 +121,7 @@ class Client {
                     output.write(move.getBytes(), 0, move.length());
                     output.flush();
                 }
-                // Le dernier coup est invalide
+                // Partie terminée
                 if (cmd == '5') {
                     byte[] aBuffer = new byte[16];
                     int size = input.available();
@@ -122,15 +129,36 @@ class Client {
 
                     String s = new String(aBuffer);
                     System.out.println("Partie Terminé. Le dernier coup joué est: " + s);
-                    String move = null;
-                    move = console.readLine();
-
-                    output.write(move.getBytes(), 0, move.length());
-                    output.flush();
+                    gameEnded = true;
                 }
             }
         } catch (IOException e) {
             System.out.println(e);
+        }
+    }
+
+    private static void gameInitialization() {
+        mBoard = new Board();
+        board = new int[15][15];
+        cpu = new CPU(Mark.Red);
+        gameEnded = false;
+    }
+
+    private static boolean connect() {
+        System.out.println("Tentative de connexion");
+        
+        try {
+            MyClient = new Socket("localhost", 8888);
+
+            input = new BufferedInputStream(MyClient.getInputStream());
+            output = new BufferedOutputStream(MyClient.getOutputStream());
+            console = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Connexion Réussie");
+
+            return true;
+        } catch (IOException e) {
+            System.out.println("Connexion échouée");
+            return false;
         }
     }
 }
