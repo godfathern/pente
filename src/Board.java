@@ -75,10 +75,8 @@ public class Board {
     }
 
     public int evaluate(Mark mark) {      
-        int markScore = 0;
-        int markCount = 0;
-        int oppCount = 0;
         // System.out.println("[evaluate()] Evaluating board for: " + mark);  
+        int markScore = 0;        
         int oppScore = 0;
         
         Mark oppMark = mark.getOpponent();
@@ -106,38 +104,29 @@ public class Board {
             for (int[] dir : directions) {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
                 if(Solvers.isBlocking(board,  move, dir)) {
-                    moveScore += 50;
-                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
-                    moveScore += 20;
-                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
-                    moveScore += 10;
+                    moveScore += 500;
+                    
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
+                    if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[0], mark.getOpponent(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
+                        moveScore += 300;
+                    } else if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[0], mark.getOpponent(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
+                        moveScore += 200;
+                    }
                 }
             }
 
             // System.out.println("[evaluate()] Move score: " + moveScore);
             if(move.getColor() == mark) {
-                markCount++;
                 markScore += moveScore;
             } else {
-                oppCount++;
                 oppScore += moveScore;
             }
         }
 
-        markScore += markCount;
-        oppScore += oppCount;
-        boolean isAttacking = markCount > oppCount;
-        if(isAttacking) {
-            markScore += markCount * 2;
-        } else {
-            oppScore += oppCount * 2;
-        }
-
-        return (markScore - oppScore );
         // System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
+        return (markScore - oppScore);
     }
 
     /**
