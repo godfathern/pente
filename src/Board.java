@@ -30,7 +30,35 @@ public class Board {
     public void play(Move move) {
         if (board[move.getCol()][move.getRow()] == Mark.Empty) {
             board[move.getCol()][move.getRow()] = move.getColor();
-            // System.out.println("[play()] Playing move: " + move);            
+            // System.out.println("[play()] Playing move: " + move);
+            for(int[] dir : Solvers.DIRECTIONS) {
+                if (Solvers.isCapture(board, move, dir)) {
+                    if (move.getColor() == Mark.Black) {                        
+                        blackCaptures++;
+                    } else {
+                        redCaptures++;
+                    }
+
+                    Move firstcaptive = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
+                    Move secondCaptive = new Move(move.getCol() + dir[0] * 2, move.getRow() + dir[1] * 2, move.getColor().getOpponent());
+                    Move otherCaptor = new Move(move.getCol() + dir[0] * 3, move.getRow() + dir[1] * 3, move.getColor());                                  
+                
+                    if(board[otherCaptor.getCol()][otherCaptor.getRow()] == move.getColor() && 
+                        Solvers.verifyConnectionCount(board, firstcaptive.getCol(), firstcaptive.getRow(), firstcaptive.getColor(), 2, dir)) {
+                        
+                        board[firstcaptive.getCol()][firstcaptive.getRow()] = Mark.Empty;
+                        board[secondCaptive.getCol()][secondCaptive.getRow()] = Mark.Empty;
+                        
+                        for (Move playedMove : playedMoves) {
+                            if(playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
+                                playedMove.setCaptured(true);
+                                move.addCapture(playedMove);
+                            }
+                        }
+                    }
+                }
+            }
+            
             playedMoves.add(turns, move);
             turns++;
         }
@@ -40,6 +68,24 @@ public class Board {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             board[move.getCol()][move.getRow()] = Mark.Empty;
             // System.out.println("[undo()] Undoing move: " + move);
+            if(move.isCapture()) {
+                if (move.getColor() == Mark.Black) {
+                    blackCaptures--;
+                } else {
+                    redCaptures--;
+                }
+
+                for(Move capture : move.getCaptureList()) {
+                    for (Move playedMove : playedMoves) {
+                        if(playedMove.equals(capture)) {
+                            playedMove.setCaptured(false);
+                            
+                            board[playedMove.getCol()][playedMove.getRow()] = playedMove.getColor();
+                        }
+                    }
+                }
+            }
+
             playedMoves.remove(move);
             turns--;
         }
@@ -51,20 +97,6 @@ public class Board {
         }
 
         return redCaptures;
-    }
-
-    public boolean isCapture(Move move) {
-        // TODO: Implement this
-        // Check if the move captures any pieces using the Shapes & Letters class
-        int row = move.getRow();
-        int col = move.getCol();
-        Mark player = move.getColor();
-        Mark[][] currentBoard = board;
-        int highScore = 0, score = 0;
-        
-        // start with most basic shapes
-        Shapes.isPair(currentBoard, row, col, player);
-        return false;
     }
 
     public boolean checkWin(Mark mark) {
@@ -115,6 +147,9 @@ public class Board {
                     } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 20;
+                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 2, dir)) {
+                        // System.out.println("[evaluate()] " + move + " is a row of 3");
+                        moveScore += 10;
                     }
                 } else {
                     if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
@@ -123,6 +158,9 @@ public class Board {
                     } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 20;
+                    } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 2, dir)) {
+                        // System.out.println("[evaluate()] " + move + " is a row of 3");
+                        moveScore += 10;
                     }
                 }
                 

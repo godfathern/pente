@@ -54,9 +54,34 @@ public class Solvers {
                 // Check if the next cell is the opponent's cell
                 if(board[c][r] == move.getColor().getOpponent()) {
                     return Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 4, direction) ||
-                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 3, direction);
+                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 3, direction) ||
+                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 2, direction);
                 }
             }        
+
+        return false;
+    }
+
+    /**
+     * Determines if the move is a capture move
+     * @param board The game board
+     * @param move The move to check
+     * @param direction The direction to check
+     * @return true if the move is a capture move, false otherwise
+     */
+    public static boolean isCapture(Mark[][] board, Move move, int[] direction) {
+        int c = move.getCol() + direction[0];
+        int r = move.getRow() + direction[1];
+        
+        // Check if the move is a pair
+        if (Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 2, direction)) {            
+            int c2 = c + direction[0] * 2;
+            int r2 = r + direction[1] * 2;
+            
+            if (Board.isInbound(c2, r2) && board[c2][r2] == move.getColor()) {
+                return true;
+            }
+        }
 
         return false;
     }

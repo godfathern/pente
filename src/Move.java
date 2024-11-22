@@ -1,13 +1,22 @@
+import java.util.ArrayList;
+
 public class Move implements Comparable<Move> {
     private int row;
     private int col;
     private Mark color;
     private int score;
+    private boolean isCaptured;
+    private boolean isCapture;
+    private ArrayList<Move> captureList;
 
     public Move(int col, int row, Mark mark) {
         this.col = col;
         this.row = row;
         color = mark;
+        isCaptured = false;
+        isCapture = false;
+
+        captureList = new ArrayList<Move>();
     }
     
     public Move(String move, Mark mark) {
@@ -34,6 +43,34 @@ public class Move implements Comparable<Move> {
 
     public void setScore(int evaluate) {
         score = evaluate;
+    }
+
+    public boolean isCaptured() {
+        return isCaptured;
+    }
+
+    public void setCaptured(boolean isCaptured) {
+        this.isCaptured = isCaptured;
+    }
+
+    public boolean isCapture() {
+        return isCapture;
+    }
+
+    public void setCapture(boolean isCapture) {
+        this.isCapture = isCapture;
+    }
+
+    public ArrayList<Move> getCaptureList() {
+        return captureList;
+    }
+
+    public void addCapture(Move move) {
+        captureList.add(move);
+    }
+
+    public void removeCapture(Move move) {
+        captureList.remove(move);
     }
 
     public boolean isWithinNSquares(Move move, int n) {
