@@ -30,7 +30,7 @@ public class Board {
     public void play(Move move) {
         if (board[move.getCol()][move.getRow()] == Mark.Empty) {
             board[move.getCol()][move.getRow()] = move.getColor();
-            System.out.println("[play()] Playing move: " + move);            
+            // System.out.println("[play()] Playing move: " + move);            
             playedMoves.add(turns, move);
             turns++;
         }
@@ -39,7 +39,7 @@ public class Board {
     public void undo(Move move) {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             board[move.getCol()][move.getRow()] = Mark.Empty;
-            System.out.println("[undo()] Undoing move: " + move);
+            // System.out.println("[undo()] Undoing move: " + move);
             playedMoves.remove(move);
             turns--;
         }
@@ -75,25 +75,25 @@ public class Board {
     }
 
     public int evaluate(Mark mark) {      
-        System.out.println("[evaluate()] Evaluating board for: " + mark);  
         int markScore = 0;
         int markCount = 0;
         int oppCount = 0;
+        // System.out.println("[evaluate()] Evaluating board for: " + mark);  
         int oppScore = 0;
         
         Mark oppMark = mark.getOpponent();
-        System.out.println("[evaluate()] Opponent: " + oppMark);
+        // System.out.println("[evaluate()] Opponent: " + oppMark);
 
         if(checkWin(mark)) {
-            System.out.println("[evaluate()] " + mark + " has won");
+            // System.out.println("[evaluate()] " + mark + " has won");
             return Board.WINNING_SCORE;
         } else if(checkWin(oppMark)) {
-            System.out.println("[evaluate()] " + oppMark + " has won");            
+            // System.out.println("[evaluate()] " + oppMark + " has won");            
             return -Board.WINNING_SCORE;
         }
         
         for (Move move : playedMoves) {
-            System.out.println("[evaluate()] Evaluating move: " + move);            
+            // System.out.println("[evaluate()] Evaluating move: " + move);            
             int moveScore = 0;
 
             int[][] directions = {
@@ -104,21 +104,20 @@ public class Board {
             };
 
             for (int[] dir : directions) {
-                System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
-
+                // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
                 if(Solvers.isBlocking(board,  move, dir)) {
                     moveScore += 50;
-                    System.out.println("[evaluate()]" + move + " is blocking");                    
                 } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
-                    System.out.println("[evaluate()] " + move + " is a row of 4");
                     moveScore += 20;
                 } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
-                    System.out.println("[evaluate()] " + move + " is a row of 3");
                     moveScore += 10;
+                    // System.out.println("[evaluate()]" + move + " is blocking");                    
+                        // System.out.println("[evaluate()] " + move + " is a row of 4");
+                        // System.out.println("[evaluate()] " + move + " is a row of 3");
                 }
             }
 
-            System.out.println("[evaluate()] Move score: " + moveScore);
+            // System.out.println("[evaluate()] Move score: " + moveScore);
             if(move.getColor() == mark) {
                 markCount++;
                 markScore += moveScore;
@@ -130,20 +129,15 @@ public class Board {
 
         markScore += markCount;
         oppScore += oppCount;
-        System.out.println("[evaluate()] Mark score: " + markScore);
-        System.out.println("[evaluate()] Opponent score: " + oppScore);
-
         boolean isAttacking = markCount > oppCount;
         if(isAttacking) {
-            System.out.println("[evaluate()] " + mark + " is attacking");
             markScore += markCount * 2;
         } else {
-            System.out.println("[evaluate()] " + mark + " is defending");
             oppScore += oppCount * 2;
         }
 
-        System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
         return (markScore - oppScore );
+        // System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
     }
 
     /**
@@ -170,14 +164,14 @@ public class Board {
     public ArrayList<Move> getPossibleMoves(Mark mark) {        
         int squareDist = 1;
 
-        System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
+        // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         ArrayList<Move> moves = new ArrayList<Move>();
         ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
         
         int maxScore = Integer.MIN_VALUE;
         for (Move move : playedMovesCopy) {
             int moveScore = Integer.MIN_VALUE;
-            System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
+            // System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
             for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
                 for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
                     if(i == move.getCol() && j == move.getRow()) {
@@ -186,21 +180,21 @@ public class Board {
 
                     if (isInbound(i, j) && board[i][j] == Mark.Empty) {
                         Move newMove = new Move(i, j, mark);
-                        System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
+                        // System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
                         play(newMove);
                         newMove.setScore(-evaluate(mark));
                         undo(newMove);
         
-                        System.out.println("[getPossibleMoves()] Evaluation result | Move: " + newMove + " - Score: " + newMove.getScore());                        
+                        // System.out.println("[getPossibleMoves()] Evaluation result | Move: " + newMove + " - Score: " + newMove.getScore());                        
                         if(newMove.getScore() > maxScore) {
-                            System.out.println("[getPossibleMoves()] " + newMove + " is better than max score" );         
+                            // System.out.println("[getPossibleMoves()] " + newMove + " is better than max score" );         
                             
                             maxScore = newMove.getScore();
-                            System.out.println("[getPossibleMoves()] New max score: " + maxScore );                                     
+                            // System.out.println("[getPossibleMoves()] New max score: " + maxScore );                                     
                             moves.clear();
                             moves.add(newMove);                    
                         } else if(newMove.getScore() == maxScore && !moves.contains(newMove)) {
-                            System.out.println("[getPossibleMoves()] " + newMove + " is equal to max score" );
+                            // System.out.println("[getPossibleMoves()] " + newMove + " is equal to max score" );
                             moves.add(newMove);
                         }
                     }
