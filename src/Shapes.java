@@ -182,6 +182,7 @@ public class Shapes {
                 if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
                     count++;
                 } else {
+                    count = 1;
                     break;
                 }
             }
@@ -193,6 +194,7 @@ public class Shapes {
                 if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
                     count++;
                 } else {
+                    count = 1;
                     break;
                 }
             }
