@@ -64,10 +64,8 @@ public class CPU {
         // System.out.println("[negaMax()] Alpha: " + alpha + ", Beta: " + beta);
         if(depth == 0) {
             return board.evaluate(mark);
-        } else if (board.checkWin(mark)) {
+        } else if (board.checkWin(mark) || board.checkWin(mark.getOpponent())) {
             return Board.WINNING_SCORE;
-        } else if(board.checkWin(mark.getOpponent())) {
-            return -Board.WINNING_SCORE;
         }
 
         ArrayList<Move> possibleMoves = board.getPossibleMoves(mark.getOpponent());

@@ -69,9 +69,22 @@ public class Board {
 
     public boolean checkWin(Mark mark) {
         int markCaptures = getCaptures(mark);
-        int maxConnectedMark = getMaxConnected(mark);
-
-        return markCaptures >= 5 || maxConnectedMark >= 5;
+        
+        for (Move move : playedMoves) {
+            if(move.getColor() == mark) { 
+                if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{0, 1})) {
+                    return true;
+                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{1, 0})) {
+                    return true;
+                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{1, 1})) {
+                    return true;
+                } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{1, -1})) {
+                    return true;
+                }                
+            }
+        }
+        
+        return markCaptures >= 5;
     }
 
     public int evaluate(Mark mark) {      
@@ -82,12 +95,9 @@ public class Board {
         Mark oppMark = mark.getOpponent();
         // System.out.println("[evaluate()] Opponent: " + oppMark);
 
-        if(checkWin(mark)) {
+        if(checkWin(mark) || checkWin(oppMark)) {
             // System.out.println("[evaluate()] " + mark + " has won");
             return Board.WINNING_SCORE;
-        } else if(checkWin(oppMark)) {
-            // System.out.println("[evaluate()] " + oppMark + " has won");            
-            return -Board.WINNING_SCORE;
         }
         
         for (Move move : playedMoves) {
