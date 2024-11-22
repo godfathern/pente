@@ -7,7 +7,7 @@ public class Solvers {
                 // Check if the next cell is the opponent's cell
                 if(board[c][r] == move.getColor().getOpponent()) {
                     return Shapes.isConnected(board, c, r, move.getColor().getOpponent(), 4, direction) ||
-                        Shapes.isConnected(board, c, r, move.getColor().getOpponent(), 3, direction);                        
+                        Shapes.isConnected(board, c, r, move.getColor().getOpponent(), 3, direction);
                 }
             }        
 
