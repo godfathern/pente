@@ -107,10 +107,10 @@ public class Board {
                     moveScore += 500;
                     
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
-                    if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[0], mark.getOpponent(), 4, dir)) {
+                    if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[1], mark.getOpponent(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
                         moveScore += 300;
-                    } else if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[0], mark.getOpponent(), 3, dir)) {
+                    } else if(Shapes.isConnected(board, move.getCol() + dir[0], move.getRow() + dir[1], mark.getOpponent(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 200;
                     }
@@ -184,7 +184,7 @@ public class Board {
                         } else if(newMove.getScore() == maxScore && !moves.contains(newMove)) {
                             // System.out.println("[getPossibleMoves()] " + newMove + " is equal to max score" );
                             moves.add(newMove);
-                        }                    
+                        }
                     }
                 }
             }
