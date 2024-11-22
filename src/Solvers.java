@@ -2,7 +2,7 @@ public class Solvers {
 	public static boolean isBlocking(Mark[][] board, Move move, int[] direction) {
         // Look in all 8 directions for wedge pattern        
             int c = move.getCol() + direction[0];
-            int r = move.getRow() + direction[1];        
+            int r = move.getRow() + direction[1];
             if (Board.isInbound(c,r) ) {
                 // Check if the next cell is the opponent's cell
                 if(board[c][r] == move.getColor().getOpponent()) {

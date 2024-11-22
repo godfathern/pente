@@ -80,10 +80,10 @@ public class Board {
                     return true;
                 } else if(Shapes.isConnected(board, move.getCol(), move.getRow(), mark, 5, new int[]{1, -1})) {
                     return true;
-                }                
+                }
             }
         }
-        
+
         return markCaptures >= 5;
     }
 
@@ -91,6 +91,8 @@ public class Board {
         // System.out.println("[evaluate()] Evaluating board for: " + mark);  
         int markScore = 0;        
         int oppScore = 0;
+        int markThreatCount = 0;
+        int oppThreatCount = 0;        
         
         Mark oppMark = mark.getOpponent();
         // System.out.println("[evaluate()] Opponent: " + oppMark);
@@ -103,6 +105,7 @@ public class Board {
         for (Move move : playedMoves) {
             // System.out.println("[evaluate()] Evaluating move: " + move);            
             int moveScore = 0;
+            int threatCount = 0;
 
             int[][] directions = {
                 {0, 1},  // Horizontal (right)
@@ -114,8 +117,10 @@ public class Board {
             for (int[] dir : directions) {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
                 if(Solvers.isBlocking(board,  move, dir)) {
-                    moveScore += 600;
+                    threatCount++;
+                    moveScore += 60;
                     
+                    Move blockedMove = new Move(move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent());
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
                     if(Shapes.isConnected(board, move.getCol() + dir[1], move.getRow() + dir[0], mark.getOpponent(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
@@ -138,14 +143,18 @@ public class Board {
 
             // System.out.println("[evaluate()] Move score: " + moveScore);
             if(move.getColor() == mark) {
+                markThreatCount += threatCount;
                 markScore += moveScore;
             } else {
+                oppThreatCount += threatCount;
                 oppScore += moveScore;
             }
         }
 
+        //markScore += markThreatCount * 5;
+        //oppScore += oppThreatCount * 5;
         // System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
-        return (markScore - oppScore);
+        return markScore - oppScore;
     }
 
     /**
