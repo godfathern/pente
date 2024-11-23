@@ -140,26 +140,22 @@ public class Board {
                     Move blockedMove = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
                     if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 4");
+                        // System.out.println("[evaluate()] " + move + " is a row of 4");                        
                         moveScore += 30;
                     } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 20;
-                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 2, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        moveScore += 10;
                     }
-                } else {
-                    if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 4");
-                        moveScore += 30;
-                    } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        moveScore += 20;
-                    } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 2, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        moveScore += 10;
-                    }
+                }
+                
+                if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
+                    // System.out.println("[evaluate()] " + move + " is a row of 4");
+                    threatCount++;
+                    moveScore += 50;
+                } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
+                    // System.out.println("[evaluate()] " + move + " is a row of 3");
+                    threatCount++;
+                    moveScore += 30;
                 }
                 
                 if(Solvers.isCapture(board, move, dir)) {
@@ -179,8 +175,8 @@ public class Board {
             }
         }
 
-        //markScore += markThreatCount * 5;
-        //oppScore += oppThreatCount * 5;
+        markScore += markThreatCount * 5;
+        oppScore += oppThreatCount * 5;
         // System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
         return markScore - oppScore;
     }
@@ -219,6 +215,7 @@ public class Board {
             if(move.isCaptured()) {
                 continue;
             }
+
             // System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
             for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
                 for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
