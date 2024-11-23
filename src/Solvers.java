@@ -72,17 +72,17 @@ public class Solvers {
     public static boolean isCapture(Mark[][] board, Move move, int[] direction) {
         int c = move.getCol() + direction[0];
         int r = move.getRow() + direction[1];
+        int c2 = c + direction[0];
+        int r2 = r + direction[1];
+        int c3 = c2 + direction[0];
+        int r3 = r2 + direction[1];
         
         // Check if the move is a pair
-        if (Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 2, direction)) {            
-            int c2 = c + direction[0] * 2;
-            int r2 = r + direction[1] * 2;
-            
-            if (Board.isInbound(c2, r2) && board[c2][r2] == move.getColor()) {
-                return true;
-            }
-        }
-
-        return false;
+        return Board.isInbound(c,r) && 
+               board[c][r] == move.getColor().getOpponent() &&
+               Board.isInbound(c2, r2) &&
+               board[c2][r2] == move.getColor().getOpponent() && 
+               Board.isInbound(c3, r3) && 
+               board[c3][r3] == move.getColor();                             
     }
 }

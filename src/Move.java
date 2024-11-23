@@ -15,7 +15,6 @@ public class Move implements Comparable<Move> {
         color = mark;
         isCaptured = false;
         isCapture = false;
-
         captureList = new ArrayList<Move>();
     }
     
@@ -23,6 +22,9 @@ public class Move implements Comparable<Move> {
         col = move.charAt(0) - 'A';
         row = Integer.parseInt(move.substring(1)) - 1;
         color = mark;
+        isCaptured = false;
+        isCapture = false;
+        captureList = new ArrayList<Move>();
     }
 
     public int getCol() {
@@ -97,7 +99,7 @@ public class Move implements Comparable<Move> {
         }
 
         Move move = (Move) obj;
-        return move.getCol() == col && move.getRow() == row;
+        return move.getCol() == col && move.getRow() == row && move.getColor() == color && move.isCaptured() == isCaptured;
     }
 
     @Override

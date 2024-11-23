@@ -33,7 +33,8 @@ public class Board {
             // System.out.println("[play()] Playing move: " + move);
             for(int[] dir : Solvers.DIRECTIONS) {
                 if (Solvers.isCapture(board, move, dir)) {
-                    if (move.getColor() == Mark.Black) {                        
+                    move.setCapture(true);
+                    if (move.getColor() == Mark.Black) {
                         blackCaptures++;
                     } else {
                         redCaptures++;
@@ -41,23 +42,21 @@ public class Board {
 
                     Move firstcaptive = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
                     Move secondCaptive = new Move(move.getCol() + dir[0] * 2, move.getRow() + dir[1] * 2, move.getColor().getOpponent());
-                    Move otherCaptor = new Move(move.getCol() + dir[0] * 3, move.getRow() + dir[1] * 3, move.getColor());                                  
-                
-                    if(board[otherCaptor.getCol()][otherCaptor.getRow()] == move.getColor() && 
-                        Solvers.verifyConnectionCount(board, firstcaptive.getCol(), firstcaptive.getRow(), firstcaptive.getColor(), 2, dir)) {
-                        
+
+                    if(playedMoves.contains(firstcaptive) && playedMoves.contains(secondCaptive)) {                                            
                         board[firstcaptive.getCol()][firstcaptive.getRow()] = Mark.Empty;
                         board[secondCaptive.getCol()][secondCaptive.getRow()] = Mark.Empty;
                         
-                        for (Move playedMove : playedMoves) {
-                            if(playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
-                                playedMove.setCaptured(true);
-                                move.addCapture(playedMove);
+                        
+                            for (Move playedMove : playedMoves) {
+                                if(playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
+                                   playedMove.setCaptured(true);
+                                   move.addCapture(playedMove);
+                                }
                             }
-                        }
+                        }                        
                     }
-                }
-            }
+                }            
             
             playedMoves.add(turns, move);
             turns++;
@@ -66,7 +65,6 @@ public class Board {
 
     public void undo(Move move) {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
-            board[move.getCol()][move.getRow()] = Mark.Empty;
             // System.out.println("[undo()] Undoing move: " + move);
             if(move.isCapture()) {
                 if (move.getColor() == Mark.Black) {
@@ -75,17 +73,17 @@ public class Board {
                     redCaptures--;
                 }
 
-                for(Move capture : move.getCaptureList()) {
+                for (Move capture : move.getCaptureList()) {
                     for (Move playedMove : playedMoves) {
-                        if(playedMove.equals(capture)) {
-                            playedMove.setCaptured(false);
-                            
+                        if(playedMove.equals(capture) && playedMove.isCaptured()) {
+                            playedMove.setCaptured(false);                            
                             board[playedMove.getCol()][playedMove.getRow()] = playedMove.getColor();
                         }
                     }
                 }
             }
-
+            
+            board[move.getCol()][move.getRow()] = Mark.Empty;
             playedMoves.remove(move);
             turns--;
         }
@@ -164,6 +162,11 @@ public class Board {
                     }
                 }
                 
+                if(Solvers.isCapture(board, move, dir)) {
+                    // System.out.println("[evaluate()] " + move + " is a capture move");
+                    threatCount++;
+                    moveScore += 1000;
+                }
             }
 
             // System.out.println("[evaluate()] Move score: " + moveScore);
@@ -213,6 +216,9 @@ public class Board {
             
         int maxScore = Integer.MIN_VALUE;  
         for (Move move : playedMovesCopy) {
+            if(move.isCaptured()) {
+                continue;
+            }
             // System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
             for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
                 for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
