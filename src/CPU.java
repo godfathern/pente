@@ -1,10 +1,8 @@
 import java.util.ArrayList;
-import java.util.Random;
 
 public class CPU {    
     private final Mark _mark;
     private final static int MAX_DEPTH = 3;
-    private int numOfExploredNodes = 0;
 
     public CPU(Mark mark) {
         _mark = mark;
@@ -14,6 +12,11 @@ public class CPU {
         return _mark;
     }
 
+    /**
+     * Get the next move for the CPU
+     * @param board The current board
+     * @return The next move
+     */
     public Move getNextMove(Board board) {
         // System.out.println("[getNextMove()] Getting Next Move for " + _mark);
         ArrayList<Move> moves = getNextMoveNegaMax(board);
@@ -21,6 +24,11 @@ public class CPU {
         return moves.get(0);
     }
 
+    /**
+     * getNextMoveNegaMax() - Get the next move using NegaMax algorithm
+     * @param board The current board
+     * @return The next move
+     */
     public ArrayList<Move> getNextMoveNegaMax(Board board) {
         // System.out.println("[getNextMoveNegaMax()] Getting Next Move with NegaMax for " + _mark); 
         ArrayList<Move> moves = new ArrayList<>();
@@ -92,6 +100,7 @@ public class CPU {
         return maxScore;
     }
 
+    @Deprecated
     public ArrayList<Move> getNextMovesAB(Board board) {
         ArrayList<Move> moves = new ArrayList<>();
 
