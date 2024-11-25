@@ -29,22 +29,12 @@ public class Solvers {
         for (int step = 1; step < connectionCount; step++) {
             int newCol = col + step * dc;
             int newRow = row + step * dr;
-            if ((Board.isInbound(newCol, newRow) && board[newCol][newRow] == player)) {
+            if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
                 count++;
             } else {
                 break;
             }
-        }
-
-        for (int step = 1; step < connectionCount; step++) {
-            int newCol = col - step * dc;
-            int newRow = row - step * dr;
-            if ((Board.isInbound(newCol, newRow) && board[newCol][newRow] == player)) {
-                count++;
-            } else {
-                break;
-            }
-        }
+        }        
 
         return count >= connectionCount;
     }
