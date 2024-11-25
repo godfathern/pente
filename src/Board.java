@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class Board {
     public static final int WINNING_SCORE = 100000;
+    public static final int MAX_ADJACENCY_COUNT = 5;
     private static final int BOARD_SIZE = 15;
 
     // 0: Empty, 1: Red, 2: Black
@@ -11,6 +12,9 @@ public class Board {
     private int blackCaptures;
     private int redCaptures;
 
+    /**
+     * Constructor for the Board class
+     */
     public Board() {
         turns = 0;
         board = new Mark[15][15];
@@ -23,14 +27,22 @@ public class Board {
         }
     }
 
+    /**
+     * getTurns() returns the number of turns that have been played
+     * @return The number of turns that have been played
+     */
     public int getTurns() {
         return turns;
     }
 
+    /**
+     * play(Move move) plays a move on the board
+     * @param move The move to play
+     */
     public void play(Move move) {
         if (board[move.getCol()][move.getRow()] == Mark.Empty) {
             board[move.getCol()][move.getRow()] = move.getColor();
-            // System.out.println("[play()] Playing move: " + move);
+            // System.out.println("[play()] Playing move: " + move); // Debug
             for(int[] dir : Solvers.DIRECTIONS) {
                 if (Solvers.isCapture(board, move, dir)) {
                     move.setCapture(true);
@@ -40,16 +52,18 @@ public class Board {
                         redCaptures++;
                     }
 
-                    Move firstcaptive = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
+                    // Gets the two moves that are being captured
+                    Move firstCaptive = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
                     Move secondCaptive = new Move(move.getCol() + dir[0] * 2, move.getRow() + dir[1] * 2, move.getColor().getOpponent());
 
-                    if(playedMoves.contains(firstcaptive) && playedMoves.contains(secondCaptive)) {                                            
-                        board[firstcaptive.getCol()][firstcaptive.getRow()] = Mark.Empty;
+                    // Check if playedMoves contains the two moves that are being captured
+                    if(playedMoves.contains(firstCaptive) && playedMoves.contains(secondCaptive)) {
+                        // Set the two moves as empty                                          
+                        board[firstCaptive.getCol()][firstCaptive.getRow()] = Mark.Empty;
                         board[secondCaptive.getCol()][secondCaptive.getRow()] = Mark.Empty;
-                        
-                        
+                            // Go through playedMoves and check for captured moves
                             for (Move playedMove : playedMoves) {
-                                if(playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
+                                if(playedMove.equals(firstCaptive) || playedMove.equals(secondCaptive)) {
                                    playedMove.setCaptured(true);
                                    move.addCapture(playedMove);
                                 }
@@ -57,22 +71,26 @@ public class Board {
                         }                        
                     }
                 }            
-            
             playedMoves.add(turns, move);
             turns++;
         }
     }
 
+    /**
+     * undo(Move move) undoes a move on the board
+     * @param move The move to undo
+     */
     public void undo(Move move) {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             // System.out.println("[undo()] Undoing move: " + move);
+            // Update the captures if the move was a capture move
             if(move.isCapture()) {
                 if (move.getColor() == Mark.Black) {
                     blackCaptures--;
                 } else {
                     redCaptures--;
                 }
-
+                // Iterate through the capture list and set the captured moves back to their original state
                 for (Move capture : move.getCaptureList()) {
                     for (Move playedMove : playedMoves) {
                         if(playedMove.equals(capture) && playedMove.isCaptured()) {
@@ -82,35 +100,49 @@ public class Board {
                     }
                 }
             }
-            
+            // Cleanup undo logic
             board[move.getCol()][move.getRow()] = Mark.Empty;
             playedMoves.remove(move);
             turns--;
         }
     }
 
+    /**
+     * getCaptures(Mark mark) returns the number of captures for a certain color
+     * @param mark The color to get the captures for
+     * @return The number of captures for a certain color
+     */
     public int getCaptures(Mark mark) {
         if (mark == Mark.Black) {
             return blackCaptures;
         }
-
         return redCaptures;
     }
 
+    /**
+     * checkWin(Mark mark) checks if a certain color has won based on specific parameters
+     * @param mark The color to check for a win
+     * @return true if the color has won, false otherwise
+     */
     public boolean checkWin(Mark mark) {
         int markCaptures = getCaptures(mark);
         
+        // Check if player has 5 connections in any direction
         for (Move move : playedMoves) {
             if(move.getColor() == mark) { 
                 for (int[] dir : Solvers.DIRECTIONS) {
-                    return Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 5, dir);
+                    return Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), MAX_ADJACENCY_COUNT, dir);
                 }
             }
         }
-
-        return markCaptures >= 5;
+        return markCaptures >= MAX_ADJACENCY_COUNT;
     }
 
+    /**
+     * evaluate(Mark mark) evaluates the board based on a certain color to determine if there is a winning move
+     * @param mark The color to evaluate the board for
+     * @return The score of the board
+     */
     public int evaluate(Mark mark) {      
         // System.out.println("[evaluate()] Evaluating board for: " + mark);  
         int markScore = 0;        
@@ -121,28 +153,32 @@ public class Board {
         Mark oppMark = mark.getOpponent();
         // System.out.println("[evaluate()] Opponent: " + oppMark);
 
+        // Check if either player has won
         if(checkWin(mark) || checkWin(oppMark)) {
             // System.out.println("[evaluate()] " + mark + " has won");
             return Board.WINNING_SCORE;
         }
         
+        // Iterate through all the played moves and evaluate them
         for (Move move : playedMoves) {
             // System.out.println("[evaluate()] Evaluating move: " + move);            
             int moveScore = 0;
             int threatCount = 0;            
 
+            // Iterate through all the directions to check for threats
             for (int[] dir : Solvers.DIRECTIONS) {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
+                // Check if the move is blocking
                 if(Solvers.isBlocking(board, move, dir)) {
                     threatCount++;
                     moveScore += 60;
                     
                     Move blockedMove = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
-                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
+                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), MAX_ADJACENCY_COUNT - 1, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");                        
                         moveScore += 30;
-                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
+                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), MAX_ADJACENCY_COUNT - 2, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 20;
                     }
@@ -175,8 +211,8 @@ public class Board {
             }
         }
 
-        markScore += markThreatCount * 5;
-        oppScore += oppThreatCount * 5;
+        markScore += markThreatCount * MAX_ADJACENCY_COUNT;
+        oppScore += oppThreatCount * MAX_ADJACENCY_COUNT;
         // System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
         return markScore - oppScore;
     }
@@ -188,11 +224,12 @@ public class Board {
      * @param mark The color of the moves to return
      * @return List of all the moves of a certain color
      */
+    @Deprecated
     public ArrayList<Move> getAllMarks(Mark mark) {
         ArrayList<Move> moves = new ArrayList<Move>();
 
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 if (board[i][j] == mark) {
                     moves.add(new Move(i, j, mark));
                 }
@@ -202,23 +239,29 @@ public class Board {
         return moves;
     }
 
+    /**
+     * Returns all the moves that are possible for a certain color
+     * @param mark The color to get the possible moves for
+     * @return List of all the possible moves for a certain color
+     */
     public ArrayList<Move> getPossibleMoves(Mark mark) {        
         int squareDist = 1;
-
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         // Have to make a copy because playing a move modifies the original list and that causes errors
         ArrayList<Move> moves = new ArrayList<Move>();        
-        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves); 
-            
-        int maxScore = Integer.MIN_VALUE;  
+        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);  
+        int maxScore = Integer.MIN_VALUE;
+
+        // Iterate through all the played moves and get the empty squares around them
         for (Move move : playedMovesCopy) {
             if(move.isCaptured()) {
                 continue;
             }
 
             // System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
+            // Iterate through all the squares around the move
             for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
-                for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
+                for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) { // Check if the square is the move itself
                     if(i == move.getCol() && j == move.getRow()) {
                         continue;
                     }
@@ -246,45 +289,48 @@ public class Board {
                 }
             }
         }
-
         return moves;
     }
 
+    /**
+     * getPossibleMovesRedSecondTurn() returns all the possible moves for the red player on the second turn
+     * @return
+     */
     public ArrayList<Move> getPossibleMovesRedSecondTurn() {
         ArrayList<Move> moves = new ArrayList<>();
 
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 5; j++) {
+        // Check if the center is empty
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < MAX_ADJACENCY_COUNT; j++) {
                 if (board[i][j].equals(Mark.Empty)) {
                     moves.add(new Move(i, j, Mark.Red));
                 }
             }
         }
 
-        for (int i = 0; i < 5; i++) {
-            for (int j = 5; j < 15; j++) {
+        for (int i = 0; i < MAX_ADJACENCY_COUNT; i++) {
+            for (int j = 5; j < BOARD_SIZE; j++) {
                 if (board[i][j].equals(Mark.Empty)) {
                     moves.add(new Move(i, j, Mark.Red));
                 }
             }
         }
 
-        for (int i = 5; i < 10; i++) {
-            for (int j = 10; j < 15; j++) {
+        for (int i = MAX_ADJACENCY_COUNT; i < 10; i++) {
+            for (int j = 10; j < BOARD_SIZE; j++) {
                 if (board[i][j].equals(Mark.Empty)) {
                     moves.add(new Move(i, j, Mark.Red));
                 }
             }
         }
 
-        for (int i = 10; i < 15; i++) {
-            for (int j = 5; j < 15; j++) {
+        for (int i = 10; i < BOARD_SIZE; i++) {
+            for (int j = 5; j < BOARD_SIZE; j++) {
                 if (board[i][j].equals(Mark.Empty)) {
                     moves.add(new Move(i, j, Mark.Red));
                 }
             }
         }
-
         return moves;
     }
 
@@ -295,11 +341,7 @@ public class Board {
      * @return true if the column and row are within the bounds of the board, false otherwise
      */
     public static boolean isInbound(int col, int row) {
-        if (col < 0 || col >= BOARD_SIZE || row < 0 || row >= BOARD_SIZE) {
-            return false;
-        }
-
-        return true;
+        return col >= 0 && col < BOARD_SIZE && row >= 0 && row < BOARD_SIZE;
     }
 
     public String toString() {
@@ -320,7 +362,6 @@ public class Board {
             sb.append("]");
             sb.append("\n");
         }
-
         return sb.toString();
     }
 }
