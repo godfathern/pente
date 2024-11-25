@@ -29,13 +29,11 @@ public class Solvers {
         for (int step = 1; step < connectionCount; step++) {
             int newCol = col + step * dc;
             int newRow = row + step * dr;
-            if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
-                count++;
-            } else {
+            if (!Board.isInbound(newCol, newRow) && board[newCol][newRow] != player) {
                 break;
-            }
+            } 
+            count++;
         }        
-
         return count >= connectionCount;
     }
 
@@ -48,17 +46,16 @@ public class Solvers {
      */
     public static boolean isBlocking(Mark[][] board, Move move, int[] direction) {
         // Look in all 8 directions for wedge pattern        
-            int c = move.getCol() + direction[0];
-            int r = move.getRow() + direction[1];
-            if (Board.isInbound(c,r) ) {
-                // Check if the next cell is the opponent's cell
-                if(board[c][r] == move.getColor().getOpponent()) {
-                    return Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 4, direction) ||
-                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 3, direction) ||
-                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 2, direction);
-                }
-            }        
-
+        int c = move.getCol() + direction[0];
+        int r = move.getRow() + direction[1];
+        if (Board.isInbound(c,r) ) {
+            // Check if the next cell is the opponent's cell
+            if(board[c][r] == move.getColor().getOpponent()) {
+                return Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), Board.MAX_ADJACENCY_COUNT - 1, direction) ||
+                        Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), Board.MAX_ADJACENCY_COUNT - 2, direction) ||
+                        Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), Board.MAX_ADJACENCY_COUNT - 3, direction);
+            }
+        }        
         return false;
     }
 
@@ -70,6 +67,14 @@ public class Solvers {
      * @return true if the move is a capture move, false otherwise
      */
     public static boolean isCapture(Mark[][] board, Move move, int[] direction) {
+        /**
+         * c = current column
+         * r = current row
+         * c2 = next column
+         * r2 = next row
+         * c3 = next next column
+         * r3 = next next row
+         */
         int c = move.getCol() + direction[0];
         int r = move.getRow() + direction[1];
         int c2 = c + direction[0];
