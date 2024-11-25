@@ -32,11 +32,7 @@ public class CPU {
         }
 
         ArrayList<Move> possibleMoves;
-        if (_mark == Mark.Red && board.getTurns() == 2) {
-            possibleMoves = board.getPossibleMovesRedSecondTurn();
-        } else {
-            possibleMoves = board.getPossibleMoves(_mark);
-        }
+        possibleMoves = board.getPossibleMoves(_mark);        
 
         int max = Integer.MIN_VALUE;
          for (Move move : possibleMoves) {

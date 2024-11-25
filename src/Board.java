@@ -222,14 +222,27 @@ public class Board {
                     if(i == move.getCol() && j == move.getRow()) {
                         continue;
                     }
+
+                    int col = i;
+                    int row = j;
                     
-                    if (isInbound(i, j) && board[i][j] == Mark.Empty) {
-                        Move newMove = new Move(i, j, mark);
+                    if(turns == 2 && mark == Mark.Red) {
+                        col = col + (col - move.getCol()) * 2;
+                        row = row + (row - move.getRow()) * 2;
+                        
+                        if(move.getColor() != Mark.Red) {
+                            break;
+                        }
+                    }
+
+                    if (isInbound(col, row) && board[col][row] == Mark.Empty) {
+                        Move newMove = new Move(col, row, mark);
+
                         // System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
                         play(newMove);
                         newMove.setScore(evaluate(mark));
                         undo(newMove);
-        
+                        
                         // System.out.println("[getPossibleMoves()] Evaluation result | Move: " + newMove + " - Score: " + newMove.getScore());                        
                         if(newMove.getScore() > maxScore) {
                             // System.out.println("[getPossibleMoves()] " + newMove + " is better than max score" );         
