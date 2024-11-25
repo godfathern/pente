@@ -142,7 +142,9 @@ public class Board {
                     if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");                        
                         moveScore += 30;
-                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
+                    }
+                    
+                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         moveScore += 20;
                     }
@@ -152,7 +154,9 @@ public class Board {
                     // System.out.println("[evaluate()] " + move + " is a row of 4");
                     threatCount++;
                     moveScore += 50;
-                } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
+                }
+
+                if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
                     // System.out.println("[evaluate()] " + move + " is a row of 3");
                     threatCount++;
                     moveScore += 30;
@@ -208,9 +212,9 @@ public class Board {
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         // Have to make a copy because playing a move modifies the original list and that causes errors
         ArrayList<Move> moves = new ArrayList<Move>();        
-        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves); 
+        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
             
-        int maxScore = Integer.MIN_VALUE;  
+        int maxScore = Integer.MIN_VALUE;
         for (Move move : playedMovesCopy) {
             if(move.isCaptured()) {
                 continue;

@@ -17,8 +17,9 @@ public class CPU {
     public Move getNextMove(Board board) {
         // System.out.println("[getNextMove()] Getting Next Move for " + _mark);
         ArrayList<Move> moves = getNextMoveNegaMax(board);
-
-        return moves.get(0);
+        Random random = new Random();
+        int r = random.nextInt(moves.size());
+        return moves.get(r);
     }
 
     public ArrayList<Move> getNextMoveNegaMax(Board board) {

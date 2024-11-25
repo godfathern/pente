@@ -81,8 +81,8 @@ public class Solvers {
         return Board.isInbound(c,r) && 
                board[c][r] == move.getColor().getOpponent() &&
                Board.isInbound(c2, r2) &&
-               board[c2][r2] == move.getColor().getOpponent() && 
-               Board.isInbound(c3, r3) && 
-               board[c3][r3] == move.getColor();                             
+               board[c2][r2] == move.getColor().getOpponent() &&
+               Board.isInbound(c3, r3) &&
+               board[c3][r3] == move.getColor();
     }
 }
