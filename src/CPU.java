@@ -76,9 +76,7 @@ public class CPU {
             // System.out.println("[()] Evaluating Node: " + possibleMove + ", Depth: " + depth);
             board.play(possibleMove);            
                         
-            possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));   
-            Zobrist.addEntry(possibleMove.getScore());
-            
+            possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));        
 
             // System.out.println("[getNextMoveNegaMax()] Score for " + possibleMove + ": " + possibleMove.getScore() + ", Depth: " + depth);
             board.undo(possibleMove);

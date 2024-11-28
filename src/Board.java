@@ -144,7 +144,7 @@ public class Board {
         for (Move move : playedMoves) {
             // System.out.println("[evaluate()] Evaluating move: " + move);            
             int moveScore = 0;
-            int threatCount = 0;            
+            int threatCount = 0;  
 
             for (int[] dir : Solvers.DIRECTIONS) {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
@@ -158,7 +158,9 @@ public class Board {
                         // System.out.println("[evaluate()] " + move + " is a row of 4");
                         threatCount++;
                         moveScore += 1250;
-                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
+                    }
+                    
+                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
                         threatCount++;
                         moveScore += 1000;
@@ -181,10 +183,12 @@ public class Board {
                     // System.out.println("[evaluate()] " + move + " is a row of 4");
                     threatCount++;
                     moveScore += 1250;
-                } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
+                }
+                
+                if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
                     // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        threatCount++;
-                        moveScore += 1000;
+                    threatCount++;
+                    moveScore += 1000;
                 }                            
             }
 
@@ -200,9 +204,9 @@ public class Board {
 
 
         if(markThreatCount > oppThreatCount) {
-            markScore += 1000;
+            markScore += 2000;
         } else if(markThreatCount < oppThreatCount) {
-            oppScore += 1000;
+            oppScore += 2000;
         }                
 
         int score = markScore - oppScore;
