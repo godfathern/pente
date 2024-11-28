@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Board {
     public static final int WINNING_SCORE = 100000;
-    private static final int BOARD_SIZE = 15;
+    public static final int BOARD_SIZE = 15;
 
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
@@ -33,63 +33,71 @@ public class Board {
         if (board[move.getCol()][move.getRow()] == Mark.Empty) {
             board[move.getCol()][move.getRow()] = move.getColor();
             // System.out.println("[play()] Playing move: " + move);
-            for(int[] dir : Solvers.DIRECTIONS) {
-                if (Solvers.isCapture(board, move, dir)) {
-                    move.setCapture(true);
-                    if (move.getColor() == Mark.Black) {
-                        blackCaptures++;
-                    } else {
-                        redCaptures++;
-                    }
-
-                    Move firstcaptive = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
-                    Move secondCaptive = new Move(move.getCol() + dir[0] * 2, move.getRow() + dir[1] * 2, move.getColor().getOpponent());
-
-                    if(playedMoves.contains(firstcaptive) && playedMoves.contains(secondCaptive)) {                                            
-                        board[firstcaptive.getCol()][firstcaptive.getRow()] = Mark.Empty;
-                        board[secondCaptive.getCol()][secondCaptive.getRow()] = Mark.Empty;
-                        
-                        
-                            for (Move playedMove : playedMoves) {
-                                if(playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
-                                   playedMove.setCaptured(true);
-                                   move.addCapture(playedMove);
-                                }
-                            }
-                        }                        
-                    }
-                }            
-            
+            handleCaptureMoves(move);            
             Zobrist.updateHash(move, false);
             playedMoves.add(turns, move);
             turns++;
         }
     }
 
+    private void handleCaptureMoves(Move move) {
+        for(int[] dir : Solvers.DIRECTIONS) {
+            if (Solvers.isCapture(board, move, dir)) {
+                move.setCapture(true);
+                if (move.getColor() == Mark.Black) {
+                    blackCaptures++;
+                } else {
+                    redCaptures++;
+                }
+
+                Move firstcaptive = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
+                Move secondCaptive = new Move(move.getCol() + dir[0] * 2, move.getRow() + dir[1] * 2, move.getColor().getOpponent());
+
+                if(playedMoves.contains(firstcaptive) && playedMoves.contains(secondCaptive)) {                                            
+                    board[firstcaptive.getCol()][firstcaptive.getRow()] = Mark.Empty;
+                    board[secondCaptive.getCol()][secondCaptive.getRow()] = Mark.Empty;
+                                        
+                        for (Move playedMove : playedMoves) {
+                            if(playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
+                               playedMove.setCaptured(true);
+                               Zobrist.updateHash(playedMove, true);
+                               move.addCapture(playedMove);
+                            }
+                        }
+                    }                    
+                }
+            }
+    }
+
     public void undo(Move move) {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             // System.out.println("[undo()] Undoing move: " + move);
-            if(move.isCapture()) {
-                if (move.getColor() == Mark.Black) {
-                    blackCaptures--;
-                } else {
-                    redCaptures--;
-                }
-
-                for (Move capture : move.getCaptureList()) {
-                    for (Move playedMove : playedMoves) {
-                        if(playedMove.equals(capture) && playedMove.isCaptured()) {
-                            playedMove.setCaptured(false);                            
-                            board[playedMove.getCol()][playedMove.getRow()] = playedMove.getColor();
-                        }
-                    }
-                }
-            }
+            handleCaptureUndo(move);
             
             board[move.getCol()][move.getRow()] = Mark.Empty;
             Zobrist.updateHash(move, false);
             playedMoves.remove(move);
             turns--;
+        }
+    }
+
+    private void handleCaptureUndo(Move move) {
+        if(move.isCapture()) {
+            if (move.getColor() == Mark.Black) {
+                blackCaptures--;
+            } else {
+                redCaptures--;
+            }
+
+            for (Move capture : move.getCaptureList()) {
+                for (Move playedMove : playedMoves) {
+                    if(playedMove.equals(capture) && playedMove.isCaptured()) {
+                        playedMove.setCaptured(false);
+                        Zobrist.updateHash(playedMove, true);                       
+                        board[playedMove.getCol()][playedMove.getRow()] = playedMove.getColor();
+                    }
+                }
+            }
         }
     }
 
