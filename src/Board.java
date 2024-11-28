@@ -21,6 +21,8 @@ public class Board {
                 board[i][j] = Mark.Empty;
             }
         }
+
+        Zobrist.init();
     }
 
     public int getTurns() {
@@ -58,6 +60,7 @@ public class Board {
                     }
                 }            
             
+            Zobrist.updateHash(move, false);
             playedMoves.add(turns, move);
             turns++;
         }
@@ -84,6 +87,7 @@ public class Board {
             }
             
             board[move.getCol()][move.getRow()] = Mark.Empty;
+            Zobrist.updateHash(move, false);
             playedMoves.remove(move);
             turns--;
         }

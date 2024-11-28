@@ -39,7 +39,14 @@ public class CPU {
          for (Move move : possibleMoves) {
             // System.out.println("[getNextMoveNegaMax()] Evaluating Node: " + move + ", Depth: " + MAX_DEPTH);
             board.play(move);
-            move.setScore(negaMax(board, _mark, -Board.WINNING_SCORE, Board.WINNING_SCORE, MAX_DEPTH));
+            
+            if(Zobrist.hashExists()) {
+                move.setScore(Zobrist.getScore());
+            } else {
+                move.setScore(negaMax(board, _mark, -Board.WINNING_SCORE, Board.WINNING_SCORE, MAX_DEPTH));
+                Zobrist.addEntry(move.getScore());
+            }
+            
             board.undo(move);
             // System.out.println("Score negaMax: " + score + " Move: " + move);
 
@@ -59,27 +66,28 @@ public class CPU {
     public int negaMax(Board board, Mark mark, int alpha, int beta, int depth) {
         // System.out.println("[negaMax()] Evaluating Board for: " + mark + ", Depth: " + depth);
         // System.out.println("[negaMax()] Alpha: " + alpha + ", Beta: " + beta);
-        if(depth == 0) {
+        if(depth == 0 || board.checkWin(mark.getOpponent()) || board.checkWin(mark)) {
             return board.evaluate(mark);
-        } else if (board.checkWin(mark) || board.checkWin(mark.getOpponent())) {
-            return Board.WINNING_SCORE;
         }
 
         ArrayList<Move> possibleMoves = board.getPossibleMoves(mark.getOpponent());
+
         int maxScore = Integer.MIN_VALUE;
         for (Move possibleMove : possibleMoves) {
             // System.out.println("[()] Evaluating Node: " + possibleMove + ", Depth: " + depth);
-            board.play(possibleMove);
-            possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));
+            board.play(possibleMove);            
+                        
+            possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));   
+            Zobrist.addEntry(possibleMove.getScore());
+            
+
             // System.out.println("[getNextMoveNegaMax()] Score for " + possibleMove + ": " + possibleMove.getScore() + ", Depth: " + depth);
             board.undo(possibleMove);
-
             
             maxScore = Math.max(maxScore, possibleMove.getScore());
             alpha = Math.max(alpha, maxScore);
             // System.out.println("[getNextMoveNegaMax()] Alpha: " + alpha + ", MaxScore: " + maxScore);
 
-            // Pruning
             if (alpha >= beta) {
                 break;
             }
