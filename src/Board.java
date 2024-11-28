@@ -115,7 +115,9 @@ public class Board {
         for (Move move : playedMoves) {
             if(move.getColor() == mark) { 
                 for (int[] dir : Solvers.DIRECTIONS) {
-                    return Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 5, dir);
+                    if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 5, dir)) {
+                        return true;
+                    }                    
                 }
             }
         }
