@@ -225,8 +225,7 @@ public class Board {
         // Have to make a copy because playing a move modifies the original list and that causes errors
         ArrayList<Move> moves = new ArrayList<Move>();        
         ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
-            
-        int maxScore = Integer.MIN_VALUE;
+
         for (Move move : playedMovesCopy) {
             if(move.isCaptured()) {
                 continue;
@@ -253,29 +252,25 @@ public class Board {
 
                     if (isInbound(col, row) && board[col][row] == Mark.Empty) {
                         Move newMove = new Move(col, row, mark);
-
                         // System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
+                        
                         play(newMove);
                         newMove.setScore(evaluate(mark));
                         undo(newMove);
-                        
-                        // System.out.println("[getPossibleMoves()] Evaluation result | Move: " + newMove + " - Score: " + newMove.getScore());                        
-                        if(newMove.getScore() > maxScore) {
-                            // System.out.println("[getPossibleMoves()] " + newMove + " is better than max score" );         
-                            
-                            maxScore = newMove.getScore();
-                            // System.out.println("[getPossibleMoves()] New max score: " + maxScore );                                     
-                            moves.clear();
+
+                        if(!moves.contains(newMove)) {
                             moves.add(newMove);
-                        } else if(newMove.getScore() == maxScore && !moves.contains(newMove)) {
-                            // System.out.println("[getPossibleMoves()] " + newMove + " is equal to max score" );
-                            moves.add(newMove);
-                        }
+                        }                        
                     }
                 }
             }
         }
 
+        moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
+        if(moves.size() > 10) {
+            moves = new ArrayList<Move>(moves.subList(0, 10));
+        }
+        
         return moves;
     }
 

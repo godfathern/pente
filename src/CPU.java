@@ -4,7 +4,6 @@ import java.util.Random;
 public class CPU {    
     private final Mark _mark;
     private final static int MAX_DEPTH = 3;
-    private int numOfExploredNodes = 0;
 
     public CPU(Mark mark) {
         _mark = mark;
