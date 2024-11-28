@@ -132,10 +132,11 @@ public class Board {
         
         Mark oppMark = mark.getOpponent();
         // System.out.println("[evaluate()] Opponent: " + oppMark);
-
-        if(checkWin(mark) || checkWin(oppMark)) {
+        if(checkWin(mark)) {
             // System.out.println("[evaluate()] " + mark + " has won");
             return Board.WINNING_SCORE;
+        } else if (checkWin(oppMark)) {
+            return -Board.WINNING_SCORE;
         }
         
         for (Move move : playedMoves) {
@@ -147,38 +148,42 @@ public class Board {
                 // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
                 if(Solvers.isBlocking(board, move, dir)) {
                     threatCount++;
-                    moveScore += 60;
-                    
+                    moveScore += 500;
+                                        
                     Move blockedMove = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
                     // System.out.println("[evaluate()]" + move + " is blocking");                    
                     if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 4");                        
-                        moveScore += 30;
+                        // System.out.println("[evaluate()] " + move + " is a row of 4");
+                        threatCount++;
+                        moveScore += 1250;
+                    } else if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
+                        // System.out.println("[evaluate()] " + move + " is a row of 3");
+                        threatCount++;
+                        moveScore += 1000;
                     }
                     
-                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
+                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 2, dir)) {
                         // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        moveScore += 20;
-                    }
+                        threatCount++;
+                        moveScore += 900;
+
+                        if(Solvers.isCapture(board, move, dir)) {
+                            // System.out.println("[evaluate()] " + move + " is a capture move");
+                            threatCount++;
+                            moveScore += 5000;
+                        }
+                    }                                                 
                 }
                 
                 if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
                     // System.out.println("[evaluate()] " + move + " is a row of 4");
                     threatCount++;
-                    moveScore += 50;
-                }
-
-                if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
+                    moveScore += 1250;
+                } else if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
                     // System.out.println("[evaluate()] " + move + " is a row of 3");
-                    threatCount++;
-                    moveScore += 30;
-                }
-                
-                if(Solvers.isCapture(board, move, dir)) {
-                    // System.out.println("[evaluate()] " + move + " is a capture move");
-                    threatCount++;
-                    moveScore += 1000;
-                }
+                        threatCount++;
+                        moveScore += 1000;
+                }                            
             }
 
             // System.out.println("[evaluate()] Move score: " + moveScore);
@@ -191,10 +196,15 @@ public class Board {
             }
         }
 
-        markScore += markThreatCount * 5;
-        oppScore += oppThreatCount * 5;
-        // System.out.println("[evaluate()] Final score: " + (markScore - oppScore));
-        return markScore - oppScore;
+
+        if(markThreatCount > oppThreatCount) {
+            markScore += 1000;
+        } else if(markThreatCount < oppThreatCount) {
+            oppScore += 1000;
+        }                
+
+        int score = markScore - oppScore;
+        return score;
     }
 
     /**

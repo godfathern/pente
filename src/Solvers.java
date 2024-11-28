@@ -46,18 +46,20 @@ public class Solvers {
      * @param direction The direction to check
      * @return true if the move is blocking, false otherwise
      */
-    public static boolean isBlocking(Mark[][] board, Move move, int[] direction) {
-        // Look in all 8 directions for wedge pattern        
-            int c = move.getCol() + direction[0];
-            int r = move.getRow() + direction[1];
-            if (Board.isInbound(c,r) ) {
-                // Check if the next cell is the opponent's cell
-                if(board[c][r] == move.getColor().getOpponent()) {
-                    return Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 4, direction) ||
-                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 3, direction) ||
-                           Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 2, direction);
-                }
-            }        
+    public static boolean isBlocking(Mark[][] board, Move move, int[] direction) {               
+        int c = move.getCol() + direction[0];
+        int r = move.getRow() + direction[1];
+        if (Board.isInbound(c,r) ) {
+            // Check if the next cell is the opponent's cell
+            if(board[c][r] == move.getColor().getOpponent()) {
+                return Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 4, direction) ||
+                       Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 3, direction) ||
+                       Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 2, direction);
+            }
+        }
+
+        return false;
+    }
 
         return false;
     }
