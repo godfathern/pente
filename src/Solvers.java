@@ -61,9 +61,6 @@ public class Solvers {
         return false;
     }
 
-        return false;
-    }
-
     /**
      * Determines if the move is a capture move
      * @param board The game board
