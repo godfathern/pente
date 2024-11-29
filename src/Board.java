@@ -178,39 +178,171 @@ public class Board {
                         }
                     }                                                 
                 }
+
+    /**
+     * Returns all the chains on the board
+     * @return List of all the chains on the board
+     */
+    public static ArrayList<Move[]> getChains() {
+        ArrayList<Move[]> chains = new ArrayList<Move[]>();
+        ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
+
+        playedMovesCopy.removeIf(move -> move.isCaptured());
+        chains.addAll(getColChains(playedMovesCopy));    
+        chains.addAll(getRowChains(playedMovesCopy));    
+        chains.addAll(getDiagonalChains(playedMovesCopy));
+
+        return chains;
+    }
+
+    /**
+     * Returns all the column chains on the board
+     * @param moves List of all the moves played
+     * @return List of all the column chains on the board
+     */
+    private static ArrayList<Move[]> getColChains(ArrayList<Move> moves) {
+        ArrayList<Move[]> colChains = new ArrayList<Move[]>();
+
+        moves.sort(Comparator
+            .comparing(Move::getColor)
+            .thenComparingInt(Move::getCol)
+            .thenComparingInt(Move::getRow));
+
+        for (int i = 0; i < moves.size(); i++) {
+            Move move = moves.get(i);
+
+            if(move.isCaptured()) {
+                continue;
+            }
+
+            int chainCount = 1;
+            List<Move> chain = new ArrayList<Move>();
+            chain.add(move);
+
+            for(int j = i + 1; j < moves.size(); j++) {
+                Move move2 = moves.get(j);
                 
                 if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
                     // System.out.println("[evaluate()] " + move + " is a row of 4");
                     threatCount++;
                     moveScore += 1250;
+                if(move2.isCaptured()) {
+                    continue;
                 }
+
+                if(move2.getColor() == move.getColor() && move2.getCol() == move.getCol() && move2.getRow() == move.getRow() + chainCount) {
+                    chainCount++;
+                    chain.add(move2);
+                } else {                    
+                    break;
+                }
+            }
+            
+            if(chainCount > 1) {
+                boolean chainFound = findChain(chain, colChains);
                 
                 if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
                     // System.out.println("[evaluate()] " + move + " is a row of 3");
                     threatCount++;
                     moveScore += 1000;
                 }                            
+                if(!chainFound) {
+                    colChains.add(chain.toArray(new Move[chain.size()])); 
+                }    
             }
+        }
+
+        return colChains;
+    }
 
             // System.out.println("[evaluate()] Move score: " + moveScore);
             if(move.getColor() == mark) {
                 markThreatCount += threatCount;
                 markScore += moveScore;
+    /**
+     * Checks if a chain is already in the list of chains
+     * @param chain The chain to check
+     * @param chains List of all the chains
+     * @return true if the chain is already in the list of chains, false otherwise
+     */
+    private static boolean findChain(List<Move> chain, ArrayList<Move[]> chains) {
+        for (Move[] c : chains) {
+            if(c.length > chain.size()) {
+                if(Arrays.asList(c).containsAll(chain)) {
+                    return true;                        
+                }
             } else {
                 oppThreatCount += threatCount;
                 oppScore += moveScore;
             }
+                if(chain.containsAll(Arrays.asList(c))) {
+                    chains.remove(c);
+                    chains.add(chain.toArray(new Move[chain.size()]));
+                }
+            }                                 
         }
 
+        return false;
+    }
 
         if(markThreatCount > oppThreatCount) {
             markScore += 2000;
         } else if(markThreatCount < oppThreatCount) {
             oppScore += 2000;
         }                
+    /**
+     * Returns all the row chains on the board
+     * @param moves List of all the moves played
+     * @return List of all the row chains on the board
+     */
+    private static ArrayList<Move[]> getRowChains(ArrayList<Move> moves) {
+        ArrayList<Move[]> rowChains = new ArrayList<>();
 
         int score = markScore - oppScore;
         return score;
+        moves.sort(Comparator
+            .comparing(Move::getColor)
+            .thenComparingInt(Move::getRow)
+            .thenComparingInt(Move::getCol));
+
+        for (int i = 0; i < moves.size(); i++) {
+            Move currentMove = moves.get(i);
+
+            if(currentMove.isCaptured()) {
+                continue;
+            }
+
+            int chainCount = 1;
+            List<Move> chain = new ArrayList<Move>();
+            chain.add(currentMove);
+
+            for(int j = i + 1; j < moves.size(); j++) {
+                Move chainedMove = moves.get(j);             
+                
+                if (chainedMove.isCaptured()) {
+                    break;
+                }
+
+                if (chainedMove.getColor() == currentMove.getColor() && 
+                   chainedMove.getRow() == currentMove.getRow() && 
+                   chainedMove.getCol() == currentMove.getCol() + chainCount) {
+                    chainCount++;
+                    chain.add(chainedMove);
+                } else {
+                    break;
+                }
+            }
+            
+            if(chainCount > 1) {
+                boolean chainFound = findChain(chain, rowChains);
+
+                if(!chainFound) {
+                    rowChains.add(chain.toArray(new Move[chain.size()]));    
+                }
+            }
+        }        
+
+        return rowChains;
     }
 
     /**
@@ -219,19 +351,114 @@ public class Board {
      * 
      * @param mark The color of the moves to return
      * @return List of all the moves of a certain color
+     * Returns all the diagonal chains on the board
+     * @param moves List of all the moves played
+     * @return List of all the diagonal chains on the board
      */
     public ArrayList<Move> getAllMarks(Mark mark) {
-        ArrayList<Move> moves = new ArrayList<Move>();
+    private static ArrayList<Move[]> getDiagonalChains(ArrayList<Move> moves) {
+        ArrayList<Move[]> diagonalChains = new ArrayList<>();
 
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 if (board[i][j] == mark) {
                     moves.add(new Move(i, j, mark));
+        // Sort by color, then by row, then by column
+        moves.sort(Comparator
+            .comparing(Move::getColor)
+            .thenComparingInt(Move::getCol)
+            .thenComparingInt(Move::getRow));
+
+        for (Move currentMove : moves) {
+            ArrayList<Move> mainDiagonalChain = new ArrayList<>();
+            mainDiagonalChain.add(currentMove);
+
+            if(currentMove.isCaptured()) {
+                continue;
+            }
+
+            for (int i = 1; i < 5; i++) {
+                Move tempMove = new Move(currentMove.getCol() + i, currentMove.getRow() + i, currentMove.getColor());
+                if (!moves.contains(tempMove)) {
+                    break;
+                }
+
+                Move chainedMove = moves.get(moves.indexOf(tempMove));
+                if (chainedMove.isCaptured()) {
+                    break;
+                }
+                
+                mainDiagonalChain.add(chainedMove);
+            }
+
+            if (mainDiagonalChain.size() > 1) {
+                boolean chainFound = findChain(mainDiagonalChain, diagonalChains);
+                
+
+                if(!chainFound) {
+                    diagonalChains.add(mainDiagonalChain.toArray(new Move[0]));
                 }
             }
         }
 
         return moves;
+        // Check anti-diagonal (top-right to bottom-left)
+        for (Move currentMove : moves) {
+            ArrayList<Move> antiDiagonalChain = new ArrayList<>();
+            antiDiagonalChain.add(currentMove);
+
+            if (currentMove.isCaptured()) {
+                continue;                
+            }
+            
+            for (int i = 1; i < 5; i++) {
+                Move tempMove = new Move(currentMove.getCol() + i, currentMove.getRow() - i, currentMove.getColor());
+                if (!moves.contains(tempMove)) {
+                    break;
+                }
+
+                Move chainedMove = moves.get(moves.indexOf(tempMove));
+                if (chainedMove.isCaptured()) {
+                    break;
+                }
+
+                antiDiagonalChain.add(chainedMove);
+            }
+
+            if (antiDiagonalChain.size() > 1) {
+                boolean chainFound = findChain(antiDiagonalChain, diagonalChains);
+                
+                if(!chainFound) {
+                    diagonalChains.add(antiDiagonalChain.toArray(new Move[0]));
+                }
+                
+            }
+        }
+
+        return diagonalChains;
+    }
+
+    /**
+     * Checks if a chain is already in the list of chains
+     * @param chain The chain to check
+     * @param chains List of all the chains
+     * @return true if the chain is already in the list of chains, false otherwise
+     */
+    private static boolean findChain(List<Move> chain, ArrayList<Move[]> chains) {
+        for (Move[] c : chains) {
+            if(c.length > chain.size()) {
+                if(Arrays.asList(c).containsAll(chain)) {
+                    return true;                        
+                }
+            } else {
+                if(chain.containsAll(Arrays.asList(c))) {
+                    chains.remove(c);
+                    chains.add(chain.toArray(new Move[chain.size()]));
+                }
+            }                                 
+        }
+
+        return false;
     }
 
     public ArrayList<Move> getPossibleMoves(Mark mark) {        
