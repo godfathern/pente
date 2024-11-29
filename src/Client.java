@@ -166,7 +166,7 @@ class Client {
             String ip = scIp.nextLine();
             String[] ipPort = ip.split(":");
             System.out.println("IP: " + ip);
-            System.out.println("Port: " + ipPort[1].getClass());
+            System.out.println("Port: " + ipPort[1]);
             MyClient = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
             scIp.close();
 
