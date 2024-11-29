@@ -155,56 +155,92 @@ public class Board {
     public int evaluate(Mark mark) {
         // System.out.println("[evaluate()] Evaluating board for: " + mark);  
         int markScore = 0;        
-        int oppScore = 0;
-        int markThreatCount = 0;
-        int oppThreatCount = 0;        
-        
+        int oppScore = 0;        
         Mark oppMark = mark.getOpponent();
-        // System.out.println("[evaluate()] Opponent: " + oppMark);
+
         if(checkWin(mark)) {
-            // System.out.println("[evaluate()] " + mark + " has won");
-            return Board.WINNING_SCORE;
-        } else if (checkWin(oppMark)) {
-            return -Board.WINNING_SCORE;
+            return WINNING_SCORE;
+        } else if(checkWin(oppMark)) {
+            return -WINNING_SCORE;
         }
         
-        for (Move move : playedMoves) {
-            // System.out.println("[evaluate()] Evaluating move: " + move);            
-            int moveScore = 0;
-            int threatCount = 0;  
+        ArrayList<Move[]> chains = getChains();
+        ArrayList<Move[]> chainsMark = new ArrayList<Move[]>();
+        ArrayList<Move[]> chainsOpp = new ArrayList<Move[]>();
 
-            for (int[] dir : Solvers.DIRECTIONS) {
-                // System.out.println("[evaluate()] Checking direction: " + dir[0] + ", " + dir[1]);
-                if(Solvers.isBlocking(board, move, dir)) {
-                    threatCount++;
-                    moveScore += 500;
-                                        
-                    Move blockedMove = new Move(move.getCol() + dir[0], move.getRow() + dir[1], move.getColor().getOpponent());
-                    // System.out.println("[evaluate()]" + move + " is blocking");                    
-                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 4, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 4");
-                        threatCount++;
-                        moveScore += 1250;
-                    }
-                    
-                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 3, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        threatCount++;
-                        moveScore += 1000;
-                    }
-                    
-                    if(Solvers.verifyConnectionCount(board, blockedMove.getCol(), blockedMove.getRow(), blockedMove.getColor(), 2, dir)) {
-                        // System.out.println("[evaluate()] " + move + " is a row of 3");
-                        threatCount++;
-                        moveScore += 900;
+        for (Move[] moves : chains) {
+            if(moves[0].getColor() == mark) {
+                chainsMark.add(moves);
+            } else {
+                chainsOpp.add(moves);
+            }
+        }
 
-                        if(Solvers.isCapture(board, move, dir)) {
-                            // System.out.println("[evaluate()] " + move + " is a capture move");
-                            threatCount++;
-                            moveScore += 5000;
-                        }
-                    }                                                 
+        for (Move[] chain : chainsMark) {
+            int chainLength = chain.length;
+            int chainScore = 0;
+
+            int blockerCount = Solvers.getChainBlockerCount(board, chain);
+            if(blockerCount == 0) {
+                if(chainLength == 4) { // Open 4
+                    chainScore += 1000;
+                } else if(chainLength == 3) { // Open 3
+                    chainScore += 100;
+                } else if(chainLength == 2) { // Open 2
+                    chainScore += 10;
                 }
+            } else if(blockerCount == 1) {
+                if(chainLength == 4) {
+                    chainScore += 100;
+                } else if(chainLength == 3) {
+                    chainScore += 10;
+                } else if(chainLength == 2) { // Opening yourself to capture
+                    chainScore += -20;
+                }
+            }
+
+            markScore += chainScore;
+        }
+
+        for (Move[] chain : chainsOpp) {
+            int chainLength = chain.length;
+            int chainScore = 0;
+
+            int blockerCount = Solvers.getChainBlockerCount(board, chain);
+            if(blockerCount == 0) {
+                if(chainLength == 4) { // Open 4
+                    chainScore += 1500;
+                } else if(chainLength == 3) { // Open 3
+                    chainScore += 1000;
+                } else if(chainLength == 2) { // Open 2
+                    chainScore += 100;
+                }
+            } else if(blockerCount == 1) {
+                if(chainLength == 4) {
+                    chainScore += -1000;
+                } else if(chainLength == 3) {
+                    chainScore += 50;
+                } else if(chainLength == 2) { // Opening themselves up to capture
+                    chainScore += 500;
+                }
+            } else if(blockerCount == 2) {
+                if(chainLength == 4) {
+                    chainScore += -2000;
+                } else if(chainLength == 3) {
+                    chainScore += 50;
+                } else if(chainLength == 2) { // Opening themselves up to capture
+                    chainScore += -1500;
+                }
+            }
+
+            oppScore += chainScore;
+        }
+
+        // System.out.println("[evaluate()] Opponent: " + oppMark);
+
+        int score = (markScore + 20 * blackCaptures) - (oppScore + 20 * redCaptures);
+        return score;
+    }
 
     /**
      * Returns all the chains on the board
@@ -249,10 +285,6 @@ public class Board {
             for(int j = i + 1; j < moves.size(); j++) {
                 Move chainedMove = moves.get(j);
                 
-                if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
-                    // System.out.println("[evaluate()] " + move + " is a row of 4");
-                    threatCount++;
-                    moveScore += 1250;
                 if(chainedMove.isCaptured()) {
                     continue;
                 }
@@ -268,11 +300,6 @@ public class Board {
             if(chainCount > 1) {
                 boolean chainFound = findChain(chain, colChains);
                 
-                if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 3, dir)) {
-                    // System.out.println("[evaluate()] " + move + " is a row of 3");
-                    threatCount++;
-                    moveScore += 1000;
-                }                            
                 if(!chainFound) {
                     colChains.add(chain.toArray(new Move[chain.size()])); 
                 }    
@@ -282,16 +309,6 @@ public class Board {
         return colChains;
     }
 
-            // System.out.println("[evaluate()] Move score: " + moveScore);
-            if(move.getColor() == mark) {
-                markThreatCount += threatCount;
-                markScore += moveScore;
-
-        if(markThreatCount > oppThreatCount) {
-            markScore += 2000;
-        } else if(markThreatCount < oppThreatCount) {
-            oppScore += 2000;
-        }                
     /**
      * Returns all the row chains on the board
      * @param moves List of all the moves played
@@ -300,8 +317,6 @@ public class Board {
     private static ArrayList<Move[]> getRowChains(ArrayList<Move> moves) {
         ArrayList<Move[]> rowChains = new ArrayList<>();
 
-        int score = markScore - oppScore;
-        return score;
         moves.sort(Comparator
             .comparing(Move::getColor)
             .thenComparingInt(Move::getRow)
