@@ -30,6 +30,7 @@ public class Zobrist {
 
 	public static int getScore() {
 		if(hashExists()) {
+			System.out.println("Getting score from hash");
 			return zobristEntries.get(hash);
 		}
 
