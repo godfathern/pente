@@ -105,7 +105,6 @@ public class EvalBoard {
                 c++;
             }
 
-            // System.out.println(diagonal.toString());
             if (diagonal.length() >= 3) {
                 moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r - 1, c - 1,
                         false, false, true, false));

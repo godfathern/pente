@@ -15,16 +15,13 @@ public class CPU {
     }
 
     public Move getNextMove(Board board) {
-        // System.out.println("[getNextMove()] Getting Next Move for " + _mark);
         ArrayList<Move> moves = getNextMoveNegaMax(board);
         Random random = new Random();
         int r = random.nextInt(moves.size());
         return moves.get(r);
     }
 
-    public ArrayList<Move> getNextMoveNegaMax(Board board) {
-        // System.out.println("[getNextMoveNegaMax()] Getting Next Move with NegaMax for
-        // " + _mark);
+    public ArrayList<Move> getNextMoveNegaMax(Board board) {    
         numberOfExploredNodes = 0;
         ArrayList<Move> moves = new ArrayList<>();
 
@@ -39,9 +36,6 @@ public class CPU {
 
         int max = Integer.MIN_VALUE;
         for (Move move : possibleMoves) {
-            // System.out.println("[getNextMoveNegaMax()] Evaluating Node: " + move + ",
-            // Depth: " + MAX_DEPTH);
-
             board.play(move);
 
             if (Zobrist.hashExists()) {
@@ -53,7 +47,6 @@ public class CPU {
 
             board.undo(move);
 
-            // System.out.println("Score negaMax: " + score + " Move: " + move);
             if (move.getScore() > max) {
                 max = move.getScore();
                 moves.clear();
@@ -74,9 +67,6 @@ public class CPU {
     }
 
     public int negaMax(Board board, Mark mark, int alpha, int beta, int depth) {
-        // System.out.println("[negaMax()] Evaluating Board for: " + mark + ", Depth: "
-        // + depth);
-        // System.out.println("[negaMax()] Alpha: " + alpha + ", Beta: " + beta);
         numberOfExploredNodes++;
         if (depth == 0 ||
                 board.checkWin(mark.getOpponent()) ||
@@ -89,27 +79,19 @@ public class CPU {
         ArrayList<Move> possibleMoves = board.getPossibleMoves(mark.getOpponent());
 
         int maxScore = Integer.MIN_VALUE;
-        for (Move possibleMove : possibleMoves) {
-            // System.out.println("[()] Evaluating Node: " + possibleMove + ", Depth: " +
-            // depth);
+        for (Move possibleMove : possibleMoves) {            
             board.play(possibleMove);
             possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));
-
-            // System.out.println("[getNextMoveNegaMax()] Score for " + possibleMove + ": "
-            // + possibleMove.getScore() + ", Depth: " + depth);
             board.undo(possibleMove);
 
             maxScore = Math.max(maxScore, possibleMove.getScore());
             alpha = Math.max(alpha, maxScore);
-            // System.out.println("[getNextMoveNegaMax()] Alpha: " + alpha + ", MaxScore: "
-            // + maxScore);
 
             if (alpha >= beta) {
                 break;
             }
         }
 
-        // System.out.println("[getNextMoveNegaMax()] Returning: " + maxScore);
         return maxScore;
     }
 }
