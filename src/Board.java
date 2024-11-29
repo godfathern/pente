@@ -9,7 +9,7 @@ public class Board {
 
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
-    private ArrayList<Move> playedMoves;
+    private static ArrayList<Move> playedMoves;
     private int turns;
     private int blackCaptures;
     private int redCaptures;

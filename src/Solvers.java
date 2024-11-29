@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Solvers {        
     public static final int[][] DIRECTIONS = {       
         {1, 0}, // Right  
@@ -21,12 +23,12 @@ public class Solvers {
      * @param direction The direction to check
      * @return  true if the move has {@code connectionCount} connected, false otherwise
      */
-    public static boolean verifyConnectionCount(Mark[][] board, int col, int row, Mark player, int connectionCount, int[] direction) {        
+    public static int verifyConnectionCount(Mark[][] board, int col, int row, Mark player, int[] direction) {        
         int count = 1; // Start with the current position
         int dc = direction[0], dr = direction[1]; // Directional change
         
         // Check in the positive direction
-        for (int step = 1; step < connectionCount; step++) {
+        for (int step = 1; step < 6; step++) {
             int newCol = col + step * dc;
             int newRow = row + step * dr;
             if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
@@ -34,9 +36,19 @@ public class Solvers {
             } else {
                 break;
             }
-        }        
+        }
+        
+        for (int step = 1; step < 6; step++) {
+            int newCol = col - step * dc;
+            int newRow = row - step * dr;
+            if (Board.isInbound(newCol, newRow) && board[newCol][newRow] == player) {
+                count++;
+            } else {
+                break;
+            }
+        }    
 
-        return count >= connectionCount;
+        return count;
     }
 
     /**
@@ -49,16 +61,119 @@ public class Solvers {
     public static boolean isBlocking(Mark[][] board, Move move, int[] direction) {               
         int c = move.getCol() + direction[0];
         int r = move.getRow() + direction[1];
+        int cc = move.getCol() - direction[0]; // Opposite direction
+        int rr = move.getRow() - direction[1]; // Opposite direction
         if (Board.isInbound(c,r) ) {
             // Check if the next cell is the opponent's cell
             if(board[c][r] == move.getColor().getOpponent()) {
-                return Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 4, direction) ||
-                       Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 3, direction) ||
-                       Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), 2, direction);
+                int firstDir = Solvers.verifyConnectionCount(board, c, r, move.getColor().getOpponent(), direction) - 1;
+                int secondDir = Solvers.verifyConnectionCount(board, cc, rr, move.getColor().getOpponent(), direction);
+                return firstDir + secondDir >= 2;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Determines if the move is blocking one of the opponent's lines
+     * @param board The game board
+     * @param move The move to check
+     * @param direction The direction to check
+     * @return true if the move is blocking, false otherwise
+     */
+    public static boolean isBlocking2(Mark[][] board, Move move) {               
+        ArrayList<Move[]> chains = Board.getChains();
+
+        for (Move[] chain : chains) {
+            Move first = chain[0];
+            Move last = chain[chain.length - 1];
+            int colDir = 0;
+            int rowDir = 0;        
+            int colDiff = last.getCol() - first.getCol();
+            int rowDiff = last.getRow() - first.getRow();
+            
+            if(move.getCol() == first.getCol() && move.getRow() == first.getRow()) {
+                continue;
+            }
+
+            if(colDiff != 0) {
+                colDir = colDiff / Math.abs(colDiff);
+            }
+
+            if(rowDiff != 0) {
+                rowDir = rowDiff / Math.abs(rowDiff);
+            }
+
+            int[] dir = { colDir, rowDir };
+            int c = first.getCol() - dir[0];
+            int r = first.getRow() - dir[1];
+            int cc = last.getCol() + dir[0]; // Opposite direction
+            int rr = last.getRow() + dir[1]; // Opposite direction
+
+            if (Board.isInbound(c,r)) {                                   
+                if(board[c][r] == move.getColor()) {
+                    return true;
+                }
+            }
+
+            if (Board.isInbound(cc,rr)) {                                   
+                if(board[cc][rr] == move.getColor()) {
+                    return true;
+                }
+            }
+        }        
+
+        return false;
+    }
+
+    /**
+     * Determines if the move is blocking one of the opponent's lines
+     * @param board The game board
+     * @param move The move to check
+     * @param direction The direction to check
+     * @return true if the move is blocking, false otherwise
+     */
+    public static int getChainBlockerCount(Mark[][] board, Move[] chain) {               
+        int blockerCount = 0;
+        Move first = chain[0];
+        Move last = chain[chain.length - 1];
+        int colDir = 0;
+        int rowDir = 0;        
+        int colDiff = last.getCol() - first.getCol();
+        int rowDiff = last.getRow() - first.getRow();
+
+        if(colDiff != 0) {
+            colDir = colDiff / Math.abs(colDiff);
+        }
+
+        if(rowDiff != 0) {
+            rowDir = rowDiff / Math.abs(rowDiff);
+        }
+
+        int[] direction = { colDir, rowDir };
+
+        int c = first.getCol() - direction[0];
+        int r = first.getRow() - direction[1];
+        int cc = last.getCol() + direction[0]; // Opposite direction
+        int rr = last.getRow() + direction[1]; // Opposite direction
+
+        if (Board.isInbound(c,r)) {                   
+            if(board[c][r] == first.getColor().getOpponent()) {
+                blockerCount++;
+            }
+
+            
+            return  blockerCount; // 1 or 2
+        }
+
+        if (Board.isInbound(cc,rr)) {                
+            if(board[cc][rr] == first.getColor().getOpponent()) {
+                blockerCount++;
+            }
+        }
+
+        return blockerCount; // 0
     }
 
     /**
