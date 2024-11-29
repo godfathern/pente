@@ -290,44 +290,6 @@ public class Board {
         return moves;
     }
 
-    public ArrayList<Move> getPossibleMovesRedSecondTurn() {
-        ArrayList<Move> moves = new ArrayList<>();
-
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (board[i][j].equals(Mark.Empty)) {
-                    moves.add(new Move(i, j, Mark.Red));
-                }
-            }
-        }
-
-        for (int i = 0; i < 5; i++) {
-            for (int j = 5; j < 15; j++) {
-                if (board[i][j].equals(Mark.Empty)) {
-                    moves.add(new Move(i, j, Mark.Red));
-                }
-            }
-        }
-
-        for (int i = 5; i < 10; i++) {
-            for (int j = 10; j < 15; j++) {
-                if (board[i][j].equals(Mark.Empty)) {
-                    moves.add(new Move(i, j, Mark.Red));
-                }
-            }
-        }
-
-        for (int i = 10; i < 15; i++) {
-            for (int j = 5; j < 15; j++) {
-                if (board[i][j].equals(Mark.Empty)) {
-                    moves.add(new Move(i, j, Mark.Red));
-                }
-            }
-        }
-
-        return moves;
-    }
-
     /**
      * Checks if a certain column and row is within the bounds of the board
      * @param col Column to check
