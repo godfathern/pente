@@ -348,23 +348,13 @@ public class Board {
     }
 
     /**
-     * Returns all the moves of a certain color (Most likely deprecated by the
-     * movesPlayed array)
-     * 
-     * @param mark The color of the moves to return
-     * @return List of all the moves of a certain color
      * Returns all the diagonal chains on the board
      * @param moves List of all the moves played
      * @return List of all the diagonal chains on the board
      */
-    public ArrayList<Move> getAllMarks(Mark mark) {
     private static ArrayList<Move[]> getDiagonalChains(ArrayList<Move> moves) {
         ArrayList<Move[]> diagonalChains = new ArrayList<>();
 
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
-                if (board[i][j] == mark) {
-                    moves.add(new Move(i, j, mark));
         // Sort by color, then by row, then by column
         moves.sort(Comparator
             .comparing(Move::getColor)
@@ -403,7 +393,6 @@ public class Board {
             }
         }
 
-        return moves;
         // Check anti-diagonal (top-right to bottom-left)
         for (Move currentMove : moves) {
             ArrayList<Move> antiDiagonalChain = new ArrayList<>();
