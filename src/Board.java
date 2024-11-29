@@ -232,30 +232,30 @@ public class Board {
             .thenComparingInt(Move::getRow));
 
         for (int i = 0; i < moves.size(); i++) {
-            Move move = moves.get(i);
+            Move currentMove = moves.get(i);
 
-            if(move.isCaptured()) {
+            if(currentMove.isCaptured()) {
                 continue;
             }
 
             int chainCount = 1;
             List<Move> chain = new ArrayList<Move>();
-            chain.add(move);
+            chain.add(currentMove);
 
             for(int j = i + 1; j < moves.size(); j++) {
-                Move move2 = moves.get(j);
+                Move chainedMove = moves.get(j);
                 
                 if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 4, dir)) {
                     // System.out.println("[evaluate()] " + move + " is a row of 4");
                     threatCount++;
                     moveScore += 1250;
-                if(move2.isCaptured()) {
+                if(chainedMove.isCaptured()) {
                     continue;
                 }
 
-                if(move2.getColor() == move.getColor() && move2.getCol() == move.getCol() && move2.getRow() == move.getRow() + chainCount) {
+                if(chainedMove.getColor() == currentMove.getColor() && chainedMove.getCol() == currentMove.getCol() && chainedMove.getRow() == currentMove.getRow() + chainCount) {
                     chainCount++;
-                    chain.add(move2);
+                    chain.add(chainedMove);
                 } else {                    
                     break;
                 }
