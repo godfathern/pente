@@ -16,6 +16,7 @@ public class CPU {
     public Move getNextMove(Board board) {
         // System.out.println("[getNextMove()] Getting Next Move for " + _mark);
         ArrayList<Move> moves = getNextMoveNegaMax(board);
+        System.out.println(moves.size() + " moves found");
         Random random = new Random();
         int r = random.nextInt(moves.size());
         return moves.get(r);
@@ -32,7 +33,8 @@ public class CPU {
         }
 
         ArrayList<Move> possibleMoves;
-        possibleMoves = board.getPossibleMoves(_mark);        
+        possibleMoves = board.getPossibleMoves(_mark);
+        System.out.println(possibleMoves.size() + " possible moves");    
 
         int max = Integer.MIN_VALUE;
          for (Move move : possibleMoves) {
