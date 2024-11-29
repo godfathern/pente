@@ -6,7 +6,6 @@ import java.util.List;
 public class Board {
     public static final int WINNING_SCORE = 100000;
     public static final int BOARD_SIZE = 15;
-    public static boolean dangerousPatternObserved = false;    
 
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
@@ -32,10 +31,6 @@ public class Board {
 
     public int getTurns() {
         return turns;
-    }
-
-    public static boolean isDangerousPatternObserved() {
-        return dangerousPatternObserved;
     }
 
     public void play(Move move) {
@@ -422,7 +417,6 @@ public class Board {
     public ArrayList<Move> getPossibleMoves(Mark mark) {        
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         // Have to make a copy because playing a move modifies the original list and that causes errors for the iterator
-        dangerousPatternObserved = false;
         // ArrayList<Move> moves = EvalBoard.getEvalMoves(board, mark);
         // moves.addAll(EvalBoard.getEvalMoves(board, mark.getOpponent()));
         
