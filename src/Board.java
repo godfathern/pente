@@ -133,14 +133,10 @@ public class Board {
      */
     public boolean checkWin(Mark mark) {
         int markCaptures = getCaptures(mark);
-        
-        for (Move move : playedMoves) {
-            if(move.getColor() == mark) { 
-                for (int[] dir : Solvers.DIRECTIONS) {
-                    if(Solvers.verifyConnectionCount(board, move.getCol(), move.getRow(), move.getColor(), 5, dir)) {
-                        return true;
-                    }                    
-                }
+
+        for (Move[] chain : getChains()) {
+            if (chain.length >= 5 && chain[0].getColor() == mark) {
+                return true;
             }
         }
 
