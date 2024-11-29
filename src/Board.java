@@ -95,6 +95,7 @@ public class Board {
      */
     private void handleCaptureUndo(Move move) {
         if(move.isCapture()) {
+            move.setCapture(false);
             if (move.getColor() == Mark.Black) {
                 blackCaptures--;
             } else {
@@ -105,7 +106,7 @@ public class Board {
                 for (Move playedMove : playedMoves) {
                     if(playedMove.equals(capture) && playedMove.isCaptured()) {
                         playedMove.setCaptured(false);
-                        Zobrist.updateHash(playedMove, true);                       
+                        Zobrist.updateHash(playedMove, true);
                         board[playedMove.getCol()][playedMove.getRow()] = playedMove.getColor();
                     }
                 }
