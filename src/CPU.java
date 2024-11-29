@@ -4,6 +4,7 @@ import java.util.Random;
 public class CPU {    
     private final Mark _mark;
     private final static int MAX_DEPTH = 3;
+    private int numberOfExploredNodes = 0;
 
     public CPU(Mark mark) {
         _mark = mark;
@@ -23,6 +24,7 @@ public class CPU {
 
     public ArrayList<Move> getNextMoveNegaMax(Board board) {
         // System.out.println("[getNextMoveNegaMax()] Getting Next Move with NegaMax for " + _mark); 
+        numberOfExploredNodes = 0;
         ArrayList<Move> moves = new ArrayList<>();
 
         // First move
@@ -35,7 +37,7 @@ public class CPU {
         possibleMoves = board.getPossibleMoves(_mark);        
 
         int max = Integer.MIN_VALUE;
-         for (Move move : possibleMoves) {
+        for (Move move : possibleMoves) {
             // System.out.println("[getNextMoveNegaMax()] Evaluating Node: " + move + ", Depth: " + MAX_DEPTH);
             board.play(move);
             
@@ -57,7 +59,8 @@ public class CPU {
                 moves.add(move);
             }
         }        
-
+        
+        System.out.println("[getNextMoveNegaMax()] Number of Explored Nodes: " + numberOfExploredNodes);
         return moves;
     }
 
@@ -65,6 +68,7 @@ public class CPU {
     public int negaMax(Board board, Mark mark, int alpha, int beta, int depth) {
         // System.out.println("[negaMax()] Evaluating Board for: " + mark + ", Depth: " + depth);
         // System.out.println("[negaMax()] Alpha: " + alpha + ", Beta: " + beta);
+        numberOfExploredNodes++;
         if(depth == 0 || board.checkWin(mark.getOpponent()) || board.checkWin(mark)) {
             return board.evaluate(mark);
         }
@@ -76,7 +80,7 @@ public class CPU {
             // System.out.println("[()] Evaluating Node: " + possibleMove + ", Depth: " + depth);
             board.play(possibleMove);            
                         
-            possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));        
+            possibleMove.setScore(-negaMax(board, mark.getOpponent(), -beta, -alpha, depth - 1));     
 
             // System.out.println("[getNextMoveNegaMax()] Score for " + possibleMove + ": " + possibleMove.getScore() + ", Depth: " + depth);
             board.undo(possibleMove);
