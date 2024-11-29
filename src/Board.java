@@ -6,10 +6,12 @@ import java.util.List;
 public class Board {
     public static final int WINNING_SCORE = 100000;
     public static final int BOARD_SIZE = 15;
+    public static boolean dangerousPatternObserved = false;    
 
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
     private static ArrayList<Move> playedMoves;
+    
     private int turns;
     private int blackCaptures;
     private int redCaptures;
@@ -30,6 +32,10 @@ public class Board {
 
     public int getTurns() {
         return turns;
+    }
+
+    public static boolean isDangerousPatternObserved() {
+        return dangerousPatternObserved;
     }
 
     public void play(Move move) {
@@ -468,11 +474,28 @@ public class Board {
     }
 
     public ArrayList<Move> getPossibleMoves(Mark mark) {        
-        int squareDist = 1;
-
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         // Have to make a copy because playing a move modifies the original list and that causes errors for the iterator
-        ArrayList<Move> moves = new ArrayList<Move>();        
+        dangerousPatternObserved = false;
+        ArrayList<Move> moves = EvalBoard.getEvalMoves(board, mark);
+        
+        if (moves.isEmpty()) {
+            moves = getPossibleMovesWithinNsquares(1, mark);
+        } else {
+            dangerousPatternObserved = true;
+        }
+
+        moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
+        
+        if(moves.size() > 10) {
+            moves = new ArrayList<Move>(moves.subList(0, 10));
+        }
+        
+        return moves;
+    }
+
+    public ArrayList<Move> getPossibleMovesWithinNsquares(int N, Mark mark) {
+        ArrayList<Move> moves = new ArrayList<Move>();
         ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
 
         for (Move move : playedMovesCopy) {
@@ -481,8 +504,8 @@ public class Board {
             }
 
             // System.out.println("[getPossibleMoves()] Getting empty squares around move: " + move);
-            for (int i = move.getCol() - squareDist; i <= move.getCol() + squareDist; i++) {
-                for (int j = move.getRow() - squareDist; j <= move.getRow() + squareDist; j++) {
+            for (int i = move.getCol() - N; i <= move.getCol() + N; i++) {
+                for (int j = move.getRow() - N; j <= move.getRow() + N; j++) {
                     if(i == move.getCol() && j == move.getRow()) {
                         continue;
                     }
@@ -504,24 +527,18 @@ public class Board {
 
                         if(moves.contains(newMove)) {
                             continue;
-                        }
+                        }            
                         
                         play(newMove);
                         newMove.setScore(evaluate(mark));
                         undo(newMove);
-                    
-                        moves.add(newMove);        
+
+                        moves.add(newMove);
                     }
                 }
             }
         }
 
-        moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
-        
-        if(moves.size() > 10) {
-            moves = new ArrayList<Move>(moves.subList(0, 10));
-        }
-        
         return moves;
     }
 
