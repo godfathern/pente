@@ -163,87 +163,33 @@ public class Board {
         int markScore = 0;        
         int oppScore = 0;        
         Mark oppMark = mark.getOpponent();
+        int threatCountMark = 0;
+        int threatCountOpp = 0;
 
         if(checkWin(mark)) {
             return WINNING_SCORE;
         } else if(checkWin(oppMark)) {
             return -WINNING_SCORE;
         }
+
+        ArrayList<Move> moves = EvalBoard.getEvalMoves(board, mark);
+        ArrayList<Move> movesOpp = EvalBoard.getEvalMoves(board, mark.getOpponent());
+
+        for (Move move : moves) {
+            markScore += move.getScore();
+        }
         
-        ArrayList<Move[]> chains = getChains();
-        ArrayList<Move[]> chainsMark = new ArrayList<Move[]>();
-        ArrayList<Move[]> chainsOpp = new ArrayList<Move[]>();
-
-        for (Move[] moves : chains) {
-            if(moves[0].getColor() == mark) {
-                chainsMark.add(moves);
-            } else {
-                chainsOpp.add(moves);
-            }
+        for (Move move : movesOpp) {
+            oppScore += move.getScore();
         }
-
-        for (Move[] chain : chainsMark) {
-            int chainLength = chain.length;
-            int chainScore = 0;
-
-            int blockerCount = Solvers.getChainBlockerCount(board, chain);
-            if(blockerCount == 0) {
-                if(chainLength == 4) { // Open 4
-                    chainScore += 1000;
-                } else if(chainLength == 3) { // Open 3
-                    chainScore += 100;
-                } else if(chainLength == 2) { // Open 2
-                    chainScore += 10;
-                }
-            } else if(blockerCount == 1) {
-                if(chainLength == 4) {
-                    chainScore += 100;
-                } else if(chainLength == 3) {
-                    chainScore += 10;
-                } else if(chainLength == 2) { // Opening yourself to capture
-                    chainScore += -20;
-                }
-            }
-
-            markScore += chainScore;
+                
+        // // System.out.println("[evaluate()] Opponent: " + oppMark);
+        if(threatCountMark > threatCountOpp) {
+            markScore += 1000 * threatCountMark;
+        } else if(threatCountMark < threatCountOpp) {
+            oppScore += 1000 * threatCountOpp;
         }
-
-        for (Move[] chain : chainsOpp) {
-            int chainLength = chain.length;
-            int chainScore = 0;
-
-            int blockerCount = Solvers.getChainBlockerCount(board, chain);
-            if(blockerCount == 0) {
-                if(chainLength == 4) { // Open 4
-                    chainScore += 1500;
-                } else if(chainLength == 3) { // Open 3
-                    chainScore += 1000;
-                } else if(chainLength == 2) { // Open 2
-                    chainScore += 100;
-                }
-            } else if(blockerCount == 1) {
-                if(chainLength == 4) {
-                    chainScore += -1000;
-                } else if(chainLength == 3) {
-                    chainScore += 50;
-                } else if(chainLength == 2) { // Opening themselves up to capture
-                    chainScore += 500;
-                }
-            } else if(blockerCount == 2) {
-                if(chainLength == 4) {
-                    chainScore += -2000;
-                } else if(chainLength == 3) {
-                    chainScore += 50;
-                } else if(chainLength == 2) { // Opening themselves up to capture
-                    chainScore += -1500;
-                }
-            }
-
-            oppScore += chainScore;
-        }
-
-        // System.out.println("[evaluate()] Opponent: " + oppMark);
-
+        
         int score = (markScore + 20 * blackCaptures) - (oppScore + 20 * redCaptures);
         return score;
     }
