@@ -477,14 +477,10 @@ public class Board {
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
         // Have to make a copy because playing a move modifies the original list and that causes errors for the iterator
         dangerousPatternObserved = false;
-        ArrayList<Move> moves = EvalBoard.getEvalMoves(board, mark);
+        // ArrayList<Move> moves = EvalBoard.getEvalMoves(board, mark);
+        // moves.addAll(EvalBoard.getEvalMoves(board, mark.getOpponent()));
         
-        if (moves.isEmpty()) {
-            moves = getPossibleMovesWithinNsquares(1, mark);
-        } else {
-            dangerousPatternObserved = true;
-        }
-
+        ArrayList<Move> moves = getPossibleMovesWithinNsquares(1, mark);
         moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
         
         if(moves.size() > 10) {

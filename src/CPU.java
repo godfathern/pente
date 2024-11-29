@@ -39,21 +39,19 @@ public class CPU {
         int max = Integer.MIN_VALUE;    
         for (Move move : possibleMoves) {
             // System.out.println("[getNextMoveNegaMax()] Evaluating Node: " + move + ", Depth: " + MAX_DEPTH);
-            if (!Board.isDangerousPatternObserved()) {
-                board.play(move);
-            
-                if(Zobrist.hashExists()) {
-                    move.setScore(Zobrist.getScore());
-                } else {
-                    move.setScore(negaMax(board, _mark, -Board.WINNING_SCORE, Board.WINNING_SCORE, MAX_DEPTH));
-                    Zobrist.addEntry(move.getScore());
-                }
-                
-                board.undo(move);
+        
+            board.play(move);
+        
+            if(Zobrist.hashExists()) {
+                move.setScore(Zobrist.getScore());
+            } else {
+                move.setScore(negaMax(board, _mark, -Board.WINNING_SCORE, Board.WINNING_SCORE, MAX_DEPTH));
+                Zobrist.addEntry(move.getScore());
             }
             
+            board.undo(move);
+            
             // System.out.println("Score negaMax: " + score + " Move: " + move);
-
             if(move.getScore() > max) {
                 max = move.getScore();
                 moves.clear();
