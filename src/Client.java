@@ -10,7 +10,17 @@ class Client {
     private static Board mBoard;
     private static CPU cpu;
     private static boolean gameEnded;
+    private static long startTime;
+    private static long timeLimit = 4000; 
     
+    public static long getStartTime() {
+        return startTime;
+    }    
+    
+    public static long getTimeLimit() {
+        return timeLimit;
+    }
+
     public static void main(String[] args) {        
         try {
             gameInitialization();      
@@ -93,6 +103,7 @@ class Client {
                 // Le serveur demande le prochain coup
                 // Le message contient aussi le dernier coup joue.
                 if (cmd == '3') {
+                    startTime = System.currentTimeMillis();
                     byte[] aBuffer = new byte[16];
 
                     int size = input.available();

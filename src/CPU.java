@@ -61,6 +61,11 @@ public class CPU {
             } else if(move.getScore() == max && !moves.contains(move)) {
                 moves.add(move);
             }
+            // Check if the time limit has been exceeded
+            if (System.currentTimeMillis() - Client.getStartTime() > Client.getTimeLimit()) {
+                System.out.println("Time limit exceeded while getting next move.");
+                break;
+            }
         }        
         
         System.out.println("[getNextMoveNegaMax()] Number of Explored Nodes: " + numberOfExploredNodes);
@@ -72,7 +77,11 @@ public class CPU {
         // System.out.println("[negaMax()] Evaluating Board for: " + mark + ", Depth: " + depth);
         // System.out.println("[negaMax()] Alpha: " + alpha + ", Beta: " + beta);
         numberOfExploredNodes++;
-        if(depth == 0 || board.checkWin(mark.getOpponent()) || board.checkWin(mark)) {
+        if (depth == 0 || 
+            board.checkWin(mark.getOpponent()) ||
+            board.checkWin(mark) || 
+            System.currentTimeMillis() - Client.getStartTime() > Client.getTimeLimit()) {
+                                
             return board.evaluate(mark);
         }
 
