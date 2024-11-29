@@ -456,7 +456,7 @@ public class Board {
         int squareDist = 1;
 
         // System.out.println("[getPossibleMoves()] Getting possible Moves for: " + mark);
-        // Have to make a copy because playing a move modifies the original list and that causes errors
+        // Have to make a copy because playing a move modifies the original list and that causes errors for the iterator
         ArrayList<Move> moves = new ArrayList<Move>();        
         ArrayList<Move> playedMovesCopy = new ArrayList<Move>(playedMoves);
 
@@ -485,22 +485,24 @@ public class Board {
                     }
 
                     if (isInbound(col, row) && board[col][row] == Mark.Empty) {
-                        Move newMove = new Move(col, row, mark);
-                        // System.out.println("[getPossibleMoves()] Evaluating move: " + newMove);
+                        Move newMove = new Move(col, row, mark);                                    
+
+                        if(moves.contains(newMove)) {
+                            continue;
+                        }
                         
                         play(newMove);
                         newMove.setScore(evaluate(mark));
                         undo(newMove);
-
-                        if(!moves.contains(newMove)) {
-                            moves.add(newMove);
-                        }                        
+                    
+                        moves.add(newMove);        
                     }
                 }
             }
         }
 
         moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
+        
         if(moves.size() > 10) {
             moves = new ArrayList<Move>(moves.subList(0, 10));
         }
