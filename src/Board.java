@@ -40,6 +40,10 @@ public class Board {
         }
     }
 
+    /**
+     * Handles the capturing of pieces when a move is played
+     * @param move The move that was played
+     */
     private void handleCaptureMoves(Move move) {
         for(int[] dir : Solvers.DIRECTIONS) {
             if (Solvers.isCapture(board, move, dir)) {
@@ -69,6 +73,10 @@ public class Board {
             }
     }
 
+    /**
+     * Undoes a move
+     * @param move The move to undo
+     */
     public void undo(Move move) {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             // System.out.println("[undo()] Undoing move: " + move);
@@ -81,6 +89,10 @@ public class Board {
         }
     }
 
+    /**
+     * Undoes the capturing of pieces when a move is undone
+     * @param move The move to undo
+     */
     private void handleCaptureUndo(Move move) {
         if(move.isCapture()) {
             if (move.getColor() == Mark.Black) {
@@ -101,6 +113,11 @@ public class Board {
         }
     }
 
+    /**
+     * Returns the number of captures for a certain color
+     * @param mark The color to get the captures for
+     * @return The number of captures for the color
+     */
     public int getCaptures(Mark mark) {
         if (mark == Mark.Black) {
             return blackCaptures;
@@ -109,6 +126,11 @@ public class Board {
         return redCaptures;
     }
 
+    /**
+     * Checks if a certain color has won the game
+     * @param mark The color to check for
+     * @return true if the color has won, false otherwise
+     */
     public boolean checkWin(Mark mark) {
         int markCaptures = getCaptures(mark);
         
@@ -125,7 +147,12 @@ public class Board {
         return markCaptures >= 5;
     }
 
-    public int evaluate(Mark mark) {      
+    /**
+     * Evaluates the board for a certain color
+     * @param mark The color to evaluate the board for
+     * @return The score of the board for the color
+     */
+    public int evaluate(Mark mark) {
         // System.out.println("[evaluate()] Evaluating board for: " + mark);  
         int markScore = 0;        
         int oppScore = 0;
@@ -259,31 +286,6 @@ public class Board {
             if(move.getColor() == mark) {
                 markThreatCount += threatCount;
                 markScore += moveScore;
-    /**
-     * Checks if a chain is already in the list of chains
-     * @param chain The chain to check
-     * @param chains List of all the chains
-     * @return true if the chain is already in the list of chains, false otherwise
-     */
-    private static boolean findChain(List<Move> chain, ArrayList<Move[]> chains) {
-        for (Move[] c : chains) {
-            if(c.length > chain.size()) {
-                if(Arrays.asList(c).containsAll(chain)) {
-                    return true;                        
-                }
-            } else {
-                oppThreatCount += threatCount;
-                oppScore += moveScore;
-            }
-                if(chain.containsAll(Arrays.asList(c))) {
-                    chains.remove(c);
-                    chains.add(chain.toArray(new Move[chain.size()]));
-                }
-            }                                 
-        }
-
-        return false;
-    }
 
         if(markThreatCount > oppThreatCount) {
             markScore += 2000;
@@ -531,6 +533,9 @@ public class Board {
         return true;
     }
 
+    /**
+     * Returns the board
+     */
     public String toString() {
         StringBuilder sb = new StringBuilder();
 
