@@ -7,7 +7,7 @@ public class EvalBoard {
     public int[] DScore = new int[] { 0, 1, 9, 81, 729 };
     public int[] AScore = new int[] { 0, 2, 18, 162, 1458 };
 
-
+    public static String[] win = {"11111"};
     public static String[] liveFour = {"11011", "10111", "11101", "11110", "01111"}; //500
     public static String[] liveThree = { "010110", "011010", "011100", "001110" }; // 120
     public static String[] capture = {"1220", "0221"}; //100
@@ -35,11 +35,19 @@ public class EvalBoard {
                 s.append(board[i][j] == player ? "1" : board[i][j] == Mark.Empty ? "0" : "2");
             }
 
-            moves.addAll(checkPattern(board, player, s.toString(), liveFour, 500, i, 0, true, false,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveThree, 120, i, 0, true, false,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), capture, 100, i, 0, true, false,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveTwo, 50, i, 0, true, false,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveOne, 10, i, 0, true, false,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), win, Board.WINNING_SCORE, i, 0, true, false,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), liveFour, 1000, i, 0, true, false,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), liveThree, 100, i, 0, true, false,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), capture, 1500, i, 0, true, false,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), liveTwo, 10, i, 0, true, false,false,false));
+            //moves.addAll(checkPattern(board, player, s.toString(), liveOne, 10, i, 0, true, false,false,false));
+
+            // Opponent
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), win, -Board.WINNING_SCORE, i, 0, true, false,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), liveFour, -1000, i, 0, true, false,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), liveThree, -100, i, 0, true, false,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), capture, -1500, i, 0, true, false,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), liveTwo, -10, i, 0, true, false,false,false));         
         }
 
         return moves;
@@ -55,11 +63,19 @@ public class EvalBoard {
                 s.append(board[i][j] == player ? "1" : board[i][j] == Mark.Empty ? "0" : "2");
             }
 
-            moves.addAll(checkPattern(board, player, s.toString(), liveFour, 500, 0, j, false, true,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveThree, 120, 0, j, false, true,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), capture, 100, 0, j, false, true,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveTwo, 50, 0, j, false, true,false,false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveOne, 10, 0, j, false, true,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), win, Board.WINNING_SCORE, 0, j, false, true,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), liveFour, 1000, 0, j, false, true,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), liveThree, 100, 0, j, false, true,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), capture, 1500, 0, j, false, true,false,false));
+            moves.addAll(checkPattern(board, player, s.toString(), liveTwo, 10, 0, j, false, true,false,false));
+            //moves.addAll(checkPattern(board, player, s.toString(), liveOne, 10, 0, j, false, true,false,false));
+
+            // Opponent
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), win, -Board.WINNING_SCORE, 0, j, false, true,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), liveFour, -1000, 0, j, false, true,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), liveThree, -100, 0, j, false, true,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), capture, -1500, 0, j, false, true,false,false));
+            // moves.addAll(checkPattern(board, player.getOpponent(), s.toString(), liveTwo, -10, 0, j, false, true,false,false));
         }
         return moves;
     }
@@ -80,13 +96,20 @@ public class EvalBoard {
             }
 
             // System.out.println(diagonal.toString());
-
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 500, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 120, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 100, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 50, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 10, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 10, r-1, c-1, false, false,true,false));
+
+                // Opponent
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), win, -Board.WINNING_SCORE, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveFour, -1000, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveThree, -100, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), capture, -1500, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveTwo, -10, r-1, c-1, false, false,true,false));
             }
         }
     
@@ -100,13 +123,21 @@ public class EvalBoard {
                 c++;
             }
 
-            //// System.out.println(diagonal.toString());
+            // System.out.println(diagonal.toString());
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 500, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 120, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 100, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 50, r-1, c-1, false, false,true,false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 10, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r-1, c-1, false, false,true,false));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 10, r-1, c-1, false, false,true,false));
+                
+                // Opponent
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), win, -Board.WINNING_SCORE, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveFour, -1000, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveThree, -100, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), capture, -1500, r-1, c-1, false, false,true,false));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveTwo, -10, r-1, c-1, false, false,true,false));
             }
         }
 
@@ -131,11 +162,19 @@ public class EvalBoard {
 
             // System.out.println(diagonal.toString());
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 500, r - 1, c + 1, false, false,false,true));                
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 120, r - 1, c + 1, false, false,false,true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 100, r - 1, c + 1, false, false,false,true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 50, r - 1, c + 1, false, false,false,true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 10, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r - 1, c + 1, false, false,false,true));                
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r - 1, c + 1, false, false,false,true));                
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 10, r - 1, c + 1, false, false,false,true));
+                
+                // Opponent
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), win, -Board.WINNING_SCORE, r - 1, c + 1, false, false,false,true));                
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveFour, -1000, r - 1, c + 1, false, false,false,true));                
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveThree, -100, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), capture, -1500, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveTwo, -10, r - 1, c + 1, false, false,false,true));
             }
         }
     
@@ -152,11 +191,19 @@ public class EvalBoard {
 
             // System.out.println(diagonal.toString());
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 500, r - 1, c + 1, false, false,false,true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 120, r - 1, c + 1, false, false,false,true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 100, r - 1, c + 1, false, false,false,true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 50, r - 1, c + 1, false, false,false,true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 50, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r - 1, c + 1, false, false,false,true));
+                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player, diagonal.toString(), liveOne, 50, r - 1, c + 1, false, false,false,true));
+
+                // Opponent
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), win, -Board.WINNING_SCORE, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveFour, -1000, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveThree, -100, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), capture, -1500, r - 1, c + 1, false, false,false,true));
+                // moves.addAll(checkPattern(board, player.getOpponent(), diagonal.toString(), liveTwo, -10, r - 1, c + 1, false, false,false,true));
             }
         }
 
