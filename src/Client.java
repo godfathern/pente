@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.Scanner;
 
 class Client {
     private static Socket MyClient;
@@ -159,7 +160,15 @@ class Client {
         System.out.println("Tentative de connexion");
         
         try {
-            MyClient = new Socket("localhost", 8888);
+            Scanner scIp = new Scanner(System.in);
+            System.out.println("Entrez l'adresse IP du serveur avec le port (0.0.0.0:1234) : ");
+            // interpolate the IP and port
+            String ip = scIp.nextLine();
+            String[] ipPort = ip.split(":");
+            System.out.println("IP: " + ip);
+            System.out.println("Port: " + ipPort[1].getClass());
+            MyClient = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
+            scIp.close();
 
             input = new BufferedInputStream(MyClient.getInputStream());
             output = new BufferedOutputStream(MyClient.getOutputStream());
