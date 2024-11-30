@@ -1,33 +1,30 @@
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EvalBoard {
-    public static final int[][] DIRECTIONS = {       
-        {1, 0}, // Right  
-        {0, 1}, // Up
-        {1, 1}, // Diagonal up-right
-        {1, -1}, // Diagonal down-right
-        
-        {-1, 0}, // Left
-        {0, -1}, // Down
-        {-1, 1}, // Diagonal up-left
-        {-1, -1} // Diagonal down-left
-    };
 
-    public static int amountOfMovesAnalyzed = 5;
-    public int[] DScore = new int[] { 0, 1, 9, 81, 729 };
-    public int[] AScore = new int[] { 0, 2, 18, 162, 1458 };
+    //Im Pep Guardiola, I have the ball, the opponent has the ball, the ball is the most important thing in the world
+    public String[] liveFour = {"11011", "10111", "11101", "11110", "01111"}; //410
+    public String[] liveThree = { "010110", "011010", "011100", "001110" }; // 310
+    public String[] deadThree = {"211100", "211010", "210110", "010112"}; // 290
+    public String[] capture = {"1220", "0221"}; //250
+    public String[] liveTwo = {"0110", "0101","1100","1010"}; // 200
+    public String[] liveOne = {"012", "021", "120","210","02"}; // 10
 
+    //Im Jose Mourinho
+    public String[] defThree = {"02220", "02202", "02022", "20220", "20202", "20022"}; // 300
 
-    public String[] liveFour = {"11011", "10111", "11101", "11110", "01111"}; //500
-    public String[] liveThree = { "010110", "011010", "011100", "001110" }; // 120
-    public String[] capture = {"1220", "0221"}; //100
-    public String[] liveTwo = {"0110", "0101","1100","1010"}; // 50
-    public String[] liveOne = {"012", "021", "120","210"}; // 10
+    //Score for each pattern : 
+    int liveFourScore = 410;
+    int liveThreeScore = 310;
+    int deadThreeScore = 290;
+    int captureScore = 250;
+    int liveTwoScore = 200;
+    int liveOneScore = 10;
+    int defThreeScore = 300;
     
-
-
 
     int [][] board;
 
@@ -41,16 +38,54 @@ public class EvalBoard {
     public void undo(int x, int y){
         board[x][y] = 0;
     }
-    public void addPoint(int x, int y, int point){
-        board[x][y] += point;
+    public void addPoint(int x, int y, int score){
+        board[x][y] += score;
+    }
+    public void reset(){
+        for(int i=0; i<board.length; i++){
+            for(int j=0; j<board[i].length; j++){
+                if (board[i][j] != 1 && board[i][j] != 2){
+                    board[i][j] = 0;
+                }
+            }
+        }
     }
 
     //Ditmemay :
-    public void evalBoard(int player) {
-        evalHorizontal(player);
-        evalVertical(player);
-        evalDiagonalLeftToRight(player);
-        evalDiagonalRightToLeft(player);
+
+    public String bestMove() {
+        this.evaluateBoard();
+        int maxScore = Integer.MIN_VALUE;
+        ArrayList<int[]> candidates = new ArrayList<>();
+        Random random = new Random();
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] > maxScore) {
+                    maxScore = board[i][j];
+                    candidates.clear();
+                    candidates.add(new int[]{i, j});
+                } else if (board[i][j] == maxScore) {
+                    candidates.add(new int[]{i, j});
+                }
+            }
+        }
+        int[] bestMove = candidates.get(random.nextInt(candidates.size()));
+        System.out.println("maxScore: " + maxScore);
+        this.display();
+        this.play(bestMove[0], bestMove[1], 1);
+        this.display();
+        this.reset();
+        this.display();
+        return CoordinateConverter.coordinateToString(bestMove[0], bestMove[1]);
+    }
+
+
+    public void evaluateBoard() {
+        evalHorizontal(1);
+        evalVertical(1);
+        evalDiagonalLeftToRight(1);
+        evalDiagonalRightToLeft(1);
     }
     
     private void evalHorizontal(int player) {
@@ -59,11 +94,13 @@ public class EvalBoard {
             for (int j = 0; j < board[0].length; j++) {
                 s.append(board[i][j] == player ? "1" : board[i][j] == 0 ? "0" : "2");
             }
-            checkPattern(s.toString(), liveFour, 500, i, 0, true, false,false,false);
-            checkPattern(s.toString(), liveThree, 120, i, 0, true, false,false,false);
-            checkPattern(s.toString(), capture, 100, i, 0, true, false,false,false);
-            checkPattern(s.toString(), liveTwo, 50, i, 0, true, false,false,false);
-            checkPattern(s.toString(), liveOne, 10, i, 0, true, false,false,false);
+            checkPattern(s.toString(), liveFour, liveFourScore, i, 0, true, false,false,false);
+            checkPattern(s.toString(), liveThree, liveThreeScore, i, 0, true, false,false,false);
+            checkPattern(s.toString(), deadThree, deadThreeScore, i,0, false, true,false,false);
+            checkPattern(s.toString(), capture, captureScore, i, 0, true, false,false,false);
+            checkPattern(s.toString(), liveTwo, liveTwoScore, i, 0, true, false,false,false);
+            checkPattern(s.toString(), liveOne, liveOneScore, i, 0, true, false,false,false);
+            checkPattern(s.toString(), defThree, defThreeScore, i, 0, true, false,false,false);
         }
     }
     
@@ -73,11 +110,13 @@ public class EvalBoard {
             for (int i = 0; i < board.length; i++) {
                 s.append(board[i][j] == player ? "1" : board[i][j] == 0 ? "0" : "2");
             }
-            checkPattern(s.toString(), liveFour, 500, 0, j, false, true,false,false);
-            checkPattern(s.toString(), liveThree, 120, 0, j, false, true,false,false);
-            checkPattern(s.toString(), capture, 100, 0, j, false, true,false,false);
-            checkPattern(s.toString(), liveTwo, 50, 0, j, false, true,false,false);
-            checkPattern(s.toString(), liveOne, 10, 0, j, false, true,false,false);
+            checkPattern(s.toString(), liveFour, liveFourScore, 0, j, false, true,false,false);
+            checkPattern(s.toString(), liveThree, liveThreeScore, 0, j, false, true,false,false);
+            checkPattern(s.toString(), deadThree, deadThreeScore, 0, j, false, true,false,false);
+            checkPattern(s.toString(), capture, captureScore, 0, j, false, true,false,false);
+            checkPattern(s.toString(), liveTwo, liveTwoScore, 0, j, false, true,false,false);
+            checkPattern(s.toString(), liveOne, liveOneScore, 0, j, false, true,false,false);
+            checkPattern(s.toString(), defThree, defThreeScore, 0, j, false, true,false,false);
         }
     }
     
@@ -96,11 +135,13 @@ public class EvalBoard {
                 }
                 System.out.println(diagonal.toString());
                 if (diagonal.length() >= 3) {
-                    checkPattern(diagonal.toString(), liveFour, 500, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), liveThree, 120, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), capture, 100, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), liveTwo, 50, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), liveOne, 10, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), liveFour, liveFourScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), liveThree, liveThreeScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), deadThree, deadThreeScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), capture, captureScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), liveOne, liveOneScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), defThree, defThreeScore, r-1, c-1, false, false,true,false);
                 }
             }
         
@@ -115,12 +156,13 @@ public class EvalBoard {
                 }
                 //System.out.println(diagonal.toString());
                 if (diagonal.length() >= 3) {
-                    checkPattern(diagonal.toString(), liveFour, 500, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), liveThree, 120, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), capture, 100, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), liveTwo, 50, r-1, c-1, false, false,true,false);
-                    checkPattern(diagonal.toString(), liveOne, 10, r-1, c-1, false, false,true,false);
-                }
+                    checkPattern(diagonal.toString(), liveFour, liveFourScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), liveThree, liveThreeScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), deadThree, deadThreeScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), capture, captureScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r-1, c-1, false, false,true,false);
+                    checkPattern(diagonal.toString(), liveOne, liveOneScore, r-1, c-1, false, false,true,false);
+                }   checkPattern(diagonal.toString(), defThree, defThreeScore, r-1, c-1, false, false,true,false);
             }
     }
     
@@ -139,11 +181,13 @@ public class EvalBoard {
             }
             System.out.println(diagonal.toString());
             if (diagonal.length() >= 3) {
-                checkPattern(diagonal.toString(), liveFour, 500, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), liveThree, 120, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), capture, 100, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), liveTwo, 50, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), liveOne, 10, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveFour, liveFourScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveThree, liveThreeScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), deadThree, deadThreeScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), capture, captureScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveOne, liveOneScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), defThree, defThreeScore, r - 1, c + 1, false, false,false,true);
             }
         }
     
@@ -158,11 +202,13 @@ public class EvalBoard {
             }
             System.out.println(diagonal.toString());
             if (diagonal.length() >= 3) {
-                checkPattern(diagonal.toString(), liveFour, 500, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), liveThree, 120, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), capture, 100, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), liveTwo, 50, r - 1, c + 1, false, false,false,true);
-                checkPattern(diagonal.toString(), liveOne, 50, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveFour, liveFourScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveThree, liveThreeScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), deadThree, deadThreeScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), capture, captureScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), liveOne, liveOneScore, r - 1, c + 1, false, false,false,true);
+                checkPattern(diagonal.toString(), defThree, defThreeScore, r - 1, c + 1, false, false,false,true);
             }
         }
     }
