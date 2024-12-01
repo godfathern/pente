@@ -84,9 +84,14 @@ class Client {
 				String s = new String(aBuffer).trim();
                 int [] moveOrdi = CoordinateConverter.stringToCoordinate(s);
                 evalBoard.play(moveOrdi[0], moveOrdi[1], 2);
+                evalBoard.reset();
+                evalBoard.removeCapture();
 				System.out.println("Dernier coup :"+ s);
 		       	System.out.println("Entrez votre coup : ");
                 String move = evalBoard.bestMove();
+                evalBoard.reset();
+                evalBoard.removeCapture();
+                evalBoard.display();
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
 				
@@ -94,8 +99,7 @@ class Client {
 			// Le dernier coup est invalide
 			if(cmd == '4'){
 				System.out.println("Coup invalide, entrez un nouveau coup : ");
-		       	String move = null;
-				move = console.readLine();
+		       	String move = evalBoard.bestMove();//ca arrive quand il y a des captures non capturables - solution temporaire
 				output.write(move.getBytes(),0,move.length());
 				output.flush();
 				
