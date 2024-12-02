@@ -20,7 +20,7 @@ public class Move implements Comparable<Move> {
     
     public Move(String move, Mark mark) {
         col = move.charAt(0) - 'A';
-        row = Integer.parseInt(move.substring(1)) - 1;
+        row = 15 - Integer.parseInt(move.substring(1));
         color = mark;
         isCaptured = false;
         isCapture = false;
@@ -81,7 +81,7 @@ public class Move implements Comparable<Move> {
 
     @Override
     public String toString(){
-        return Character.toString((char) (col + 'A')) + (row + 1);
+        return Character.toString((char) (col + 'A')) + (15 - row);
     }
 
     @Override

@@ -10,18 +10,18 @@ public class Board {
     // 0: Empty, 1: Red, 2: Black
     private final Mark[][] board;
     private static ArrayList<Move> playedMoves;
-
+    private EvalBoard evalBoard = new EvalBoard(BOARD_SIZE);
     private int turns;
     private int blackCaptures;
     private int redCaptures;
 
     public Board() {
         turns = 0;
-        board = new Mark[15][15];
+        board = new Mark[BOARD_SIZE][BOARD_SIZE];
         playedMoves = new ArrayList<Move>();
 
-        for (int i = 0; i < 15; i++) {
-            for (int j = 0; j < 15; j++) {
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            for (int j = 0; j < BOARD_SIZE; j++) {
                 board[i][j] = Mark.Empty;
             }
         }
@@ -36,6 +36,9 @@ public class Board {
     public void play(Move move) {
         if (board[move.getCol()][move.getRow()] == Mark.Empty) {
             board[move.getCol()][move.getRow()] = move.getColor();
+            evalBoard.play(move.getRow(), move.getCol(), move.getColor().ordinal());
+            evalBoard.reset();
+            //evalBoard.removeCapture(move.getColor());
             handleCaptureMoves(move);
             Zobrist.updateHash(move, false);
 
@@ -72,6 +75,7 @@ public class Board {
                         if (playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
                             playedMove.setCaptured(true);                            
                             move.addCapture(playedMove);
+                            evalBoard.capture(playedMove.getRow(), playedMove.getCol());
 
                             Zobrist.updateHash(playedMove, true);
                         }
@@ -90,8 +94,9 @@ public class Board {
         if (board[move.getCol()][move.getRow()] == move.getColor()) {
             handleCaptureUndo(move);
             Zobrist.updateHash(move, false);
-
-            board[move.getCol()][move.getRow()] = Mark.Empty;            
+            
+            board[move.getCol()][move.getRow()] = Mark.Empty;      
+            evalBoard.play(move.getRow(), move.getCol(), Mark.Empty.ordinal());
             playedMoves.remove(move);
             turns--;
         }
@@ -104,6 +109,7 @@ public class Board {
      */
     private void handleCaptureUndo(Move move) {
         if (move.isCapture()) {
+            //evalBoard.removeCapture(move.getColor());
             move.setCapture(false);
             if (move.getColor() == Mark.Black) {
                 blackCaptures--;
@@ -116,7 +122,7 @@ public class Board {
                     if (playedMove.equals(capture) && playedMove.isCaptured()) {
                         playedMove.setCaptured(false);                        
                         board[playedMove.getCol()][playedMove.getRow()] = playedMove.getColor();
-
+                        evalBoard.play(playedMove.getRow(), playedMove.getCol(), playedMove.getColor().ordinal());
                         Zobrist.updateHash(playedMove, true);
                     }
                 }
@@ -173,17 +179,14 @@ public class Board {
             return WINNING_SCORE;
         } else if (checkWin(oppMark)) {
             return -WINNING_SCORE;
-        }
+        }            
 
-        ArrayList<Move> moves = EvalBoard.getEvalMoves(board, mark);
-        ArrayList<Move> movesOpp = EvalBoard.getEvalMoves(board, mark.getOpponent());
-
-        for (Move move : moves) {
-            markScore += move.getScore();
-        }
-
-        for (Move move : movesOpp) {
-            oppScore += move.getScore();
+        if(mark == Mark.Black) {
+            markScore += evalBoard.getTotalScoreBlack() + 20 * blackCaptures;
+            oppScore += evalBoard.getTotalScoreRed() + 20 * redCaptures;
+        } else {
+            markScore += evalBoard.getTotalScoreRed() + 20 * blackCaptures;
+            oppScore += evalBoard.getTotalScoreBlack() + 20 * redCaptures;
         }
 
         if (threatCountMark > threatCountOpp) {
@@ -192,7 +195,7 @@ public class Board {
             oppScore += 1000 * threatCountOpp;
         }
 
-        int score = (markScore + 20 * blackCaptures) - (oppScore + 20 * redCaptures);
+        int score = markScore - oppScore;
         return score;
     }
 
@@ -427,12 +430,12 @@ public class Board {
     }
 
     public ArrayList<Move> getPossibleMoves(Mark mark) {
-        ArrayList<Move> moves = getPossibleMovesWithinNsquares(1, mark);
+        ArrayList<Move> moves = evalBoard.bestMove(mark);
         moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
 
-        if (moves.size() > 10) {
-            moves = new ArrayList<Move>(moves.subList(0, 10));
-        }
+        // if (moves.size() > 10) {
+        //     moves = new ArrayList<Move>(moves.subList(0, 10));
+        // }
 
         return moves;
     }

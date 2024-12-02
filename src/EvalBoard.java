@@ -1,154 +1,363 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EvalBoard {
-    public static int amountOfMovesAnalyzed = 5;
-    public int[] DScore = new int[] { 0, 1, 9, 81, 729 };
-    public int[] AScore = new int[] { 0, 2, 18, 162, 1458 };
 
-    public static String[] win = { "11111" };
-    public static String[] liveFour = { "11011", "10111", "11101", "11110", "01111" }; // 500
-    public static String[] liveThree = { "010110", "011010", "011100", "001110" }; // 120
-    public static String[] capture = { "1220", "0221" }; // 100
-    public static String[] liveTwo = { "0110", "0101", "1100", "1010" }; // 50
-    public static String[] liveOne = { "012", "021", "120", "210" }; // 10
+    private int totalScoreBlack = 0;
+    private int totalScoreRed = 0;
+    
+    // Im Pep Guardiola, I have the ball, the opponent has the ball, the ball is the
+    // most important thing in the world
+    private static HashMap<Integer, String[]> patterns;
 
-    public static ArrayList<Move> getEvalMoves(Mark[][] board, Mark player) {
-        ArrayList<Move> moves = new ArrayList<>();
+    public String[] win = { "11111" };
+    public String[] liveFourWedge = { "11011", "10111", "11101"};
+    public String[] liveFour = { "11110", "01111" };
+    public String[] liveThreeWedgeFree = { "010110", "011010" };
+    public String[] liveThreeWedge = { "1011", "1101" };
+    public String[] liveThreeFree = { "001110", "011100" };
+    public String[] liveThree = { "01110", "01110" };
+    public String[] deadThreeWedge = { "211010", "210110", "010112" };
+    public String[] deadThree = { "211100", "001112" };
+    public String[] liveTwoWedgeFree = { "0101", "1010" };
+    public String[] liveTwoWedge = { "101", "101" };
+    public String[] liveTwoFree = { "0110", "1100"};
+    public String[] liveTwo = { "011", "110"};
+    public String[] liveOne = { "02" };
+    
+    // Waste patterns
+    public String[] waste = { "021", "120" };
+    
+    // Self burn patterns
+    public String[] selfCapture = { "012", "210" };
+    public String[] getCaptured = { "0112", "2110" };
+    
+    // Defensive patterns    
+    public String[] defDeadThreeWedge = { "122020", "120220", "020221" };
+    public String[] defDeadThree = { "122200", "002221" };
+    public String[] defThreeWedgeFree = { "22020", "02202", "02022", "20220", "202020", "020202" };
+    public String[] defThreeWedge = { "20202", "20022", "2202", "2022" };
+    public String[] defThree = { "02220", "02202", "02022", "20220", "20202", "20022" };
+    public String[] defFourWedge = { "122022", "220221", "202221", "120222", "222021",  "122202" };
+    public String[] defFour = { "122220", "022221" };
+    
+    // Capture
+    public String[] potentialCapture = { "0220" };
+    public String[] defFourDoubleDoubleCap = { "1220221" };
+    public String[] defThreeCap = { "20221", "12202"  };
+    public String[] capture = { "1220", "0221" };
 
-        moves.addAll(evalHorizontal(board, player));
-        moves.addAll(evalVertical(board, player));
-        moves.addAll(evalDiagonalLeftToRight(board, player));
-        moves.addAll(evalDiagonalRightToLeft(board, player));
+    // Get captured
 
-        return moves;
+    // Score for each pattern :
+    int winScore = Board.WINNING_SCORE;
+    int liveFourWedgeScore = 45000;
+    int liveFourScore = 40000;
+    int liveThreeWedgeFreeScore = 2500;
+    int liveThreeWedgeScore = 2000;
+    int liveThreeFreeScore = 1500;
+    int liveThreeScore = 1000;
+    int deadThreeWedgeScore = -250;
+    int deadThreeScore = -250;
+    int liveTwoWedgeFreeScore = 300;
+    int liveTwoWedgeScore = 250;
+    int liveTwoFreeScore = 225;
+    int liveTwoScore = 5;
+    int liveOneScore = 3;
+    
+    int wasteScore = -1000;
+    
+    int selfCaptureScore = -5000;    
+    
+    int defDeadThreeWedgeScore = 2000;
+    int defDeadThreeScore = 1000;
+    int defThreeWedgeFreeScore = 3000;
+    int defThreeWedgeScore = 2500;
+    int defThreeScore = 2000;
+    int defFourWedgeScore = 25000;
+    int defFourScore = 15000;
+    
+    int defFourDoubleDoubleCapScore = Board.WINNING_SCORE;
+    int potentialCaptureScore = 500;
+    int defThreeCapScore = 5000;
+    int captureScore = 25000;
+    
+    int getCapturedScore = -2500;
+    
+    int[][] board;
+
+    public EvalBoard(int size) {
+        this.board = new int[size][size];
+
+        patterns = new HashMap<Integer, String[]>();                
+        patterns.put(winScore, win);
+        patterns.put(liveFourWedgeScore, liveFourWedge);
+        patterns.put(liveFourScore, liveFour);
+        patterns.put(liveThreeWedgeFreeScore, liveThreeWedgeFree);
+        patterns.put(liveThreeWedgeScore, liveThreeWedge);
+        patterns.put(liveThreeFreeScore, liveThreeFree);
+        patterns.put(liveThreeScore, liveThree);
+        patterns.put(deadThreeWedgeScore, deadThreeWedge);
+        patterns.put(deadThreeScore, deadThree);
+        patterns.put(liveTwoWedgeFreeScore, liveTwoWedgeFree);
+        patterns.put(liveTwoWedgeScore, liveTwoWedge);
+        patterns.put(liveTwoFreeScore, liveTwoFree);
+        patterns.put(liveTwoScore, liveTwo);
+        patterns.put(liveOneScore,liveOne);
+
+        patterns.put(wasteScore, waste);
+
+        patterns.put(selfCaptureScore, selfCapture);
+        patterns.put(getCapturedScore, getCaptured);
+
+        patterns.put(defDeadThreeWedgeScore, defDeadThreeWedge);
+        patterns.put(defDeadThreeScore, defDeadThree);
+        patterns.put(defThreeWedgeFreeScore, defThreeWedgeFree);
+        patterns.put(defThreeWedgeScore, defThreeWedge);
+        patterns.put(defThreeScore, defThree);
+        patterns.put(defFourWedgeScore, defFourWedge);
+        patterns.put(defFourScore, defFour);
+
+        patterns.put(defFourDoubleDoubleCapScore, defFourDoubleDoubleCap);
+        patterns.put(potentialCaptureScore, potentialCapture);
+        patterns.put(defThreeCapScore, defThreeCap);
+        patterns.put(captureScore, capture);
     }
 
-    private static ArrayList<Move> evalHorizontal(Mark[][] board, Mark player) {
-        ArrayList<Move> moves = new ArrayList<>();
+    public int getTotalScoreBlack() {
+        return totalScoreBlack;
+    }
+
+    public int getTotalScoreRed() {
+        return totalScoreRed;
+    }    
+
+    public void play(int row, int col, int player) {
+        board[row][col] = player;
+    }
+
+    public void capture(int x, int y) {
+        board[x][y] = 0;
+    }
+
+    public void addPoint(int x, int y, int score, Mark player) {
+        board[x][y] += score;
+        
+        if (player == Mark.Black) {
+            totalScoreBlack += score;
+        } else { 
+            totalScoreRed += score;
+        }
+    }
+
+    public void reset() {
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if (board[i][j] != 1 && board[i][j] != 2) {
+                    board[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    public ArrayList<Move> bestMove(Mark player) {
+        this.evaluateBoard(player);
+        int maxScore = Integer.MIN_VALUE;
+        ArrayList<Move> candidates = new ArrayList<>();
 
         for (int i = 0; i < board.length; i++) {
-            StringBuilder s = new StringBuilder();
+            for (int j = 0; j < board[i].length; j++) {                
+                
+                if(board[i][j] != 0 && board[i][j] != 1 && board[i][j] != 2) {
+                    Move newMove = new Move(i, j, player);
+                    newMove.setScore(board[i][j]);
 
-            for (int j = 0; j < board[0].length; j++) {
-                s.append(board[i][j] == player ? "1" : board[i][j] == Mark.Empty ? "0" : "2");
+                    if (newMove.getScore() > maxScore) {
+                        maxScore = newMove.getScore();
+    
+                        candidates.clear();
+                        candidates.add(newMove);
+                    } else if (newMove.getScore() == maxScore) {
+                        candidates.add(newMove);
+                    }
+                }
+
             }
-
-            moves.addAll(checkPattern(board, player, s.toString(), win, Board.WINNING_SCORE, i, 0, true, false, false,
-                    false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveFour, 1000, i, 0, true, false, false, false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveThree, 100, i, 0, true, false, false, false));
-            moves.addAll(checkPattern(board, player, s.toString(), capture, 1500, i, 0, true, false, false, false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveTwo, 10, i, 0, true, false, false, false));
         }
+        
+        // System.out.("maxScore: " + maxScore);
+        this.display();
 
-        return moves;
+        return candidates;
     }
 
-    private static ArrayList<Move> evalVertical(Mark[][] board, Mark player) {
-        ArrayList<Move> moves = new ArrayList<>();
+    public void evaluateBoard(Mark player) {
+        evalHorizontal(player);
+        evalVertical(player);
+        evalDiagonalLeftToRight(player);
+        evalDiagonalRightToLeft(player);
+    }
 
+    private void appendToString(int i, int j, Mark player, StringBuilder s) {
+        if (board[i][j] == player.ordinal()) {
+            s.append("1");
+        } else if (board[i][j] == 0) {
+            s.append("0");
+        } else if (board[i][j] == player.getOpponent().ordinal()) {
+            s.append("2");
+        }
+    }
+
+    private void evalHorizontal(Mark player) {
+        for (int i = 0; i < board.length; i++) {
+            StringBuilder s = new StringBuilder();
+            for (int j = 0; j < board[0].length; j++) {
+                appendToString(i, j, player, s);
+            }
+
+            for (int score : patterns.keySet()) {
+                checkPattern(s.toString(), patterns.get(score), score, i, 0, true, false, false, false, player);                
+            }
+
+            // checkPattern(s.toString(), win, winScore, i, 0, true, false, false, false, player);            
+            // checkPattern(s.toString(), liveFour, liveFourScore, i, 0, true, false, false, false, player);
+            // checkPattern(s.toString(), liveThree, liveThreeScore, i, 0, true, false, false, false, player);
+            // checkPattern(s.toString(), deadThree, deadThreeScore, i, 0, true, false, false, false, player);
+            // checkPattern(s.toString(), capture, captureScore, i, 0, true, false, false, false, player);
+            // checkPattern(s.toString(), liveTwo, liveTwoScore, i, 0, true, false, false, false, player);
+            // checkPattern(s.toString(), liveOne, liveOneScore, i, 0, true, false, false, false, player);
+            // checkPattern(s.toString(), defThree, defThreeScore, i, 0, true, false, false, false, player);
+            // checkPattern(s.toString(), defFour, defFourScore, i, 0, true, false, false, false, player);
+        }
+    }
+
+    private void evalVertical(Mark player) {
         for (int j = 0; j < board[0].length; j++) {
             StringBuilder s = new StringBuilder();
-
             for (int i = 0; i < board.length; i++) {
-                s.append(board[i][j] == player ? "1" : board[i][j] == Mark.Empty ? "0" : "2");
+                appendToString(i, j, player, s);
             }
 
-            moves.addAll(checkPattern(board, player, s.toString(), win, Board.WINNING_SCORE, 0, j, false, true, false,
-                    false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveFour, 1000, 0, j, false, true, false, false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveThree, 100, 0, j, false, true, false, false));
-            moves.addAll(checkPattern(board, player, s.toString(), capture, 1500, 0, j, false, true, false, false));
-            moves.addAll(checkPattern(board, player, s.toString(), liveTwo, 10, 0, j, false, true, false, false));
+            for (int score : patterns.keySet()) {
+                checkPattern(s.toString(), patterns.get(score), score, 0,j,false, true, false, false, player);
+            }
+
+            // checkPattern(s.toString(), win, winScore, 0,j,false, true, false, false, player);
+            // checkPattern(s.toString(), liveFour, liveFourScore, 0, j, false, true, false, false, player);
+            // checkPattern(s.toString(), liveThree, liveThreeScore, 0, j, false, true, false, false, player);
+            // checkPattern(s.toString(), deadThree, deadThreeScore, 0, j, false, true, false, false, player);
+            // checkPattern(s.toString(), capture, captureScore, 0, j, false, true, false, false, player);
+            // checkPattern(s.toString(), liveTwo, liveTwoScore, 0, j, false, true, false, false, player);
+            // checkPattern(s.toString(), liveOne, liveOneScore, 0, j, false, true, false, false, player);
+            // checkPattern(s.toString(), defThree, defThreeScore, 0, j, false, true, false, false, player);
+            // checkPattern(s.toString(), defFour, defFourScore, 0, j, false, true, false, false, player);
         }
-        return moves;
     }
 
-    private static ArrayList<Move> evalDiagonalLeftToRight(Mark[][] board, Mark player) {
-        int rows = board[0].length;
-        int cols = board.length;
-        ArrayList<Move> moves = new ArrayList<>();
+    private void evalDiagonalLeftToRight(Mark player) {
+        int rows = board.length;
+        int cols = board[0].length;
 
         for (int startCol = 0; startCol < cols; startCol++) {
             StringBuilder diagonal = new StringBuilder();
             int r = 0, c = startCol;
-
             while (r < rows && c < cols) {
-                diagonal.append(board[c][r] == player ? "1" : board[c][r] == Mark.Empty ? "0" : "2");
+                appendToString(r, c, player, diagonal);
                 r++;
                 c++;
-            }
 
+            }
+            // System.out.(diagonal.toString());
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r - 1, c - 1,
-                        false, false, true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r - 1, c - 1, false,
-                        false, true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r - 1, c - 1, false,
-                        false, true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r - 1, c - 1, false, false,
-                        true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r - 1, c - 1, false, false,
-                        true, false));
+            //     checkPattern(diagonal.toString(), win, winScore, r-1, c-1, false,
+            //     false,true,false, player);
+            //     checkPattern(diagonal.toString(), liveFour, liveFourScore, r-1, c-1, false,
+            //     false,true,false, player);
+            //     checkPattern(diagonal.toString(), liveThree, liveThreeScore, r-1, c-1, false,
+            //     false,true,false, player);
+            //     checkPattern(diagonal.toString(), deadThree, deadThreeScore, r-1, c-1, false,
+            //     false,true,false, player);
+            //     checkPattern(diagonal.toString(), capture, captureScore, r-1, c-1, false,
+            //     false,true,false, player);
+            //     checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r-1, c-1, false,
+            //     false,true,false, player);
+            //     checkPattern(diagonal.toString(), liveOne, liveOneScore, r-1, c-1, false, false,true,false, player);
+            //     checkPattern(diagonal.toString(), defThree, defThreeScore, r-1, c-1, false,
+            //     false,true,false, player);
+            //     checkPattern(diagonal.toString(), defFour, defFourScore, r-1, c-1, false,
+            //     false,true,false, player);
+
+                for (int score : patterns.keySet()) {
+                    checkPattern(diagonal.toString(), patterns.get(score), score, r - 1, c - 1, false, false, true, false, player);
+                }
             }
         }
 
         for (int startRow = 1; startRow < rows; startRow++) {
             StringBuilder diagonal = new StringBuilder();
             int r = startRow, c = 0;
-
             while (r < rows && c < cols) {
-                diagonal.append(board[c][r] == player ? "1" : board[c][r] == Mark.Empty ? "0" : "2");
+                appendToString(r, c, player, diagonal);
                 r++;
                 c++;
-            }
 
+            }
+            // // System.out.(diagonal.toString());
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r - 1, c - 1,
-                        false, false, true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r - 1, c - 1, false,
-                        false, true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r - 1, c - 1, false,
-                        false, true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r - 1, c - 1, false, false,
-                        true, false));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r - 1, c - 1, false, false,
-                        true, false));                
+                // checkPattern(diagonal.toString(), win, winScore, r-1, c-1, false,
+                // false,true,false, player);
+                // checkPattern(diagonal.toString(), liveFour, liveFourScore, r-1, c-1, false,
+                // false,true,false, player);
+                // checkPattern(diagonal.toString(), liveThree, liveThreeScore, r-1, c-1, false,
+                // false,true,false, player);
+                // checkPattern(diagonal.toString(), deadThree, deadThreeScore, r-1, c-1, false,
+                // false,true,false, player);
+                // checkPattern(diagonal.toString(), capture, captureScore, r-1, c-1, false,
+                // false,true,false, player);
+                // checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r-1, c-1, false,
+                // false,true,false, player);
+                // checkPattern(diagonal.toString(), liveOne, liveOneScore, r-1, c-1, false, false,true,false, player);
+                // checkPattern(diagonal.toString(), defThree, defThreeScore, r-1, c-1, false,
+                // false,true,false, player);
+                // checkPattern(diagonal.toString(), defFour, defFourScore, r-1, c-1, false,
+                // false,true,false, player);
+                for (int score : patterns.keySet()) {
+                    checkPattern(diagonal.toString(), patterns.get(score), score, r - 1, c - 1, false, false, true, false, player);
+                }
             }
         }
-
-        return moves;
     }
 
-    private static ArrayList<Move> evalDiagonalRightToLeft(Mark[][] board, Mark player) {
+    private void evalDiagonalRightToLeft(Mark player) {
         int rows = board.length;
         int cols = board[0].length;
-        ArrayList<Move> moves = new ArrayList<>();
 
         // Diagonals starting from the top row (decreasing column)
         for (int startCol = cols - 1; startCol >= 0; startCol--) {
             StringBuilder diagonal = new StringBuilder();
             int r = 0, c = startCol;
-
             while (r < rows && c >= 0) {
-                diagonal.append(board[c][r] == player ? "1" : board[c][r] == Mark.Empty ? "0" : "2");
+                appendToString(r, c, player, diagonal);
                 r++;
                 c--;
             }
-
+            // System.out.(diagonal.toString());
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r - 1, c + 1,
-                        false, false, false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r - 1, c + 1, false,
-                        false, false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r - 1, c + 1, false,
-                        false, false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r - 1, c + 1, false, false,
-                        false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r - 1, c + 1, false, false,
-                        false, true));                
+                // checkPattern(diagonal.toString(), win, winScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveFour, liveFourScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveThree, liveThreeScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), deadThree, deadThreeScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), capture, captureScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveOne, liveOneScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), defThree, defThreeScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), defFour, defFourScore, r - 1, c + 1, false, false, false, true, player);       
+                for (int score : patterns.keySet()) {
+                    checkPattern(diagonal.toString(), patterns.get(score), score, r - 1, c + 1, false, false, false, true, player);
+                }
             }
         }
 
@@ -156,89 +365,92 @@ public class EvalBoard {
         for (int startRow = 1; startRow < rows; startRow++) {
             StringBuilder diagonal = new StringBuilder();
             int r = startRow, c = cols - 1;
-
             while (r < rows && c >= 0) {
-                diagonal.append(board[c][r] == player ? "1" : board[c][r] == Mark.Empty ? "0" : "2");
+                appendToString(r, c, player, diagonal);
                 r++;
                 c--;
             }
-
+            // System.out.(diagonal.toString());
             if (diagonal.length() >= 3) {
-                moves.addAll(checkPattern(board, player, diagonal.toString(), win, Board.WINNING_SCORE, r - 1, c + 1,
-                        false, false, false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveFour, 1000, r - 1, c + 1, false,
-                        false, false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveThree, 100, r - 1, c + 1, false,
-                        false, false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), capture, 1500, r - 1, c + 1, false, false,
-                        false, true));
-                moves.addAll(checkPattern(board, player, diagonal.toString(), liveTwo, 10, r - 1, c + 1, false, false,
-                        false, true));
+                // checkPattern(diagonal.toString(), win, winScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveFour, liveFourScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveThree, liveThreeScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), deadThree, deadThreeScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), capture, captureScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveTwo, liveTwoScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), liveOne, liveOneScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), defThree, defThreeScore, r - 1, c + 1, false, false, false, true, player);
+                // checkPattern(diagonal.toString(), defFour, defFourScore, r - 1, c + 1, false, false, false, true, player);
+                for (int score : patterns.keySet()) {
+                    checkPattern(diagonal.toString(), patterns.get(score), score, r - 1, c + 1, false, false, false, true, player);
+                }
             }
         }
-
-        return moves;
     }
 
-    private static ArrayList<Move> checkPattern(Mark[][] board, Mark player, String lineString, String[] patterns,
-            int score,
-            int baseRow, int baseCol, boolean isHorizontal, boolean isVertical, boolean isDiagonalLeftToRight,
-            boolean isDiagonalRightToLeft) {
-        ArrayList<Move> moves = new ArrayList<>();
+    private void checkPattern(String lineString, String[] patterns, int score, int baseRow, int baseCol,
+            boolean isHorizontal, boolean isVertical, boolean isDiagonalLeftToRight, boolean isDiagonalRightToLeft, Mark player) {
+        boolean scoreAssigned = false;
         for (String pattern : patterns) {
             Pattern regex = Pattern.compile(pattern);
             Matcher matcher = regex.matcher(lineString);
-
             while (matcher.find()) {
+                // System.out.("Pattern found: " + pattern);
+                // System.out.("Adding score: " + score);
+                // System.out.("Base row: " + baseRow + " Base col: " + baseCol);
+                // System.out.("Start: " + matcher.start() + " End: " + matcher.end());
                 for (int k = matcher.start(); k < matcher.end(); k++) {
-                    if (isHorizontal && board[k][baseRow] != player && board[k][baseRow] != player.getOpponent()) {
-                        Move move = new Move(k, baseRow, player);
-                        move.setScore(score);
-
-                        moves.add(move);
-                    } else if (isVertical && board[baseCol][k] != player && board[baseCol][k] != player.getOpponent()) {                        
-                        Move move = new Move(baseCol, k, player);
-                        move.setScore(score);
-
-                        moves.add(move);
+                    if (isHorizontal && board[baseRow][k] != 1 && board[baseRow][k] != 2) {                        
+                        this.addPoint(baseRow, k, score, player);
+                        scoreAssigned = true;
+                    } else if (isVertical && board[k][baseCol] != 1 && board[k][baseCol] != 2) {                        
+                        this.addPoint(k, baseCol, score, player);           
+                        scoreAssigned = true;             
                     } else if (isDiagonalLeftToRight) {
                         if (baseRow >= baseCol) {
                             int row = baseRow - baseCol + k;
                             int col = k;
-
-                            if (board[col][row] != player && board[col][row] != player.getOpponent()) {
-                                Move move = new Move(col, row, player);
-                                move.setScore(score);
-                                moves.add(move);
+                            // System.out.("row: " + row + " col: " + col);
+                            if (board[row][col] != 1 && board[row][col] != 2) {
+                                this.addPoint(row, col, score, player);         
+                                scoreAssigned = true;                           
                             }
                         } else {
                             int row = k;
                             int col = baseCol - baseRow + k;
-
-                            if (board[col][row] != player && board[col][row] != player.getOpponent()) {
-                                Move move = new Move(col, row, player);
-                                move.setScore(score);
-
-                                moves.add(move);
-                            }
+                            // System.out.("row: " + row + " col: " + col);
+                            if (board[row][col] != 1 && board[row][col] != 2) {
+                                this.addPoint(row, col, score, player);    
+                                scoreAssigned = true;                                
+                            }                                
                         }
                     } else if (isDiagonalRightToLeft) {
                         if (baseCol < 15) {
                             int row = baseCol + k;
                             int col = baseRow - k;
-
-                            if (board[col][row] != player && board[col][row] != player.getOpponent()) {
-                                Move move = new Move(col, row, player);
-                                move.setScore(score);
-
-                                moves.add(move);
+                            if (board[row][col] != 1 && board[row][col] != 2) {
+                                this.addPoint(row, col, score, player);       
+                                scoreAssigned = true;                             
                             }
                         }
                     }
                 }
             }
+            if (scoreAssigned) {
+                break;                    
+            }
         }
-
-        return moves;
     }
+
+    public void display() {
+        // System.out.("Board:");
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                // System.out.printf("%8d", board[i][j]);
+            }
+            // System.out.();
+            // System.out.print("\n");
+        }
+    }
+
 }

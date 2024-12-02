@@ -33,7 +33,7 @@ class Client {
                         if(connect()) {
                             gameInitialization();
                         }
-                    }       
+                    }
                 }
 
                 char cmd = 0;                                
@@ -69,7 +69,6 @@ class Client {
                     cpu = new CPU(Mark.Red);
                     Move move = cpu.getNextMove(mBoard);
                     mBoard.play(move);
-                    System.out.println(move);
 
                     output.write(move.toString().getBytes(), 0, move.toString().getBytes().length);
                     output.flush();
@@ -105,6 +104,7 @@ class Client {
                 // Le message contient aussi le dernier coup joue.
                 if (cmd == '3') {
                     startTime = System.currentTimeMillis();
+                    timeLimit = 4000; 
                     byte[] aBuffer = new byte[16];
 
                     int size = input.available();
@@ -126,11 +126,13 @@ class Client {
                 }
                 // Le dernier coup est invalide
                 if (cmd == '4') {
+                    startTime = System.currentTimeMillis();
+                    timeLimit = 1000; 
                     System.out.println("Coup invalide, entrez un nouveau coup : ");
-                    String move = null;
+                    Move move = cpu.getNextMove(mBoard);
+                    mBoard.play(move);
 
-                    move = console.readLine();
-                    output.write(move.getBytes(), 0, move.length());
+                    output.write(move.toString().getBytes(), 0, move.toString().length());
                     output.flush();
                 }
                 // Partie terminée
