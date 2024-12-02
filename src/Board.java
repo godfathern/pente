@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Board {
-    public static final int WINNING_SCORE = 100000;
+    public static final int WINNING_SCORE = 1000000;
     public static final int BOARD_SIZE = 15;
 
     // 0: Empty, 1: Red, 2: Black
@@ -58,8 +58,10 @@ public class Board {
                 move.setCapture(true);
                 if (move.getColor() == Mark.Black) {
                     blackCaptures++;
+                    evalBoard.updateCaptures(blackCaptures);
                 } else {
                     redCaptures++;
+                    evalBoard.updateCaptures(redCaptures);
                 }
 
                 Move firstcaptive = new Move(move.getCol() + dir[0], move.getRow() + dir[1],
@@ -75,7 +77,7 @@ public class Board {
                         if (playedMove.equals(firstcaptive) || playedMove.equals(secondCaptive)) {
                             playedMove.setCaptured(true);                            
                             move.addCapture(playedMove);
-                            evalBoard.capture(playedMove.getRow(), playedMove.getCol());
+                            evalBoard.capture(playedMove.getRow(), playedMove.getCol());                            
 
                             Zobrist.updateHash(playedMove, true);
                         }
@@ -113,8 +115,10 @@ public class Board {
             move.setCapture(false);
             if (move.getColor() == Mark.Black) {
                 blackCaptures--;
+                evalBoard.updateCaptures(blackCaptures);
             } else {
                 redCaptures--;
+                evalBoard.updateCaptures(redCaptures);
             }
 
             for (Move capture : move.getCaptureList()) {
@@ -173,26 +177,34 @@ public class Board {
         int oppScore = 0;
         Mark oppMark = mark.getOpponent();
         int threatCountMark = 0;
-        int threatCountOpp = 0;
+        int threatCountOpp = 0;        
 
         if (checkWin(mark)) {
             return WINNING_SCORE;
-        } else if (checkWin(oppMark)) {
+        } else if(checkWin(oppMark)) {
             return -WINNING_SCORE;
-        }            
-
-        if(mark == Mark.Black) {
-            markScore += evalBoard.getTotalScoreBlack() + 20 * blackCaptures;
-            oppScore += evalBoard.getTotalScoreRed() + 20 * redCaptures;
-        } else {
-            markScore += evalBoard.getTotalScoreRed() + 20 * blackCaptures;
-            oppScore += evalBoard.getTotalScoreBlack() + 20 * redCaptures;
         }
 
-        if (threatCountMark > threatCountOpp) {
-            markScore += 1000 * threatCountMark;
-        } else if (threatCountMark < threatCountOpp) {
-            oppScore += 1000 * threatCountOpp;
+        int threatModifier = 2000;
+        int captureModifier = 10000;
+        if(mark == Mark.Black) {
+            markScore += evalBoard.getTotalScoreBlack() + captureModifier * blackCaptures;
+            oppScore += evalBoard.getTotalScoreRed() + captureModifier * redCaptures;
+
+            if (evalBoard.getThreatsCountBlack() > evalBoard.getThreatCountRed()) {
+                markScore += threatModifier * threatCountMark;
+            } else if (evalBoard.getThreatsCountBlack() < evalBoard.getThreatCountRed()) {
+                oppScore += threatModifier * threatCountOpp;
+            }
+        } else {
+            markScore += evalBoard.getTotalScoreRed() + captureModifier * blackCaptures;
+            oppScore += evalBoard.getTotalScoreBlack() + captureModifier * redCaptures;
+
+            if (evalBoard.getThreatCountRed() > evalBoard.getThreatsCountBlack()) {
+                markScore += threatModifier * threatCountMark;
+            } else if (evalBoard.getThreatCountRed() < evalBoard.getThreatsCountBlack()) {
+                oppScore += threatModifier * threatCountOpp;
+            }
         }
 
         int score = markScore - oppScore;
@@ -413,7 +425,8 @@ public class Board {
      * @return true if the chain is already in the list of chains, false otherwise
      */
     private static boolean findChain(List<Move> chain, ArrayList<Move[]> chains) {
-        for (Move[] c : chains) {
+        ArrayList<Move[]> chainArrayCopy = new ArrayList<Move[]>(chains);
+        for (Move[] c : chainArrayCopy) {
             if (c.length > chain.size()) {
                 if (Arrays.asList(c).containsAll(chain)) {
                     return true;
@@ -431,6 +444,13 @@ public class Board {
 
     public ArrayList<Move> getPossibleMoves(Mark mark) {
         ArrayList<Move> moves = evalBoard.bestMove(mark);
+
+        // for (Move move : moves) {
+        //     play(move);
+        //     move.setScore(evaluate(mark));
+        //     undo(move);
+        // }
+
         moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
 
         // if (moves.size() > 10) {

@@ -13,6 +13,10 @@ class Client {
     private static boolean gameEnded;
     private static long startTime;
     private static long timeLimit = 4000; 
+    private static Scanner scIp;
+    private static String ip;
+    private static String[] ipPort;
+
     
     public static long getStartTime() {
         return startTime;
@@ -162,15 +166,17 @@ class Client {
         System.out.println("Tentative de connexion");
         
         try {
-            Scanner scIp = new Scanner(System.in);
-            System.out.println("Entrez l'adresse IP du serveur avec le port (0.0.0.0:1234) : ");
-            // interpolate the IP and port
-            String ip = scIp.nextLine();
-            String[] ipPort = ip.split(":");
-            System.out.println("IP: " + ip);
-            System.out.println("Port: " + ipPort[1]);
-            MyClient = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));
-            scIp.close();
+            if(scIp == null) {
+                scIp = new Scanner(System.in);
+                System.out.println("Entrez l'adresse IP du serveur avec le port (0.0.0.0:1234) : ");
+                // interpolate the IP and port
+                ip = scIp.nextLine();
+                ipPort = ip.split(":");
+                System.out.println("IP: " + ip);
+                System.out.println("Port: " + ipPort[1]);
+            }
+            MyClient = new Socket(ipPort[0], Integer.parseInt(ipPort[1]));                
+            
 
             input = new BufferedInputStream(MyClient.getInputStream());
             output = new BufferedOutputStream(MyClient.getOutputStream());

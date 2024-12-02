@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class CPU {
     private final Mark _mark;
-    private final static int MAX_DEPTH = 3;
+    private final static int MAX_DEPTH = 10;
     private int numberOfExploredNodes = 0;
 
     public CPU(Mark mark) {
@@ -19,6 +19,8 @@ public class CPU {
         //ArrayList<Move> moves = board.getPossibleMoves(_mark);
         Random random = new Random();
         int r = random.nextInt(moves.size());
+
+        moves.sort((m1, m2) -> m1.compareTo(m2));
         return moves.get(r);
     }
 
@@ -30,7 +32,12 @@ public class CPU {
         if (_mark == Mark.Red && board.getTurns() == 0) {
             moves.add(new Move("H8", Mark.Red));
             return moves;
+        } else if (_mark == Mark.Red && board.getTurns() == 2) {
+            moves.addAll(board.getPossibleMovesWithinNsquares(1, _mark));
+            return moves;
         }
+
+        
 
         ArrayList<Move> possibleMoves;
         possibleMoves = board.getPossibleMoves(_mark);
