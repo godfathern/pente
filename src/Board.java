@@ -445,11 +445,11 @@ public class Board {
     public ArrayList<Move> getPossibleMoves(Mark mark) {
         ArrayList<Move> moves = evalBoard.bestMove(mark);
 
-        // for (Move move : moves) {
-        //     play(move);
-        //     move.setScore(evaluate(mark));
-        //     undo(move);
-        // }
+        for (Move move : moves) {
+            play(move);
+            move.setScore(evaluate(mark));
+            undo(move);
+        }
 
         moves.sort((Move m1, Move m2) -> m1.compareTo(m2));
 
