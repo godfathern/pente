@@ -174,15 +174,15 @@ public class EvalBoard {
                 if(board[i][j] != 0 && board[i][j] != 1 && board[i][j] != 2) {
                     Move newMove = new Move(i, j, player);
                     newMove.setScore(board[i][j]);
-
-                    if (newMove.getScore() > maxScore) {
-                        maxScore = newMove.getScore();
+                    candidates.add(newMove);
+                    // if (newMove.getScore() > maxScore) {
+                    //     maxScore = newMove.getScore();
     
-                        candidates.clear();
-                        candidates.add(newMove);
-                    } else if (newMove.getScore() == maxScore) {
-                        candidates.add(newMove);
-                    }
+                    //     candidates.clear();
+                    //     candidates.add(newMove);
+                    // } else if (newMove.getScore() == maxScore) {
+                        
+                    // }
                 }
 
             }
